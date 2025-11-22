@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working Express - Services de Bricolage</title>
+</head>
+<body>
+
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-indigo-600"><a href="index.html">WorkingExpress</a></h1>
+    <a href="#" class="text-gray-600 hover:text-indigo-600 transition duration-150">Mon Tableau de Bord</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Navigation entre Catégories -->
+  <nav class="flex space-x-4 mb-8 justify-center border-b pb-4">
+    <a href="garde_enfant.html" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-pink-100 hover:text-pink-700 transition duration-300">
+      🧸 Garde d'Enfants
+    </a>
+    <a href="travail_domestique.html" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-emerald-100 hover:text-emerald-700 transition duration-300">
+      🧹 Travail Domestique
+    </a>
+    <a href="bricolage.html" class="px-6 py-2 rounded-full brico-bg text-indigo-900 font-bold border-2 border-indigo-500 shadow-lg transition duration-300">
+      🛠️ Services de Bricolage
+    </a>
+  </nav>
+
+  <!-- Section LISTE DES PRESTATAIRES (Visible par défaut) -->
+  <section id="provider-list-section">
+
+    <!-- Titre et Description de la Catégorie (Bricolage) -->
+    <section class="mb-10 text-center md:text-left">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
+        Services de Bricolage <span class="brico-color">🛠️</span>
+      </h2>
+      <p class="text-xl text-gray-500">Trouvez rapidement un artisan pour vos réparations, installations et petits travaux.</p>
+    </section>
+
+    <!-- Barre de Filtres et de Recherche Spécifique -->
+    <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        <!-- Filtre Localisation -->
+        <input type="text" id="filter-location" placeholder="Ville ou quartier (ex: Dakar)"
+               class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+        <!-- Filtre Type de Service/Spécialité -->
+        <select id="filter-specialty" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
+          <option value="all">Toutes les spécialités</option>
+          <option value="plomberie">Plomberie</option>
+          <option value="electricite">Électricité</option>
+          <option value="montage">Montage de meubles</option>
+          <option value="peinture">Peinture / Rénovation légère</option>
+        </select>
+
+        <!-- Filtre Urgence -->
+        <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+          <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+          <label for="filter-urgent" class="text-gray-700">Intervention Urgente (moins de 2h)</label>
+        </div>
+
+        <!-- Bouton Appliquer les Filtres -->
+        <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+          Appliquer les Filtres
+        </button>
+      </div>
+    </form>
+
+    <!-- Liste des Prestataires de Bricolage -->
+    <div id="providers-container">
+      <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Prestataires trouvés</h3>
+
+      <!-- Le conteneur 'providers-list' sera rempli dynamiquement ou contient les éléments initiaux -->
+      <div id="providers-list" class="space-y-6">
+        <!-- Les cartes initiales restent ici, mais j'ajoute un ID pour l'identification JS -->
+
+        <!-- Carte Prestataire 1 : Papa K. -->
+        <div id="provider-1" class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             data-specialty="plomberie,electricite" data-availability="now" data-location="Dakar">
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <img src="https://placehold.co/80x80/ef4444/ffffff?text=P1" alt="Photo de Papa K." class="w-16 h-16 rounded-full border-2 border-red-500">
+            <div>
+              <p class="text-xl font-bold text-gray-900">Papa K.</p>
+              <p class="text-gray-600">Plombier Certifié | Dépannage 24/7</p>
+              <div class="flex items-center mt-1">
+                <span class="text-sm font-bold mr-1 text-gray-800">4.9</span>
+                <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+                <span class="rating-star text-gray-300">&#9733;</span>
+                <span class="text-sm text-gray-500 ml-2">(88 Avis)</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold text-red-700 bg-red-100 px-3 py-1 rounded-full">
+                                <span class="relative flex h-2 w-2 mr-2">
+                                    <span class="animate-ping-brico absolute inline-flex h-full w-full rounded-full ping-brico bg-red-500 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                                </span>
+              Disponible pour Urgence
+            </div>
+            <p class="text-2xl font-bold brico-color">50€ / déplacement + pièces</p>
+            <button onclick="showProviderDetails(1)" class="px-5 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-300">
+              Contacter en Urgence
+            </button>
+          </div>
+        </div>
+
+        <!-- Carte Prestataire 2 : Aïcha D. -->
+        <div id="provider-2" class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             data-specialty="montage,peinture" data-availability="soon" data-location="Parcelles Assainies">
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <img src="https://placehold.co/80x80/4f46e5/ffffff?text=A2" alt="Photo de Aïcha D." class="w-16 h-16 rounded-full border-2 border-indigo-500">
+            <div>
+              <p class="text-xl font-bold text-gray-900">Aïcha D.</p>
+              <p class="text-gray-600">Multi-Services : Montage, Peinture, Fixations</p>
+              <div class="flex items-center mt-1">
+                <span class="text-sm font-bold mr-1 text-gray-800">5.0</span>
+                <span class="rating-star">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                <span class="text-sm text-gray-500 ml-2">(42 Avis)</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold text-indigo-700 brico-bg px-3 py-1 rounded-full">
+              <span class="w-2 h-2 mr-2 rounded-full bg-indigo-500"></span>
+              Prochain créneau : Après-demain
+            </div>
+            <p class="text-2xl font-bold brico-color">25€ / heure</p>
+            <button onclick="showProviderDetails(2)" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+              Demander un Devis
+            </button>
+          </div>
+        </div>
+
+        <!-- Carte Prestataire 3 : Issa M. -->
+        <div id="provider-3" class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             data-specialty="electricite" data-availability="booking" data-location="Guédiawaye">
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <img src="https://placehold.co/80x80/9ca3af/ffffff?text=I3" alt="Photo de Issa M." class="w-16 h-16 rounded-full border-2 border-gray-400">
+            <div>
+              <p class="text-xl font-bold text-gray-900">Issa M.</p>
+              <p class="text-gray-600">Maître Électricien | Rénovation et Mise aux normes</p>
+              <div class="flex items-center mt-1">
+                <span class="text-sm font-bold mr-1 text-gray-800">4.7</span>
+                <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+                <span class="rating-star text-gray-300">&#9733;</span>
+                <span class="text-sm text-gray-500 ml-2">(65 Avis)</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+              <span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
+              Réservation nécessaire (3 jours de délai)
+            </div>
+            <p class="text-2xl font-bold brico-color">30€ / heure</p>
+            <button onclick="showProviderDetails(3)" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+              Planifier
+            </button>
+          </div>
+        </div>
+
+      </div>
+      <!-- Message affiché si aucun résultat n'est trouvé -->
+      <div id="no-results" class="hidden text-center p-8 brico-bg rounded-lg border border-indigo-200 mt-6">
+        <p class="text-xl brico-color font-semibold">Aucun artisan ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section DÉTAIL DU PRESTATAIRE & FORMULAIRE DE RÉSERVATION (Cachée par défaut) -->
+  <section id="provider-detail-section" class="hidden fade-in">
+    <button onclick="goBackToList()" class="mb-6 flex items-center text-indigo-600 hover:text-indigo-800 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      Retour à la liste des prestataires
+    </button>
+
+    <!-- Contenu Dynamique du Prestataire -->
+    <div id="detail-content" class="bg-white p-8 rounded-xl shadow-2xl mb-8 border-t-4 border-indigo-500">
+      <!-- Les détails du prestataire seront insérés ici (image, nom, etc.) -->
+    </div>
+
+    <!-- Formulaire de Demande de Service / Simulation d'Acceptation -->
+    <div id="booking-request-form" class="bg-indigo-50 p-6 rounded-xl border border-indigo-200">
+      <h3 class="text-3xl font-bold brico-color mb-4">Demande de Service</h3>
+      <p class="text-gray-600 mb-6">Décrivez votre besoin et proposez un montant pour le service. Le prestataire doit accepter avant le paiement.</p>
+
+      <div class="space-y-4">
+                    <textarea id="service-description" placeholder="Ex: Fuite d'eau urgente dans la cuisine, besoin de fixer une étagère, installation d'une prise électrique."
+                              class="w-full p-4 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 h-32"></textarea>
+
+        <button onclick="handleBookingRequest()" id="request-service-btn" class="w-full px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+          Soumettre ma Demande de Service
+        </button>
+
+        <!-- Message après soumission de la demande -->
+        <div id="booking-status-message" class="hidden p-4 bg-yellow-100 text-yellow-800 rounded-lg">
+          <p class="font-semibold">✅ Demande envoyée ! En attente d'acceptation par le prestataire...</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section PAIEMENT (Affichée après simulation d'acceptation) -->
+    <div id="payment-section" class="hidden fade-in mt-8 bg-green-50 p-8 rounded-xl shadow-xl border-t-4 border-green-500">
+      <h3 class="text-3xl font-bold text-green-800 mb-6">Confirmation de Réservation & Paiement</h3>
+      <p class="text-lg text-green-700 font-semibold mb-4">Le prestataire a <span class="text-red-600">accepté</span> votre demande ! Procédez au paiement pour confirmer.</p>
+      <div class="bg-white p-6 rounded-lg shadow-inner mb-6">
+        <p class="text-xl font-bold text-gray-800 mb-2">Montant du Service à Payer (Total)</p>
+        <input type="number" id="payment-amount" placeholder="Saisir le montant en Euros (€)" value="35"
+               class="w-full p-4 text-2xl font-mono border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <h4 class="text-xl font-bold text-gray-800 mb-4">Choisir un mode de paiement :</h4>
+
+      <!-- Options de Paiement -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Option Wave -->
+        <label class="payment-option p-4 border-2 rounded-lg cursor-pointer transition duration-200 hover:shadow-lg hover:border-indigo-500">
+          <input type="radio" name="payment-method" value="wave" onchange="handlePaymentSelection(this.value)" class="hidden">
+          <div class="font-bold text-lg flex items-center">
+            <img src="https://placehold.co/20x20/2563eb/ffffff?text=W" alt="Wave Logo" class="mr-2 rounded"> Wave
+          </div>
+        </label>
+
+        <!-- Option Orange Money -->
+        <label class="payment-option p-4 border-2 rounded-lg cursor-pointer transition duration-200 hover:shadow-lg hover:border-indigo-500">
+          <input type="radio" name="payment-method" value="orange-money" onchange="handlePaymentSelection(this.value)" class="hidden">
+          <div class="font-bold text-lg flex items-center">
+            <img src="https://placehold.co/20x20/ff8c00/ffffff?text=OM" alt="Orange Money Logo" class="mr-2 rounded"> Orange Money
+          </div>
+        </label>
+
+        <!-- Option Carte Bancaire -->
+        <label class="payment-option p-4 border-2 rounded-lg cursor-pointer transition duration-200 hover:shadow-lg hover:border-indigo-500">
+          <input type="radio" name="payment-method" value="card" onchange="handlePaymentSelection(this.value)" class="hidden">
+          <div class="font-bold text-lg flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+              <path fill-rule="evenodd" d="M18 9H2v7a2 2 0 002 2h12a2 2 0 002-2V9zM4 14V9h12v5h-3.25a.75.75 0 000 1.5h.5a.75.75 0 00.75-.75V14H16V9H4v5h3.25a.75.75 0 000-1.5h-.5a.75.75 0 00-.75.75V14z" clip-rule="evenodd" />
+            </svg>
+            Carte Bancaire
+          </div>
+        </label>
+      </div>
+
+      <!-- Champs de Saisie Spécifiques au Paiement (Dynamique) -->
+      <div id="payment-fields-container" class="mt-6 p-6 bg-white rounded-lg shadow-md border border-gray-100 hidden fade-in">
+        <h5 class="text-xl font-bold mb-4 text-gray-700">Détails de Paiement <span id="payment-method-name"></span></h5>
+        <div id="wave-fields" class="space-y-3 hidden">
+          <input type="text" placeholder="Numéro de Téléphone Wave (ex: 78XXXXXXX)" class="w-full p-3 border rounded-lg">
+          <input type="password" placeholder="Code PIN Wave" class="w-full p-3 border rounded-lg">
+        </div>
+        <div id="om-fields" class="space-y-3 hidden">
+          <input type="text" placeholder="Numéro de Téléphone Orange Money (ex: 77XXXXXXX)" class="w-full p-3 border rounded-lg">
+          <input type="password" placeholder="Code Secret Orange Money" class="w-full p-3 border rounded-lg">
+        </div>
+        <div id="card-fields" class="space-y-3 hidden">
+          <input type="text" placeholder="Numéro de Carte (16 chiffres)" class="w-full p-3 border rounded-lg">
+          <div class="flex space-x-3">
+            <input type="text" placeholder="Date d'Expiration (MM/AA)" class="w-1/2 p-3 border rounded-lg">
+            <input type="text" placeholder="CVC" class="w-1/2 p-3 border rounded-lg">
+          </div>
+          <input type="text" placeholder="Nom sur la Carte" class="w-full p-3 border rounded-lg">
+        </div>
+      </div>
+
+      <!-- Bouton de Paiement Final -->
+      <button onclick="processPayment()" id="final-payment-btn" class="w-full mt-6 px-6 py-4 bg-green-600 text-white font-bold rounded-lg shadow-xl hover:bg-green-700 transition duration-300 disabled:opacity-50" disabled>
+        Payer et Confirmer le Service
+      </button>
+
+      <!-- Message de Résultat du Paiement -->
+      <div id="payment-result-message" class="mt-6 hidden p-4 rounded-lg text-center"></div>
+
+    </div>
+  </section>
+
+
+</main>
+
+<!-- Pied de Page (Footer) -->
+<footer class="bg-gray-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+    <p>&copy; 2025 Working Express. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<!-- Script JavaScript pour la logique d'application -->
+<script>
+  // --- 1. DONNÉES DES PRESTATAIRES (Simulation) ---
+  const providersData = [
+    {
+      id: 1,
+      name: "Papa K.",
+      title: "Plombier Certifié | Dépannage 24/7",
+      description: "Spécialiste des urgences plomberie (fuites, canalisations bouchées) et électricité légère. Disponible immédiatement sur Dakar et environs proches.",
+      rating: 4.9,
+      reviews: 88,
+      specialty: ["plomberie", "electricite"],
+      availability: "now",
+      location: "Dakar",
+      price: "50€ / déplacement + pièces",
+      action: "Contacter en Urgence",
+      image: "https://placehold.co/80x80/ef4444/ffffff?text=P1",
+      color: "border-red-500",
+      badge_text: "Disponible pour Urgence",
+      badge_color: "bg-red-100 text-red-700"
+    },
+    {
+      id: 2,
+      name: "Aïcha D.",
+      title: "Multi-Services : Montage, Peinture, Fixations",
+      description: "Experte en aménagement intérieur. Montage de meubles IKEA, pose de cadres, peinture de petites surfaces. Ponctualité garantie.",
+      rating: 5.0,
+      reviews: 42,
+      specialty: ["montage", "peinture"],
+      availability: "soon",
+      location: "Parcelles Assainies",
+      price: "25€ / heure",
+      action: "Demander un Devis",
+      image: "https://placehold.co/80x80/4f46e5/ffffff?text=A2",
+      color: "border-indigo-500",
+      badge_text: "Prochain créneau : Après-demain",
+      badge_color: "brico-bg text-indigo-700"
+    },
+    {
+      id: 3,
+      name: "Issa M.",
+      title: "Maître Électricien | Rénovation et Mise aux normes",
+      description: "Travaux d'électricité complexes, rénovation complète, installation de systèmes de sécurité. Nécessite une planification préalable.",
+      rating: 4.7,
+      reviews: 65,
+      specialty: ["electricite"],
+      availability: "booking",
+      location: "Guédiawaye",
+      price: "30€ / heure",
+      action: "Planifier",
+      image: "https://placehold.co/80x80/9ca3af/ffffff?text=I3",
+      color: "border-gray-400",
+      badge_text: "Réservation nécessaire (3 jours de délai)",
+      badge_color: "bg-gray-100 text-gray-700"
+    }
+  ];
+
+  let currentProvider = null;
+
+  // --- 2. GESTION DE LA VUE (LISTE vs DÉTAIL) ---
+
+  /**
+   * Affiche la vue détaillée du prestataire et cache la liste.
+   * @param {number} providerId - L'ID du prestataire à afficher.
+   */
+  function showProviderDetails(providerId) {
+    const listSection = document.getElementById('provider-list-section');
+    const detailSection = document.getElementById('provider-detail-section');
+    const detailContent = document.getElementById('detail-content');
+
+    // Réinitialiser les sections de réservation/paiement
+    document.getElementById('booking-request-form').classList.remove('hidden');
+    document.getElementById('booking-status-message').classList.add('hidden');
+    document.getElementById('payment-section').classList.add('hidden');
+    document.getElementById('payment-result-message').classList.add('hidden');
+    document.getElementById('request-service-btn').disabled = false;
+
+
+    currentProvider = providersData.find(p => p.id === providerId);
+
+    if (!currentProvider) return;
+
+    // Masquer la liste et afficher la section de détail
+    listSection.classList.add('hidden');
+    detailSection.classList.remove('hidden');
+
+    // Mise à jour du contenu détaillé
+    detailContent.innerHTML = `
+                <div class="flex items-start space-x-6">
+                    <img src="${currentProvider.image}" alt="Photo de ${currentProvider.name}" class="w-24 h-24 rounded-full border-4 ${currentProvider.color}">
+                    <div>
+                        <h2 class="text-4xl font-extrabold text-gray-900">${currentProvider.name}</h2>
+                        <p class="text-xl text-indigo-600 mb-2">${currentProvider.title}</p>
+
+                        <!-- Notation -->
+                        <div class="flex items-center mb-4">
+                            <span class="text-lg font-bold mr-1 text-gray-800">${currentProvider.rating}</span>
+                            <span class="rating-star">${'★'.repeat(Math.floor(currentProvider.rating))}</span>
+                            <span class="rating-star text-gray-300">${'★'.repeat(5 - Math.floor(currentProvider.rating))}</span>
+                            <span class="text-base text-gray-500 ml-2">(${currentProvider.reviews} Avis)</span>
+                        </div>
+
+                        <div class="text-gray-700 space-y-3">
+                            <p class="font-light">${currentProvider.description}</p>
+                            <p class="text-2xl font-bold brico-color">${currentProvider.price}</p>
+                            <p class="text-sm font-semibold ${currentProvider.badge_color} px-3 py-1 rounded-full inline-block">
+                                ${currentProvider.badge_text}
+                            </p>
+                            <p class="text-sm text-gray-500">📍 Zone d'intervention : ${currentProvider.location}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+  }
+
+  /**
+   * Retourne à la vue de la liste des prestataires.
+   */
+  function goBackToList() {
+    document.getElementById('provider-list-section').classList.remove('hidden');
+    document.getElementById('provider-detail-section').classList.add('hidden');
+    currentProvider = null;
+  }
+
+
+  // --- 3. GESTION DE LA RÉSERVATION (MOCK) ---
+
+  /**
+   * Simule la soumission de la demande et l'acceptation par le prestataire.
+   */
+  function handleBookingRequest() {
+    const description = document.getElementById('service-description').value.trim();
+
+    if (description.length < 10) {
+      // Utilisation de console.error et d'un modal UI (ici, juste un message interne) au lieu d'alert()
+      document.getElementById('booking-status-message').classList.remove('hidden');
+      document.getElementById('booking-status-message').className = 'p-4 bg-red-100 text-red-800 rounded-lg';
+      document.getElementById('booking-status-message').innerHTML = '<p class="font-semibold">⚠️ Veuillez décrire votre besoin avec plus de détails (minimum 10 caractères).</p>';
+      return;
+    }
+
+    document.getElementById('request-service-btn').disabled = true;
+    document.getElementById('booking-status-message').classList.remove('hidden');
+    document.getElementById('booking-status-message').className = 'p-4 bg-yellow-100 text-yellow-800 rounded-lg';
+    document.getElementById('booking-status-message').innerHTML = '<p class="font-semibold">✅ Demande envoyée ! En attente d\'acceptation par le prestataire...</p>';
+
+    // Simulation de l'acceptation par le prestataire après 3 secondes
+    setTimeout(() => {
+      // Masquer le formulaire de demande et afficher la section de paiement
+      document.getElementById('booking-request-form').classList.add('hidden');
+      document.getElementById('payment-section').classList.remove('hidden');
+
+      // Mettre à jour le message d'acceptation
+      document.getElementById('booking-status-message').className = 'p-4 bg-green-100 text-green-800 rounded-lg';
+      document.getElementById('booking-status-message').innerHTML = '<p class="font-semibold">🎉 Votre demande a été ACCEPTÉE ! Vous pouvez maintenant procéder au paiement.</p>';
+    }, 3000);
+  }
+
+  // --- 4. GESTION DU PAIEMENT ---
+
+  /**
+   * Affiche les champs de saisie spécifiques en fonction du mode de paiement sélectionné.
+   * @param {string} method - 'wave', 'orange-money', ou 'card'.
+   */
+  function handlePaymentSelection(method) {
+    const container = document.getElementById('payment-fields-container');
+    const waveFields = document.getElementById('wave-fields');
+    const omFields = document.getElementById('om-fields');
+    const cardFields = document.getElementById('card-fields');
+    const methodNameDisplay = document.getElementById('payment-method-name');
+    const finalPaymentBtn = document.getElementById('final-payment-btn');
+
+    // Masquer tout d'abord
+    waveFields.classList.add('hidden');
+    omFields.classList.add('hidden');
+    cardFields.classList.add('hidden');
+    container.classList.remove('hidden');
+    finalPaymentBtn.disabled = false; // Activer le bouton de paiement
+
+    // Afficher le champ approprié
+    if (method === 'wave') {
+      waveFields.classList.remove('hidden');
+      methodNameDisplay.textContent = 'Wave';
+    } else if (method === 'orange-money') {
+      omFields.classList.remove('hidden');
+      methodNameDisplay.textContent = 'Orange Money';
+    } else if (method === 'card') {
+      cardFields.classList.remove('hidden');
+      methodNameDisplay.textContent = 'Carte Bancaire';
+    }
+
+    // Mettre à jour le style du bouton radio
+    document.querySelectorAll('.payment-option').forEach(label => {
+      const radio = label.querySelector('input[type="radio"]');
+      if (radio.checked) {
+        label.classList.add('border-indigo-600', 'bg-indigo-50');
+        label.classList.remove('border-gray-300');
+      } else {
+        label.classList.remove('border-indigo-600', 'bg-indigo-50');
+        label.classList.add('border-gray-300');
+      }
+    });
+  }
+
+  /**
+   * Simule le processus de paiement final.
+   */
+  function processPayment() {
+    const amountInput = document.getElementById('payment-amount');
+    const amount = parseFloat(amountInput.value);
+    const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
+    const resultMessage = document.getElementById('payment-result-message');
+
+    if (!amount || amount <= 0 || !selectedMethod) {
+      resultMessage.classList.remove('hidden');
+      resultMessage.className = 'mt-6 p-4 rounded-lg bg-red-100 text-red-700 text-center font-bold';
+      resultMessage.textContent = "Erreur: Veuillez saisir un montant valide et sélectionner un mode de paiement.";
+      return;
+    }
+
+    // Désactiver le bouton et montrer le chargement
+    document.getElementById('final-payment-btn').disabled = true;
+    document.getElementById('final-payment-btn').textContent = "Paiement en cours...";
+    resultMessage.classList.remove('hidden');
+    resultMessage.className = 'mt-6 p-4 rounded-lg bg-yellow-100 text-yellow-800 text-center font-bold';
+    resultMessage.textContent = "Traitement du paiement en cours, veuillez patienter...";
+
+    // Simulation du délai de paiement
+    setTimeout(() => {
+      const isSuccess = Math.random() > 0.1; // 90% de chance de succès
+
+      if (isSuccess) {
+        const transactionId = crypto.randomUUID().substring(0, 8).toUpperCase();
+        resultMessage.className = 'mt-6 p-4 rounded-lg bg-green-100 text-green-700 text-center font-bold';
+        resultMessage.innerHTML = `
+                        <p class="text-2xl mb-2">🎉 Paiement Réussi !</p>
+                        <p>Service pour ${currentProvider.name} confirmé pour ${amount.toFixed(2)}€ par ${selectedMethod.value}.</p>
+                        <p class="text-sm mt-1">Transaction ID: ${transactionId}</p>
+                        <p class="text-sm mt-3 font-normal">Le prestataire vous contactera sous peu pour finaliser l'intervention.</p>
+                    `;
+        document.getElementById('final-payment-btn').classList.add('hidden');
+      } else {
+        resultMessage.className = 'mt-6 p-4 rounded-lg bg-red-100 text-red-700 text-center font-bold';
+        resultMessage.textContent = "Échec du Paiement. Vérifiez vos informations et réessayez ou contactez le support.";
+        document.getElementById('final-payment-btn').disabled = false;
+        document.getElementById('final-payment-btn').textContent = "Payer et Confirmer le Service";
+      }
+    }, 3500);
+  }
+
+  // --- 5. LOGIQUE DE FILTRAGE (Existante, adaptée pour ne pas masquer les boutons) ---
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filter-form');
+    const providerCards = document.querySelectorAll('.provider-card');
+    const resultsCount = document.getElementById('results-count');
+    const noResultsMessage = document.getElementById('no-results');
+
+    /**
+     * Applique les filtres sélectionnés par l'utilisateur pour masquer/afficher les cartes.
+     */
+    function applyFilters(e) {
+      e.preventDefault();
+
+      // 1. Récupération des valeurs des filtres
+      const locationFilter = document.getElementById('filter-location').value.trim().toLowerCase();
+      const specialtyFilter = document.getElementById('filter-specialty').value;
+      const urgentFilter = document.getElementById('filter-urgent').checked;
+
+      let visibleCount = 0;
+
+      // 2. Parcourir toutes les cartes de prestataires
+      providerCards.forEach(card => {
+        const cardLocation = card.dataset.location.toLowerCase();
+        const cardSpecialties = card.dataset.specialty.split(',');
+        const cardAvailability = card.dataset.availability;
+
+        let isMatch = true;
+
+        // --- Critère 1: Localisation ---
+        if (locationFilter && !cardLocation.includes(locationFilter)) {
+          isMatch = false;
+        }
+
+        // --- Critère 2: Type de Spécialité ---
+        if (specialtyFilter !== 'all' && !cardSpecialties.includes(specialtyFilter)) {
+          isMatch = false;
+        }
+
+        // --- Critère 3: Urgence (Disponible Maintenant) ---
+        if (urgentFilter && cardAvailability !== 'now') {
+          isMatch = false;
+        }
+
+        // 3. Afficher ou masquer la carte
+        if (isMatch) {
+          card.style.display = 'flex'; // Afficher la carte
+          visibleCount++;
+        } else {
+          card.style.display = 'none'; // Masquer la carte
+        }
+      });
+
+      // 4. Mettre à jour le compteur de résultats et le message "Aucun Résultat"
+      if (visibleCount > 0) {
+        resultsCount.textContent = `${visibleCount} Prestataire(s) trouvé(s) dans votre région`;
+        noResultsMessage.classList.add('hidden');
+      } else {
+        resultsCount.textContent = `0 Prestataire trouvé`;
+        noResultsMessage.classList.remove('hidden');
+      }
+    }
+
+    // Écouteur d'événement pour le bouton "Appliquer les Filtres"
+    filterForm.addEventListener('submit', applyFilters);
+  });
+</script>
+
+</body>
+</html>

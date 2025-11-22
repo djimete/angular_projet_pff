@@ -1,0 +1,18 @@
+/* Effet de survol pour les boutons sociaux */
+.btn-social {
+  transition: transform 0.1s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+}
+
+.btn-social:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  background-color: #f9fafb;
+}
+
+/* Styles spécifiques pour colorer les icônes */
+.fa-google { color: #DB4437; }
+.fa-facebook-f { color: #4267B2; }
+.fa-apple { color: #000000; }

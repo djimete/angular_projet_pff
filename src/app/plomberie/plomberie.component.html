@@ -1,0 +1,190 @@
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-indigo-600"><a href="#">WorkingExpress</a></h1>
+    <div id="auth-status" class="text-sm text-gray-600">Chargement de l'utilisateur...</div>
+  </div>
+</header>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <!-- Contenu Principal : Vue Liste -->
+  <section id="list-view">
+    <!-- Titre et Description de la Catégorie -->
+    <section class="mb-10 text-center md:text-left">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Plomberie <span class="text-indigo-600">🛠️</span></h2>
+      <p class="text-xl text-gray-500">Trouvez un plombier qualifié disponible près de chez vous.</p>
+    </section>
+
+    <!-- Barre de Filtres et de Recherche Spécifique -->
+    <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" id="filter-location" placeholder="Ville ou code postal (ex: Dakar)"
+               class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+        <select id="filter-service" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
+          <option value="all">Tous les services</option>
+          <option value="fuite">Fuite d'eau urgente</option>
+          <option value="installation">Installation robinetterie</option>
+          <option value="debouchage">Débouchage canalisation</option>
+        </select>
+        <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+          <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+          <label for="filter-urgent" class="text-gray-700">Disponible Maintenant (Urgence)</label>
+        </div>
+        <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+          Appliquer les Filtres
+        </button>
+      </div>
+    </form>
+    <section>
+      <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Plombiers trouvés dans votre région</h3>
+      <div id="plumbers-list" class="space-y-6">
+        <!-- Carte Prestataire 1 : Louis M. -->
+        <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             data-id="1" data-service="fuite,installation,debouchage" data-availability="now" data-location="dakar/rufisque">
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <a href="#" onclick="showPlumberDetails('1'); return false;"><img src="https://placehold.co/80x80/059669/ffffff?text=L1" alt="Photo de Louis M." class="w-16 h-16 rounded-full border-2 border-green-500"></a>
+            <div>
+              <a href="#" onclick="showPlumberDetails('1'); return false;" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">Louis M.</a>
+              <p class="text-gray-600">Expert en détection de fuites | 12 ans d'expérience (dakar/Rufisque)</p>
+              <div class="flex items-center mt-1"><span class="text-sm font-bold mr-1 text-gray-800">4.9</span><span class="rating-star">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="text-sm text-gray-500 ml-2">(85 Avis)</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full"><span class="relative flex h-2 w-2 mr-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>Disponible Maintenant</div>
+            <p class="text-2xl font-bold text-indigo-600">10 000 XOF / heure</p>
+            <a href="#" onclick="showPlumberDetails('1'); return false;" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">Voir le service</a>
+          </div>
+        </div>
+
+        <!-- Carte Prestataire 2 : Marion T. -->
+        <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-orange-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             data-id="2" data-service="debouchage,installation" data-availability="soon" data-location="dakar/pikine">
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <a href="#" onclick="showPlumberDetails('2'); return false;"><img src="https://placehold.co/80x80/f97316/ffffff?text=M2" alt="Photo de Marion T." class="w-16 h-16 rounded-full border-2 border-orange-500"></a>
+            <div>
+              <a href="#" onclick="showPlumberDetails('2'); return false;" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">Marion T.</a>
+              <p class="text-gray-600">Plombière certifiée RGE | 5 ans d'expérience (dakar/pikine)</p>
+              <div class="flex items-center mt-1"><span class="text-sm font-bold mr-1 text-gray-800">4.7</span><span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span><span class="rating-star text-gray-300">&#9733;</span><span class="text-sm text-gray-500 ml-2">(32 Avis)</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold text-orange-700 bg-orange-100 px-3 py-1 rounded-full"><span class="w-2 h-2 mr-2 rounded-full bg-orange-500"></span>Prochain créneau : Demain 8h00</div>
+            <p class="text-2xl font-bold text-indigo-600">15 000 XOF / forfait</p>
+            <a href="#" onclick="showPlumberDetails('2'); return false;" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">Voir le service</a>
+          </div>
+        </div>
+
+        <!-- Carte Prestataire 3 : Jean B. -->
+        <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             data-id="3" data-service="installation" data-availability="booking" data-location="dakar">
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <a href="#" onclick="showPlumberDetails('3'); return false;"><img src="https://placehold.co/80x80/9ca3af/ffffff?text=J3" alt="Photo de Jean B." class="w-16 h-16 rounded-full border-2 border-gray-400"></a>
+            <div>
+              <a href="#" onclick="showPlumberDetails('3'); return false;" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">modou diaw</a>
+              <p class="text-gray-600">Réparation de robinet | 2 ans d'expérience (dakar)</p>
+              <div class="flex items-center mt-1"><span class="text-sm font-bold mr-1 text-gray-800">4.3</span><span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span><span class="rating-star text-gray-300">&#9733;</span><span class="text-sm text-gray-500 ml-2">(12 Avis)</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full"><span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>Sur réservation (3 jours d'attente)</div>
+            <p class="text-2xl font-bold text-indigo-600">Prix sur devis</p>
+            <a href="#" onclick="showPlumberDetails('3'); return false;" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">Voir le service</a>
+          </div>
+        </div>
+
+      </div>
+      <div id="no-results" class="hidden text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
+        <p class="text-xl text-yellow-800 font-semibold">Aucun plombier ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
+      </div>
+    </section>
+  </section>
+  <!-- Contenu Détaillé : Vue Détail du Plombier (Initiallement caché) -->
+  <section id="detail-view" class="hidden">
+    <button onclick="showListView()" class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800 transition duration-150 font-medium">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
+        <path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Retour à la liste
+    </button>
+
+    <!-- Conteneur pour les Détails -->
+    <div id="plumber-details-container" class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+      <!-- Les détails, le statut et les actions seront injectés ici -->
+    </div>
+  </section>
+
+</main>
+
+
+
+
+<!-- Modale de Réservation (Cachée par défaut) -->
+<div id="reservation-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <h2 class="text-2xl font-bold text-indigo-600 mb-4">Finaliser la Réservation</h2>
+    <form id="reservation-form">
+      <input type="hidden" id="reservation-plumber-id">
+
+      <div class="mb-4">
+        <label for="user-name" class="block text-gray-700 font-medium mb-2">Votre Nom Complet</label>
+        <input type="text" id="user-name" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ex: Aliou Diallo">
+      </div>
+
+      <div class="mb-4">
+        <label for="user-phone" class="block text-gray-700 font-medium mb-2">Numéro de Téléphone (pour contact)</label>
+        <input type="tel" id="user-phone" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ex: 77 123 45 67">
+      </div>
+
+      <div class="mb-6">
+        <label for="service-description" class="block text-gray-700 font-medium mb-2">Description du Problème</label>
+        <textarea id="service-description" rows="3" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Décrivez brièvement la fuite, le débouchage, etc."></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-3">
+        <button type="button" onclick="closeReservationModal()" class="px-5 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 transition duration-300">
+          Annuler
+        </button>
+        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300">
+          Envoyer la demande de Réservation
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modale de Paiement (Cachée par défaut) -->
+<div id="payment-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Paiement de l'Acompte</h2>
+    <form id="payment-form">
+      <input type="hidden" id="payment-reservation-id">
+      <input type="hidden" id="payment-method">
+      <input type="hidden" id="payment-validation-code">
+
+      <div id="payment-fields-container">
+        <!-- Les champs de saisie spécifiques au mode de paiement seront injectés ici -->
+      </div>
+
+      <div class="mt-6 flex justify-end space-x-3">
+        <button type="button" onclick="closePaymentModal()" class="px-5 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 transition duration-300">
+          Annuler
+        </button>
+        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300">
+          Confirmer et Payer
+        </button>
+      </div>
+      <div id="payment-message" class="mt-4 p-3 rounded-lg hidden"></div>
+    </form>
+  </div>
+</div>
+
+<!-- Modale Générique de Message (pour remplacer alert) -->
+<div id="message-modal" class="modal-overlay hidden message-modal">
+  <div class="modal-content">
+    <div id="message-content"></div>
+    <button onclick="closeMessageModal()" class="mt-4 px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+      OK
+    </button>
+  </div>
+</div>
+

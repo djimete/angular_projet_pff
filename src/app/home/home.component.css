@@ -1,0 +1,101 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+}
+.category-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+/* Style pour rendre les cartes de fonctionnalité cliquables visuellement */
+.feature-card {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.feature-card:hover {
+  background-color: #eef2ff; /* indigo-50 lightened */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.hidden-results {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+.show-results {
+  display: block;
+  opacity: 1;
+}
+/* Style pour le modal (caché par défaut) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: transform 0.3s ease-out;
+}
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+} body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f9fb;
+  }
+.category-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+/* Style pour rendre les cartes de fonctionnalité cliquables visuellement */
+.feature-card {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.feature-card:hover {
+  background-color: #eef2ff; /* indigo-50 lightened */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.hidden-results {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+.show-results {
+  display: block;
+  opacity: 1;
+}
+/* Style pour le modal (caché par défaut) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: transform 0.3s ease-out;
+}
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}

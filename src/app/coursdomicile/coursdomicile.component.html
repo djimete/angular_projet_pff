@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working Express - Cours à Domicile</title>
+</head>
+<body>
+
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-teal-600"><a href="index.html">WorkingExpress</a></h1>
+    <a href="#" class="text-gray-600 hover:text-teal-600 transition duration-150">Mon Tableau de Bord</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Navigation entre Catégories -->
+  <nav class="flex space-x-4 mb-8 justify-center border-b pb-4 overflow-x-auto">
+    <a href="garde_enfant.html" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-pink-100 hover:text-pink-700 transition duration-300 whitespace-nowrap">
+      🧸 Garde d'Enfants
+    </a>
+    <a href="travail_domestique.html" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-emerald-100 hover:text-emerald-700 transition duration-300 whitespace-nowrap">
+      🧹 Travail Domestique
+    </a>
+    <a href="bricolage.html" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-indigo-100 hover:text-indigo-700 transition duration-300 whitespace-nowrap">
+      🛠️ Services de Bricolage
+    </a>
+    <a href="cours_domicile.html" class="px-6 py-2 rounded-full cours-bg text-teal-900 font-bold border-2 border-teal-500 shadow-lg transition duration-300 whitespace-nowrap">
+      📚 Cours à Domicile
+    </a>
+  </nav>
+
+  <!-- Titre et Description de la Catégorie (Cours à Domicile) -->
+  <section class="mb-10 text-center md:text-left">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
+      Soutien Scolaire & Cours à Domicile <span class="cours-color">📚</span>
+    </h2>
+    <p class="text-xl text-gray-500">Trouvez le tuteur parfait pour l'aide aux devoirs, la préparation d'examens ou l'apprentissage de langues.</p>
+  </section>
+
+  <!-- Barre de Filtres et de Recherche Spécifique -->
+  <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Filtre Localisation -->
+      <input type="text" id="filter-location" placeholder="Ville ou quartier (ex: Dakar)"
+             class="p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+
+      <!-- Filtre Matière / Niveau -->
+      <select id="filter-specialty" class="p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 appearance-none">
+        <option value="all">Toutes les matières/niveaux</option>
+        <option value="mathematiques">Mathématiques (Collège/Lycée)</option>
+        <option value="francais">Français (Primaire/Collège)</option>
+        <option value="anglais">Anglais & Langues</option>
+        <option value="physique">Physique-Chimie</option>
+        <option value="primaire">Aide aux devoirs (Primaire)</option>
+      </select>
+
+      <!-- Filtre Aide Immédiate / En Ligne -->
+      <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+        <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+        <label for="filter-urgent" class="text-gray-700 text-sm">Aide Immédiate (En ligne ou moins de 2h)</label>
+      </div>
+
+      <!-- Bouton Appliquer les Filtres -->
+      <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-teal-600 text-white font-bold rounded-lg shadow-md hover:bg-teal-700 transition duration-300">
+        Appliquer les Filtres
+      </button>
+    </div>
+  </form>
+
+  <!-- Liste des Prestataires de Cours à Domicile -->
+  <section>
+    <!-- L'ID 'results-count' sera mis à jour par le JavaScript -->
+    <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Professeurs trouvés</h3>
+
+    <!-- Le conteneur 'providers-list' contiendra toutes les cartes -->
+    <div id="providers-list" class="space-y-6">
+
+      <!-- Carte Prestataire 1 : M. Diop (Urgence, Mathématiques, Dakar) -->
+      <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-teal-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-id="mdiop"
+           data-specialty="mathematiques,physique"
+           data-availability="now"
+           data-location="Dakar">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <!-- Photo / Avatar -->
+          <div class="w-16 h-16 rounded-full border-2 border-teal-500 bg-teal-600 flex items-center justify-center text-white text-xl font-bold">MD</div>
+          <div>
+            <p class="text-xl font-bold text-gray-900">M. Diop</p>
+            <p class="text-gray-600">Professeur de Mathématiques & Physique (Lycée)</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">4.9</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="rating-star text-gray-300">&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(112 Cours donnés)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Vert/Rouge = Immédiat) -->
+          <div class="availability-status flex items-center font-semibold text-red-700 bg-red-100 px-3 py-1 rounded-full">
+                            <span class="relative flex h-2 w-2 mr-2">
+                                <span class="animate-ping-cours absolute inline-flex h-full w-full rounded-full ping-cours bg-red-500 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                            </span>
+            Disponible en ligne maintenant
+          </div>
+
+          <p class="text-2xl font-bold cours-color">35€ / heure (Visio)</p>
+          <button data-provider-id="mdiop" class="open-detail-btn px-5 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-300">
+            Réserver une Session
+          </button>
+        </div>
+      </div>
+
+      <!-- Carte Prestataire 2 : Fatou B. (Français/Anglais, Parcelles) -->
+      <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-teal-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-id="fatoub"
+           data-specialty="francais,anglais,primaire"
+           data-availability="soon"
+           data-location="Parcelles Assainies">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <!-- Photo / Avatar -->
+          <div class="w-16 h-16 rounded-full border-2 border-teal-500 bg-teal-300 flex items-center justify-center text-teal-800 text-xl font-bold">FB</div>
+          <div>
+            <p class="text-xl font-bold text-gray-900">Fatou B.</p>
+            <p class="text-gray-600">Spécialiste Primaire & Langues (Français, Anglais)</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">5.0</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(68 Cours donnés)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Bleu = Prochainement) -->
+          <div class="availability-status flex items-center font-semibold text-teal-700 cours-bg px-3 py-1 rounded-full">
+            <span class="w-2 h-2 mr-2 rounded-full bg-teal-500"></span>
+            Prochain créneau : Demain 17h00
+          </div>
+
+          <p class="text-2xl font-bold cours-color">20€ / heure</p>
+          <button data-provider-id="fatoub" class="open-detail-btn px-5 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-300">
+            Demander une Réservation
+          </button>
+        </div>
+      </div>
+
+      <!-- Carte Prestataire 3 : Adam N. (Primaire, Banlieue) -->
+      <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-id="adamn"
+           data-specialty="primaire,francais"
+           data-availability="booking"
+           data-location="Guédiawaye">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <!-- Photo / Avatar -->
+          <div class="w-16 h-16 rounded-full border-2 border-gray-400 bg-gray-300 flex items-center justify-center text-gray-800 text-xl font-bold">AN</div>
+          <div>
+            <p class="text-xl font-bold text-gray-900">Adam N.</p>
+            <p class="text-gray-600">Aide aux Devoirs (Collège/Primaire) - Toutes matières</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">4.7</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="rating-star text-gray-300">&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(45 Cours donnés)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Gris = Réservation) -->
+          <div class="availability-status flex items-center font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+            <span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
+            Réservation nécessaire (48h de délai)
+          </div>
+
+          <p class="text-2xl font-bold cours-color">18€ / heure</p>
+          <button data-provider-id="adamn" class="open-detail-btn px-5 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-300">
+            Planifier un Cours
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <!-- Message affiché si aucun résultat n'est trouvé -->
+    <div id="no-results" class="hidden text-center p-8 cours-bg rounded-lg border border-teal-200 mt-6">
+      <p class="text-xl cours-color font-semibold">Aucun professeur ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- Pied de Page (Footer) -->
+<footer class="bg-gray-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+    <p>&copy; 2025 Working Express. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<!-- MODALE DES DÉTAILS ET PAIEMENT -->
+<div id="provider-detail-modal" class="modal-overlay">
+  <div class="modal-content w-full md:w-3/4 lg:w-1/2 p-8">
+    <!-- Bouton de Fermeture -->
+    <div class="flex justify-end">
+      <button id="close-modal-btn" class="text-gray-500 hover:text-gray-900 text-2xl font-bold">&times;</button>
+    </div>
+
+    <!-- Conteneur pour le Contenu Dynamique (Détails ou Paiement) -->
+    <div id="modal-container">
+      <!-- Vue des Détails du Professeur (Par défaut) -->
+      <div id="detail-view">
+        <h2 id="detail-name" class="text-3xl font-bold text-gray-900 mb-2">Détails du Prestataire</h2>
+        <div class="flex items-center space-x-4 mb-6">
+          <div id="detail-avatar" class="w-20 h-20 rounded-full border-4 border-teal-500 bg-teal-600 flex items-center justify-center text-white text-2xl font-bold"></div>
+          <div>
+            <p id="detail-description" class="text-lg text-gray-600"></p>
+            <p id="detail-location" class="text-gray-500">📍 Localisation</p>
+            <div class="flex items-center mt-1">
+              <span id="detail-rating" class="text-sm font-bold mr-1 text-gray-800"></span>
+              <span id="detail-stars" class="rating-star"></span>
+              <span id="detail-reviews" class="text-sm text-gray-500 ml-2"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+          <p id="detail-price" class="text-3xl font-extrabold cours-color mb-1"></p>
+          <p id="detail-availability" class="text-sm text-gray-600"></p>
+        </div>
+
+        <button id="request-booking-btn" class="w-full px-6 py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition duration-300">
+          Confirmer la Demande de Cours
+        </button>
+      </div>
+
+      <!-- Vue du Paiement (Affichée après la demande de réservation/simulation d'acceptation) -->
+      <div id="payment-view" class="hidden mt-8">
+        <h2 class="text-3xl font-bold text-teal-600 mb-6">Paiement Requis</h2>
+        <p class="text-lg text-gray-700 mb-4">Votre réservation est confirmée ! Veuillez choisir votre méthode de paiement pour finaliser la session avec <span id="payment-provider-name" class="font-bold text-teal-800"></span>.</p>
+
+        <!-- Sélection de la méthode de paiement -->
+        <div class="mb-6">
+          <label for="payment-method" class="block text-sm font-medium text-gray-700 mb-2">Sélectionnez la méthode de paiement :</label>
+          <select id="payment-method" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+            <option value="none">-- Choisir une option --</option>
+            <option value="wave">Wave Mobile Money</option>
+            <option value="orange-money">Orange Money</option>
+            <option value="carte-bancaire">Carte Bancaire (Visa/Mastercard)</option>
+          </select>
+        </div>
+
+        <!-- Champ de Saisie du Montant -->
+        <div class="mb-6">
+          <label for="payment-amount" class="block text-sm font-medium text-gray-700 mb-2">Montant à Payer (€)</label>
+          <input type="number" id="payment-amount" placeholder="Saisir le montant (ex: 35)"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500" required>
+        </div>
+
+        <!-- Champs Spécifiques à la Méthode de Paiement (Dynamique) -->
+        <div id="specific-fields-container" class="space-y-4">
+
+          <!-- Wave/Orange Money Fields -->
+          <div id="mobile-money-fields" class="hidden bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <label for="mobile-phone" class="block text-sm font-medium text-gray-700 mb-2">Numéro de Téléphone Mobile</label>
+            <input type="text" id="mobile-phone" placeholder="Ex: 77 000 00 00"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+            <p class="text-xs text-gray-500 mt-2">Vous recevrez une notification pour confirmer le transfert.</p>
+          </div>
+
+          <!-- Credit Card Fields -->
+          <div id="card-fields" class="hidden bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="card-number" class="block text-sm font-medium text-gray-700 mb-2">Numéro de Carte</label>
+                <input type="text" id="card-number" placeholder="XXXX XXXX XXXX XXXX"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label for="card-holder" class="block text-sm font-medium text-gray-700 mb-2">Nom sur la Carte</label>
+                <input type="text" id="card-holder" placeholder="NOM PRÉNOM"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label for="card-expiry" class="block text-sm font-medium text-gray-700 mb-2">Date d'Expiration (MM/AA)</label>
+                <input type="text" id="card-expiry" placeholder="MM/AA"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label for="card-cvv" class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
+                <input type="text" id="card-cvv" placeholder="123"
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button id="finalize-payment-btn" class="w-full mt-6 px-6 py-3 bg-teal-600 text-white font-bold rounded-lg shadow-xl hover:bg-teal-700 transition duration-300 disabled:bg-gray-400">
+          Payer <span id="payment-final-amount"></span>
+        </button>
+        <p id="payment-status-message" class="mt-4 text-center text-sm text-red-600 hidden"></p>
+      </div>
+
+      <!-- Confirmation Message (Affichée après paiement réussi) -->
+      <div id="confirmation-view" class="hidden text-center p-8 bg-green-50 rounded-lg border border-green-200 mt-8">
+        <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="text-2xl font-bold text-green-700 mt-3">Paiement Réussi !</h3>
+        <p class="text-gray-600 mt-2">Votre cours est confirmé. Le professeur <span id="confirmed-provider-name" class="font-bold"></span> vous contactera pour les détails.</p>
+        <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script JavaScript pour gérer les filtres, la modale et le paiement -->
+<script>
+  // Définition des données pour dynamiser la modale
+  const mockProviders = [
+    { id: 'mdiop', name: 'M. Diop', initial: 'MD', description: 'Professeur agrégé en Mathématiques et Physique, 15 ans d\'expérience.', rating: 4.9, reviews: 112, price: 35, location: 'Dakar/Online', specialties: 'mathematiques,physique', availability: 'Disponible en ligne maintenant' },
+    { id: 'fatoub', name: 'Fatou B.', initial: 'FB', description: 'Ancienne institutrice, spécialisée en soutien primaire et langues (Français/Anglais).', rating: 5.0, reviews: 68, price: 20, location: 'Parcelles Assainies', specialties: 'francais,anglais,primaire', availability: 'Prochain créneau : Demain 17h00' },
+    { id: 'adamn', name: 'Adam N.', initial: 'AN', description: 'Étudiant en Master, aide aux devoirs pour Collège et Primaire. Excellent pédagogue.', rating: 4.7, reviews: 45, price: 18, location: 'Guédiawaye', specialties: 'primaire,francais', availability: 'Réservation nécessaire (48h de délai)' },
+  ];
+
+  // --- LOGIQUE GÉNÉRALE DE FILTRAGE ---
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filter-form');
+    const providerCards = document.querySelectorAll('.provider-card');
+    const resultsCount = document.getElementById('results-count');
+    const noResultsMessage = document.getElementById('no-results');
+    const openDetailButtons = document.querySelectorAll('.open-detail-btn');
+
+    // Initialisation du compteur
+    updateResultsCount(providerCards.length);
+
+    /** Met à jour le texte du compteur de résultats. */
+    function updateResultsCount(count) {
+      const singularPlural = count > 1 ? 's' : '';
+      resultsCount.textContent = `${count} Professeur${singularPlural} trouvé${singularPlural} pour vos critères`;
+      if (count === 0) {
+        noResultsMessage.classList.remove('hidden');
+      } else {
+        noResultsMessage.classList.add('hidden');
+      }
+    }
+
+    /** Applique les filtres sélectionnés par l'utilisateur. */
+    function applyFilters(e) {
+      e.preventDefault();
+
+      const locationFilter = document.getElementById('filter-location').value.trim().toLowerCase();
+      const specialtyFilter = document.getElementById('filter-specialty').value;
+      const urgentFilter = document.getElementById('filter-urgent').checked;
+
+      let visibleCount = 0;
+
+      providerCards.forEach(card => {
+        const cardLocation = card.dataset.location.toLowerCase();
+        const cardSpecialties = card.dataset.specialty.split(',');
+        const cardAvailability = card.dataset.availability;
+
+        let isMatch = true;
+
+        // Critère 1: Localisation
+        if (locationFilter && !cardLocation.includes(locationFilter)) {
+          isMatch = false;
+        }
+
+        // Critère 2: Matière / Niveau
+        if (specialtyFilter !== 'all' && !cardSpecialties.includes(specialtyFilter)) {
+          isMatch = false;
+        }
+
+        // Critère 3: Aide Immédiate
+        if (urgentFilter && cardAvailability !== 'now') {
+          isMatch = false;
+        }
+
+        if (isMatch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      updateResultsCount(visibleCount);
+    }
+
+    filterForm.addEventListener('submit', applyFilters);
+
+    // --- LOGIQUE DE LA MODALE ET DU PAIEMENT ---
+
+    const modalOverlay = document.getElementById('provider-detail-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const detailView = document.getElementById('detail-view');
+    const paymentView = document.getElementById('payment-view');
+    const confirmationView = document.getElementById('confirmation-view');
+
+    const requestBookingBtn = document.getElementById('request-booking-btn');
+    const paymentMethodSelect = document.getElementById('payment-method');
+    const specificFieldsContainer = document.getElementById('specific-fields-container');
+    const mobileMoneyFields = document.getElementById('mobile-money-fields');
+    const cardFields = document.getElementById('card-fields');
+    const finalizePaymentBtn = document.getElementById('finalize-payment-btn');
+    const paymentAmountInput = document.getElementById('payment-amount');
+    const paymentFinalAmountSpan = document.getElementById('payment-final-amount');
+    const paymentStatusMessage = document.getElementById('payment-status-message');
+
+    let currentProvider = null; // Stocke le prestataire actuellement visualisé/réservé
+
+    /** Ouvre la modale et affiche les détails du prestataire. */
+    function openDetailModal(providerId) {
+      currentProvider = mockProviders.find(p => p.id === providerId);
+
+      if (!currentProvider) return console.error('Prestataire non trouvé:', providerId);
+
+      // Réinitialiser les vues
+      detailView.classList.remove('hidden');
+      paymentView.classList.add('hidden');
+      confirmationView.classList.add('hidden');
+      paymentStatusMessage.classList.add('hidden');
+      paymentMethodSelect.value = 'none';
+      updatePaymentFieldsVisibility();
+
+      // Remplir les détails
+      document.getElementById('detail-name').textContent = currentProvider.name;
+      document.getElementById('detail-avatar').textContent = currentProvider.initial;
+      document.getElementById('detail-description').textContent = currentProvider.description;
+      document.getElementById('detail-location').textContent = `📍 Zone: ${currentProvider.location}`;
+      document.getElementById('detail-price').textContent = `${currentProvider.price}€ / heure`;
+      document.getElementById('detail-availability').textContent = currentProvider.availability;
+      document.getElementById('detail-rating').textContent = currentProvider.rating;
+      document.getElementById('detail-reviews').textContent = `(${currentProvider.reviews} Cours donnés)`;
+
+      // Mettre à jour les étoiles
+      const fullStars = Math.floor(currentProvider.rating);
+      const emptyStars = 5 - fullStars;
+      document.getElementById('detail-stars').innerHTML =
+        '&#9733;'.repeat(fullStars) + '<span class="text-gray-300">&#9733;</span>'.repeat(emptyStars);
+
+      // Afficher la modale
+      modalOverlay.classList.add('active');
+    }
+
+    /** Ferme la modale. */
+    window.closeModal = function() {
+      modalOverlay.classList.remove('active');
+      currentProvider = null;
+    }
+
+    /** Passe de la vue Détails à la vue Paiement (simule l'acceptation). */
+    requestBookingBtn.addEventListener('click', () => {
+      if (!currentProvider) return;
+
+      // Mettre à jour les montants par défaut et le nom
+      paymentAmountInput.value = currentProvider.price;
+      document.getElementById('payment-provider-name').textContent = currentProvider.name;
+
+      // Afficher la vue de paiement
+      detailView.classList.add('hidden');
+      paymentView.classList.remove('hidden');
+      updateFinalAmountDisplay();
+    });
+
+    /** Met à jour la visibilité des champs de paiement spécifiques. */
+    function updatePaymentFieldsVisibility() {
+      mobileMoneyFields.classList.add('hidden');
+      cardFields.classList.add('hidden');
+
+      const selectedMethod = paymentMethodSelect.value;
+
+      if (selectedMethod === 'wave' || selectedMethod === 'orange-money') {
+        mobileMoneyFields.classList.remove('hidden');
+      } else if (selectedMethod === 'carte-bancaire') {
+        cardFields.classList.remove('hidden');
+      }
+
+      finalizePaymentBtn.disabled = selectedMethod === 'none';
+    }
+
+    /** Met à jour le texte du bouton Payer avec le montant actuel. */
+    function updateFinalAmountDisplay() {
+      const amount = parseFloat(paymentAmountInput.value);
+      if (isNaN(amount) || amount <= 0) {
+        paymentFinalAmountSpan.textContent = '';
+      } else {
+        paymentFinalAmountSpan.textContent = `(${amount}€)`;
+      }
+    }
+
+    // Événements
+    closeModalBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+      // Fermer si l'on clique en dehors du contenu
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    openDetailButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        openDetailModal(e.currentTarget.dataset.providerId);
+      });
+    });
+
+    paymentMethodSelect.addEventListener('change', updatePaymentFieldsVisibility);
+    paymentAmountInput.addEventListener('input', updateFinalAmountDisplay);
+
+    finalizePaymentBtn.addEventListener('click', () => {
+      const amount = parseFloat(paymentAmountInput.value);
+      const method = paymentMethodSelect.value;
+
+      if (method === 'none' || isNaN(amount) || amount <= 0) {
+        paymentStatusMessage.textContent = "Veuillez choisir une méthode de paiement et saisir un montant valide.";
+        paymentStatusMessage.classList.remove('hidden');
+        return;
+      }
+
+      // --- SIMULATION DE PAIEMENT RÉUSSI ---
+      paymentStatusMessage.classList.add('hidden');
+
+      // Remplir le message de confirmation
+      document.getElementById('confirmed-provider-name').textContent = currentProvider.name;
+
+      // Afficher la vue de confirmation
+      paymentView.classList.add('hidden');
+      confirmationView.classList.remove('hidden');
+
+      console.log(`Paiement de ${amount}€ via ${method} réussi pour ${currentProvider.name}.`);
+      // Normalement, ici vous enverriez les données de paiement à un serveur.
+    });
+
+    // Assurer que le bouton de paiement est désactivé au début
+    finalizePaymentBtn.disabled = true;
+
+  });
+</script>
+
+</body>
+</html>
+

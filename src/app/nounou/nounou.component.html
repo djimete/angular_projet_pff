@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working Express - Garde d'Enfants et Nannies</title>
+</head>
+<body>
+
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-indigo-600">
+      <a href="#" onclick="showView('list-view')">WorkingExpress</a>
+    </h1>
+    <a href="#" class="text-gray-600 hover:text-indigo-600 transition duration-150">Mon Tableau de Bord</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- ============================================== -->
+  <!-- ============== 1. VUE LISTE ================== -->
+  <!-- ============================================== -->
+  <section id="list-view">
+
+    <!-- Titre et Description de la Catégorie (Garde d'Enfants) -->
+    <section class="mb-10 text-center md:text-left">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
+        Garde d'Enfants <span class="childcare-color">🧸</span>
+      </h2>
+      <p class="text-xl text-gray-500">Trouvez une nounou ou assistante maternelle qualifiée près de chez vous.</p>
+    </section>
+
+    <!-- Barre de Filtres et de Recherche Spécifique (Laisser tel quel) -->
+    <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" id="filter-location" placeholder="Ville ou quartier (ex: Dakar)"
+               class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+        <select id="filter-age" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
+          <option value="all">Toutes tranches d'âge</option>
+          <option value="bebe">Bébés (0-2 ans)</option>
+          <option value="maternelle">Maternelle (3-5 ans)</option>
+          <option value="primaire">Primaire (6-12 ans)</option>
+        </select>
+        <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+          <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+          <label for="filter-urgent" class="text-gray-700">Disponible Immédiatement</label>
+        </div>
+        <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-pink-600 text-white font-bold rounded-lg shadow-md hover:bg-pink-700 transition duration-300">
+          Appliquer les Filtres
+        </button>
+      </div>
+    </form>
+
+    <!-- Liste des Prestataires de Garde d'Enfants -->
+    <section>
+      <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Prestataires trouvés</h3>
+
+      <!-- Conteneur qui sera peuplé dynamiquement par le JS -->
+      <div id="providers-list" class="space-y-6">
+        <!-- Les cartes des prestataires seront générées ici par le script JavaScript -->
+      </div>
+      <!-- Message affiché si aucun résultat n'est trouvé -->
+      <div id="no-results" class="hidden text-center p-8 bg-pink-50 rounded-lg border border-pink-200 mt-6">
+        <p class="text-xl text-pink-800 font-semibold">Aucun prestataire de garde d'enfants ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
+      </div>
+    </section>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- =========== 2. VUE DÉTAIL / RÉSERVATION ====== -->
+  <!-- ============================================== -->
+  <section id="detail-view" class="hidden">
+    <button onclick="showView('list-view')" class="text-pink-600 hover:text-pink-800 font-semibold mb-6 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+      Retour à la liste
+    </button>
+
+    <!-- Détails du prestataire (sera mis à jour par JS) -->
+    <div id="detail-content" class="bg-white p-8 rounded-xl shadow-2xl transition-all duration-300">
+      <!-- Contenu Dynamique ici -->
+    </div>
+
+    <!-- Simulation d'Acceptation de Demande -->
+    <div id="reservation-section" class="mt-8 p-6 bg-pink-50 border border-pink-200 rounded-xl hidden">
+      <h3 class="text-2xl font-bold text-pink-800 mb-4">Demande acceptée ! 🎉</h3>
+      <p class="text-gray-700 mb-4">Votre demande de réservation a été **acceptée** par <span id="accepted-nanny-name" class="font-bold"></span>. Vous pouvez maintenant procéder au paiement pour confirmer la prestation.</p>
+      <p class="text-lg font-semibold text-gray-800 mb-4">Montant de la prestation à payer : <span id="prestation-montant" class="text-pink-600 font-bold"></span></p>
+      <button onclick="showPaymentForm(currentNannyId, 55.00)" class="px-8 py-3 bg-pink-600 text-white font-bold rounded-lg hover:bg-pink-700 transition duration-300 w-full md:w-auto">
+        Effectuer le Paiement Maintenant
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- ============= 3. VUE PAIEMENT ================ -->
+  <!-- ============================================== -->
+  <section id="payment-view" class="hidden">
+    <button onclick="showView('detail-view')" class="text-pink-600 hover:text-pink-800 font-semibold mb-6 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+      Annuler et revenir à la demande
+    </button>
+
+    <div class="w-full max-w-lg mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl transition-all duration-300">
+
+      <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Paiement Sécurisé <span class="childcare-color">🔒</span></h1>
+      <p class="text-center text-gray-500 mb-6">Paiement pour <span id="payment-for-nanny" class="font-semibold text-pink-600"></span></p>
+
+      <!-- Section du Montant (Champ commun et manuel) -->
+      <div class="mb-6 border-b pb-4 border-indigo-100">
+        <label for="payment-montant" class="block text-sm font-medium text-gray-700 mb-2">Montant à Payer (Saisie manuelle)</label>
+        <div class="relative rounded-lg shadow-sm">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span class="text-gray-500 sm:text-sm font-semibold">€</span>
+          </div>
+          <input type="number" id="payment-montant" name="montant" placeholder="55.00" min="0.01" step="0.01" required
+                 class="block w-full rounded-lg border-2 border-indigo-300 py-3 pl-10 pr-4 text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm sm:leading-6 transition duration-150 ease-in-out">
+        </div>
+      </div>
+
+      <!-- Section Choix de la Méthode de Paiement -->
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Choisir la méthode de paiement</h2>
+
+      <div id="payment-options" class="space-y-4 mb-8">
+        <!-- Choix 1: Carte Bancaire -->
+        <label class="flex items-center p-4 bg-blue-50 border-2 border-blue-200 rounded-xl cursor-pointer hover:bg-blue-100 transition duration-150 ease-in-out has-[:checked]:border-blue-600 has-[:checked]:ring-2 has-[:checked]:ring-blue-500">
+          <input type="radio" name="payment_method" value="carte" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" onclick="showPaymentFields('carte')">
+          <span class="ml-3 text-lg font-medium text-gray-800">Carte Bancaire (Visa, Mastercard)</span>
+        </label>
+
+        <!-- Choix 2: Orange-Money -->
+        <label class="flex items-center p-4 bg-orange-50 border-2 border-orange-200 rounded-xl cursor-pointer hover:bg-orange-100 transition duration-150 ease-in-out has-[:checked]:border-orange-600 has-[:checked]:ring-2 has-[:checked]:ring-orange-500">
+          <input type="radio" name="payment_method" value="orange" class="form-radio h-5 w-5 text-orange-600 focus:ring-orange-500" onclick="showPaymentFields('orange')">
+          <span class="ml-3 text-lg font-medium text-gray-800">Orange-Money (Mobile)</span>
+        </label>
+
+        <!-- Choix 3: Wave -->
+        <label class="flex items-center p-4 bg-teal-50 border-2 border-teal-200 rounded-xl cursor-pointer hover:bg-teal-100 transition duration-150 ease-in-out has-[:checked]:border-teal-600 has-[:checked]:ring-2 has-[:checked]:ring-teal-500">
+          <input type="radio" name="payment_method" value="wave" class="form-radio h-5 w-5 text-teal-600 focus:ring-teal-500" onclick="showPaymentFields('wave')">
+          <span class="ml-3 text-lg font-medium text-gray-800">Wave (Mobile)</span>
+        </label>
+      </div>
+
+      <!-- Conteneur pour les champs spécifiques (Initialement vide/caché) -->
+      <div id="specific-fields-container">
+
+        <!-- Champs pour Carte Bancaire -->
+        <div id="fields-carte" class="hidden space-y-4 p-5 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 class="text-lg font-bold text-blue-800">Détails de la Carte</h3>
+
+          <div>
+            <label for="card_number" class="block text-sm font-medium text-gray-700">Numéro de Carte</label>
+            <input type="text" id="card_number" placeholder="xxxx xxxx xxxx xxxx"
+                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-blue-500 focus:ring-blue-500" disabled>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="col-span-2">
+              <label for="expiry_date" class="block text-sm font-medium text-gray-700">Date d'Expiration (MM/AA)</label>
+              <input type="text" id="expiry_date" placeholder="01/25"
+                     class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-blue-500 focus:ring-blue-500" disabled>
+            </div>
+            <div>
+              <label for="cvv" class="block text-sm font-medium text-gray-700">CVV</label>
+              <input type="text" id="cvv" placeholder="123" maxlength="3"
+                     class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-blue-500 focus:ring-blue-500" disabled>
+            </div>
+          </div>
+        </div>
+
+        <!-- Champs pour Orange-Money -->
+        <div id="fields-orange" class="hidden space-y-4 p-5 bg-orange-50 border border-orange-200 rounded-lg">
+          <h3 class="text-lg font-bold text-orange-800">Paiement Orange-Money</h3>
+
+          <div>
+            <label for="orange_phone" class="block text-sm font-medium text-gray-700">Numéro Orange-Money</label>
+            <input type="tel" id="orange_phone" placeholder="+221 77 XX XXX XX"
+                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-orange-500 focus:ring-orange-500" disabled>
+          </div>
+
+          <div>
+            <label for="orange_pin" class="block text-sm font-medium text-gray-700">Code Pin / Validation</label>
+            <input type="password" id="orange_pin" placeholder="Code secret de l'application mobile"
+                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-orange-500 focus:ring-orange-500" disabled>
+          </div>
+        </div>
+
+        <!-- Champs pour Wave -->
+        <div id="fields-wave" class="hidden space-y-4 p-5 bg-teal-50 border border-teal-200 rounded-lg">
+          <h3 class="text-lg font-bold text-teal-800">Paiement Wave</h3>
+
+          <div>
+            <label for="wave_phone" class="block text-sm font-medium text-gray-700">Numéro Wave</label>
+            <input type="tel" id="wave_phone" placeholder="+221 76 XX XXX XX"
+                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-teal-500 focus:ring-teal-500" disabled>
+          </div>
+
+          <p class="text-sm text-teal-700">Vous recevrez une notification sur votre téléphone pour valider le paiement.</p>
+        </div>
+
+      </div>
+
+      <!-- Bouton de Soumission -->
+      <div class="mt-8">
+        <button id="submit-payment-button" disabled
+                class="w-full py-3 px-4 rounded-xl text-white font-semibold text-lg bg-gray-400 cursor-not-allowed transition duration-150 ease-in-out shadow-lg hover:shadow-xl disabled:opacity-50">
+          Sélectionnez une méthode de paiement
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- Pied de Page (Footer) -->
+<footer class="bg-gray-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+    <p>&copy; 2025 Working Express. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<!-- Script JavaScript pour gérer les vues et la logique métier -->
+<script>
+  // --- DATA SIMULATION ---
+  const providers = {
+    'khadijas': { id: 'khadijas', name: 'Khadija S.', title: 'Assistante Maternelle agréée | Spécialisée Bébés', location: 'Dakar', rate: '5€ / heure', imgText: 'K1', reviews: 68, rating: 4.9, ageGroups: ['bebe', 'maternelle'], availability: 'now', profileContent: 'Khadija a 8 ans d\'expérience et est spécialisée dans les soins aux nourrissons (0-2 ans). Elle est agréée par l\'État du Sénégal. Elle est disponible du Lundi au Vendredi.' },
+    'mansourd': { id: 'mansourd', name: 'Mansour D.', title: 'Coach scolaire et périscolaire | Aide aux devoirs', location: 'Rufisque', rate: '10€ / heure', imgText: 'M2', reviews: 15, rating: 4.7, ageGroups: ['primaire'], availability: 'soon', profileContent: 'Mansour est titulaire d\'un Master en Éducation. Il se concentre sur l\'aide aux devoirs et les activités parascolaires pour les enfants de 6 à 12 ans. Il propose des créneaux en soirée.' },
+    'aminac': { id: 'aminac', name: 'Amina C.', title: 'Nourrice avec références | Garde temps plein', location: 'Dakar', rate: 'Forfait mensuel (sur devis)', imgText: 'A3', reviews: 22, rating: 4.3, ageGroups: ['maternelle', 'primaire'], availability: 'booking', profileContent: 'Amina propose une garde à temps plein (40h/semaine). Elle a d\'excellentes références et est disponible pour une longue durée. Contactez-la pour un devis.' }
+  };
+
+  let currentNannyId = null; // ID du prestataire actuellement affiché en détail/paiement
+
+  // --- GESTION DES VUES ---
+
+  /**
+   * Affiche la vue demandée et cache les autres.
+   * @param {string} viewId - ID de la vue à afficher ('list-view', 'detail-view', 'payment-view')
+   */
+  function showView(viewId) {
+    document.getElementById('list-view').classList.add('hidden');
+    document.getElementById('detail-view').classList.add('hidden');
+    document.getElementById('payment-view').classList.add('hidden');
+
+    const viewElement = document.getElementById(viewId);
+    if (viewElement) {
+      viewElement.classList.remove('hidden');
+      window.scrollTo(0, 0); // Remonter en haut de page
+    }
+  }
+
+  /**
+   * Affiche les détails d'un prestataire (Vue 2).
+   * @param {string} id - L'ID du prestataire.
+   */
+  function showDetails(id) {
+    currentNannyId = id;
+    const nanny = providers[id];
+    const detailContent = document.getElementById('detail-content');
+
+    if (!nanny) {
+      alertUser('Prestataire non trouvé.', 'error');
+      showView('list-view');
+      return;
+    }
+
+    // Réinitialiser la section de réservation/paiement
+    document.getElementById('reservation-section').classList.add('hidden');
+
+    detailContent.innerHTML = `
+                <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+                    <img src="https://placehold.co/120x120/ec4899/ffffff?text=${nanny.imgText}" alt="Photo de ${nanny.name}" class="w-32 h-32 rounded-full border-4 border-pink-500 shadow-md">
+
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-1">${nanny.name}</h2>
+                        <p class="text-xl text-pink-600 mb-2">${nanny.title}</p>
+
+                        <!-- Notation détaillée -->
+                        <div class="flex items-center mb-4">
+                            <span class="text-lg font-bold mr-2 text-gray-800">${nanny.rating}</span>
+                            ${generateStars(nanny.rating)}
+                            <span class="text-md text-gray-500 ml-3">(${nanny.reviews} Avis vérifiés)</span>
+                        </div>
+
+                        <!-- Détails de la Prestation -->
+                        <p class="text-gray-700 mb-4">${nanny.profileContent}</p>
+
+                        <div class="flex flex-wrap gap-4">
+                            <span class="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full">Zone: ${nanny.location}</span>
+                            <span class="bg-pink-100 text-pink-800 text-sm font-medium px-3 py-1 rounded-full">Tarif: ${nanny.rate}</span>
+                        </div>
+
+                        <!-- Bouton Faire une demande (simule une action) -->
+                        <button onclick="simulateReservationDemand('${nanny.id}')"
+                                class="mt-6 px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300">
+                            Faire une demande de réservation
+                        </button>
+                    </div>
+                </div>
+            `;
+
+    showView('detail-view');
+  }
+
+  /**
+   * Simule le processus de demande de réservation et l'acceptation.
+   * @param {string} id - L'ID du prestataire.
+   */
+  function simulateReservationDemand(id) {
+    const nanny = providers[id];
+    const reservationSection = document.getElementById('reservation-section');
+
+    alertUser(`Demande de réservation envoyée à ${nanny.name}. Simulation d'attente...`, 'info');
+
+    // Simuler un délai d'attente pour l'acceptation
+    setTimeout(() => {
+      const montantPrestation = 55.00; // Montant fixe pour la simulation
+
+      document.getElementById('accepted-nanny-name').textContent = nanny.name;
+      document.getElementById('prestation-montant').textContent = `${montantPrestation.toFixed(2)} €`;
+
+      // Mettre à jour la fonction de paiement avec l'ID et le montant
+      const payButton = reservationSection.querySelector('button');
+      payButton.setAttribute('onclick', `showPaymentForm('${id}', ${montantPrestation})`);
+
+      reservationSection.classList.remove('hidden');
+      alertUser(`La demande de ${nanny.name} a été acceptée !`, 'success');
+
+      window.scrollTo(0, document.body.scrollHeight); // Scroll vers le bas pour voir le message
+    }, 2500); // 2.5 secondes de délai simulé
+  }
+
+  /**
+   * Affiche le formulaire de paiement (Vue 3).
+   * @param {string} id - L'ID du prestataire.
+   * @param {number} amount - Le montant pré-défini.
+   */
+  function showPaymentForm(id, amount) {
+    const nanny = providers[id];
+
+    // Pré-remplir le montant dans le champ de saisie manuel
+    const montantInput = document.getElementById('payment-montant');
+    montantInput.value = amount.toFixed(2);
+
+    document.getElementById('payment-for-nanny').textContent = nanny.name;
+
+    // Réinitialiser les radios et champs spécifiques
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => radio.checked = false);
+    showPaymentFields(null);
+
+    showView('payment-view');
+  }
+
+
+  // --- LOGIQUE DYNAMIQUE DU PAIEMENT (ADAPTÉE) ---
+
+  /**
+   * Affiche les champs de saisie spécifiques à la méthode de paiement sélectionnée.
+   * C'est ici que sont appliquées les exigences de champs propres et de désactivation/activation.
+   * @param {string|null} method - La méthode sélectionnée ('carte', 'orange', 'wave').
+   */
+  function showPaymentFields(method) {
+    const allFieldsContainers = document.querySelectorAll('#specific-fields-container > div');
+    const submitButton = document.getElementById('submit-payment-button');
+
+    // 1. Cacher et désactiver tous les inputs spécifiques
+    allFieldsContainers.forEach(container => {
+      container.classList.add('hidden');
+      // Désactiver tous les inputs dans ce conteneur
+      container.querySelectorAll('input').forEach(input => input.disabled = true);
+    });
+
+    // 2. Afficher et activer les inputs pour la méthode sélectionnée
+    const selectedFields = document.getElementById(`fields-${method}`);
+    if (selectedFields) {
+      selectedFields.classList.remove('hidden');
+      // Activer les inputs spécifiques
+      selectedFields.querySelectorAll('input').forEach(input => input.disabled = false);
+    }
+
+    // 3. Activer et personnaliser le bouton de soumission
+    if (method) {
+      submitButton.disabled = false;
+      submitButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+      submitButton.classList.add('bg-pink-600', 'hover:bg-pink-700');
+      submitButton.textContent = `Payer ${document.getElementById('payment-montant').value} € via ${getFriendlyMethodName(method)}`;
+    } else {
+      submitButton.disabled = true;
+      submitButton.classList.remove('bg-pink-600', 'hover:bg-pink-700');
+      submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+      submitButton.textContent = 'Sélectionnez une méthode de paiement';
+    }
+  }
+
+  /**
+   * Nom convivial pour la méthode de paiement.
+   */
+  function getFriendlyMethodName(method) {
+    switch (method) {
+      case 'carte': return 'Carte Bancaire';
+      case 'orange': return 'Orange-Money';
+      case 'wave': return 'Wave';
+      default: return 'Méthode Inconnue';
+    }
+  }
+
+  /**
+   * Gère la soumission du paiement simulé.
+   */
+  document.getElementById('submit-payment-button').addEventListener('click', function(e) {
+    e.preventDefault();
+    const montant = document.getElementById('payment-montant').value;
+    const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+
+    if (!montant || parseFloat(montant) <= 0 || !selectedMethod) {
+      alertUser('Veuillez saisir un montant valide et sélectionner une méthode de paiement.', 'error');
+      return;
+    }
+
+    // Validation minimale (à étendre dans une vraie application)
+    let isFormValid = true;
+    const specificInputs = document.getElementById(`fields-${selectedMethod}`).querySelectorAll('input');
+    specificInputs.forEach(input => {
+      if (input.value.trim() === '' && input.type !== 'password') {
+        isFormValid = false;
+      }
+    });
+
+    if (!isFormValid) {
+      alertUser(`Veuillez remplir tous les champs requis pour le paiement par ${getFriendlyMethodName(selectedMethod)}.`, 'error');
+      return;
+    }
+
+    const nannyName = providers[currentNannyId]?.name || 'le prestataire';
+    const message = `Paiement réussi de ${parseFloat(montant).toFixed(2)} € via ${getFriendlyMethodName(selectedMethod)} pour ${nannyName}. La réservation est confirmée !`;
+    alertUser(message, 'success');
+
+    // Retourner à la liste après un paiement réussi simulé
+    setTimeout(() => showView('list-view'), 3000);
+  });
+
+
+  // --- LOGIQUE DE RENDU DYNAMIQUE DES CARTES ---
+
+  /**
+   * Génère le HTML pour une carte de prestataire individuelle.
+   * @param {object} nanny - Les données du prestataire.
+   */
+  function generateProviderCardHtml(nanny) {
+    const isAvailableNow = nanny.availability === 'now';
+    const availabilityText = isAvailableNow ? 'Disponible Maintenant' : (nanny.availability === 'soon' ? 'Bientôt Disponible' : 'Sur Réservation');
+    const borderClass = isAvailableNow ? 'border-pink-500' : 'border-gray-300';
+
+    // Animation ping uniquement pour "Disponible Maintenant"
+    const pingHtml = isAvailableNow ? `
+                <span class="relative flex h-2 w-2 mr-2">
+                    <span class="animate-ping-pink absolute inline-flex h-full w-full rounded-full ping-pink opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
+                </span>
+            ` : '';
+
+    const availabilityClasses = isAvailableNow ? 'text-pink-700 bg-pink-100' : 'text-gray-700 bg-gray-100';
+
+    return `
+                <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 ${borderClass} flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+                    data-id="${nanny.id}"
+                    data-age-group="${nanny.ageGroups.join(',')}"
+                    data-availability="${nanny.availability}"
+                    data-location="${nanny.location}">
+
+                    <div class="flex items-center space-x-4 w-full md:w-auto">
+                        <a href="#" onclick="showDetails('${nanny.id}')">
+                            <img src="https://placehold.co/80x80/ec4899/ffffff?text=${nanny.imgText}" alt="Photo de ${nanny.name}" class="w-16 h-16 rounded-full border-2 border-pink-500">
+                        </a>
+                        <div>
+                            <a href="#" onclick="showDetails('${nanny.id}')" class="text-xl font-bold text-gray-900 hover:text-pink-600 transition">${nanny.name}</a>
+                            <p class="text-gray-600">${nanny.title}</p>
+                            <div class="flex items-center mt-1">
+                                <span class="text-sm font-bold mr-1 text-gray-800">${nanny.rating}</span>
+                                ${generateStars(nanny.rating)}
+                                <span class="text-sm text-gray-500 ml-2">(${nanny.reviews} Avis)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-start md:items-end space-y-2">
+                        <div class="availability-status flex items-center font-semibold ${availabilityClasses} px-3 py-1 rounded-full">
+                            ${pingHtml}
+                            ${availabilityText}
+                        </div>
+                        <p class="text-2xl font-bold text-pink-600">${nanny.rate}</p>
+                        <button onclick="showDetails('${nanny.id}')" class="px-5 py-2 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700 transition duration-300">
+                            Contacter
+                        </button>
+                    </div>
+                </div>
+            `;
+  }
+
+  /**
+   * Rend la liste complète des prestataires dans le DOM et initialise les filtres.
+   */
+  function renderProviderList() {
+    const listContainer = document.getElementById('providers-list');
+    let htmlContent = '';
+
+    // Convertir l'objet en tableau pour itérer sur tous les prestataires
+    Object.values(providers).forEach(nanny => {
+      htmlContent += generateProviderCardHtml(nanny);
+    });
+
+    listContainer.innerHTML = htmlContent;
+
+    // Mise à jour du compteur de résultats initial
+    document.getElementById('results-count').textContent = `${Object.keys(providers).length} Prestataires trouvés`;
+
+    // Retourne les cartes nouvellement créées pour les filtres
+    return document.querySelectorAll('.provider-card');
+  }
+
+
+  // --- FONCTIONS UTILITAIRES ---
+
+  /**
+   * Génère le HTML pour les étoiles de notation.
+   */
+  function generateStars(rating) {
+    const fullStars = Math.floor(rating);
+    const remainingStars = 5 - fullStars;
+    let starsHtml = '';
+    for (let i = 0; i < fullStars; i++) {
+      starsHtml += `<span class="rating-star">&#9733;</span>`;
+    }
+    // Ajouter les étoiles grisées pour compléter
+    for (let i = 0; i < remainingStars; i++) {
+      starsHtml += `<span class="rating-star text-gray-300">&#9733;</span>`;
+    }
+    return starsHtml;
+  }
+
+  /**
+   * Affiche un message à l'utilisateur au lieu d'alert().
+   */
+  function alertUser(message, type) {
+    let messageBox = document.getElementById('user-message-box');
+    if (!messageBox) {
+      messageBox = document.createElement('div');
+      messageBox.id = 'user-message-box';
+      messageBox.className = 'fixed top-0 left-0 right-0 p-4 text-center z-50 transition-all duration-300 transform -translate-y-full';
+      document.body.appendChild(messageBox);
+    }
+
+    const baseClasses = 'inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold shadow-lg text-white';
+    let specificClasses = '';
+
+    if (type === 'success') {
+      specificClasses = 'bg-green-600';
+    } else if (type === 'error') {
+      specificClasses = 'bg-red-600';
+    } else {
+      specificClasses = 'bg-indigo-600';
+    }
+
+    messageBox.innerHTML = `<p class="${baseClasses} ${specificClasses}">${message}</p>`;
+
+    // Animer pour afficher
+    messageBox.classList.remove('-translate-y-full');
+    messageBox.classList.add('translate-y-0');
+
+    // Animer pour masquer après 4 secondes
+    setTimeout(() => {
+      messageBox.classList.remove('translate-y-0');
+      messageBox.classList.add('-translate-y-full');
+    }, 4000);
+  }
+
+  /**
+   * Initialisation de la page et des filtres.
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    // Afficher la vue de liste au chargement
+    showView('list-view');
+
+    // 1. Rendre la liste des prestataires (et obtenir la référence des cartes)
+    const providerCards = renderProviderList();
+
+    // --- Logique des Filtres ---
+    const filterForm = document.getElementById('filter-form');
+    const resultsCount = document.getElementById('results-count');
+    const noResultsMessage = document.getElementById('no-results');
+
+    function applyFilters(e) {
+      e.preventDefault();
+      const locationFilter = document.getElementById('filter-location').value.trim().toLowerCase();
+      const ageFilter = document.getElementById('filter-age').value;
+      const urgentFilter = document.getElementById('filter-urgent').checked;
+
+      let visibleCount = 0;
+
+      providerCards.forEach(card => {
+        const cardLocation = card.dataset.location.toLowerCase();
+        const cardAgeGroups = card.dataset.ageGroup.split(',');
+        const cardAvailability = card.dataset.availability;
+
+        let isMatch = true;
+
+        if (locationFilter && !cardLocation.includes(locationFilter)) {
+          isMatch = false;
+        }
+        if (ageFilter !== 'all' && !cardAgeGroups.includes(ageFilter)) {
+          isMatch = false;
+        }
+        if (urgentFilter && cardAvailability !== 'now') {
+          isMatch = false;
+        }
+
+        if (isMatch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (visibleCount > 0) {
+        resultsCount.textContent = `${visibleCount} Prestataire(s) trouvé(s) dans votre région`;
+        noResultsMessage.classList.add('hidden');
+      } else {
+        resultsCount.textContent = `0 Prestataire trouvé`;
+        noResultsMessage.classList.remove('hidden');
+      }
+    }
+
+    // 2. Attacher l'événement de soumission du formulaire de filtre
+    filterForm.addEventListener('submit', applyFilters);
+
+    // 3. Mettre à jour le bouton de paiement en cas de changement manuel du montant
+    document.getElementById('payment-montant').addEventListener('input', () => {
+      const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+      if (selectedMethod) {
+        // Mettre à jour le texte du bouton si une méthode est sélectionnée
+        const submitButton = document.getElementById('submit-payment-button');
+        submitButton.textContent = `Payer ${document.getElementById('payment-montant').value} € via ${getFriendlyMethodName(selectedMethod)}`;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
+

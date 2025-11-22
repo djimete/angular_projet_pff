@@ -1,0 +1,286 @@
+
+
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-indigo-600"><a href="index.html">WorkingExpress</a></h1>
+    <a href="#" class="text-gray-600 hover:text-indigo-600 transition duration-150">Mon Tableau de Bord</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Navigation entre Catégories -->
+  <nav class="flex space-x-4 mb-8 justify-center border-b pb-4">
+    <a href="garde_enfant.html" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-pink-100 hover:text-pink-700 transition duration-300">
+      🧸 Garde d'Enfants
+    </a>
+    <a href="travail_domestique.html" class="px-6 py-2 rounded-full bg-emerald-100 text-emerald-700 font-bold border-2 border-emerald-500 shadow-lg transition duration-300">
+      🧹 Travail Domestique
+    </a>
+  </nav>
+
+  <!-- Titre et Description de la Catégorie (Travail Domestique) -->
+  <section class="mb-10 text-center md:text-left">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
+      Travail Domestique <span class="domestic-color">🧹</span>
+    </h2>
+    <p class="text-xl text-gray-500">Trouvez un(e) aide ménagère, repasseur(se) ou agent de nettoyage qualifié(e).</p>
+  </section>
+
+  <!-- Barre de Filtres et de Recherche Spécifique -->
+  <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Filtre Localisation -->
+      <input type="text" id="filter-location" placeholder="Ville ou quartier (ex: Dakar)"
+             class="p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+
+      <!-- Filtre Type de Service -->
+      <select id="filter-service" class="p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 appearance-none">
+        <option value="all">Tous types de services</option>
+        <option value="menage">Ménage régulier</option>
+        <option value="repassage">Repassage uniquement</option>
+        <option value="nettoyage_profondeur">Nettoyage en profondeur</option>
+      </select>
+
+      <!-- Filtre Disponibilité Immédiate -->
+      <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+        <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+        <label for="filter-urgent" class="text-gray-700">Disponible Immédiatement</label>
+      </div>
+
+      <!-- Bouton Appliquer les Filtres -->
+      <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-emerald-600 text-white font-bold rounded-lg shadow-md hover:bg-emerald-700 transition duration-300">
+        Appliquer les Filtres
+      </button>
+    </div>
+  </form>
+
+  <!-- Liste des Prestataires de Travail Domestique -->
+  <section>
+    <!-- L'ID 'results-count' sera mis à jour par le JavaScript -->
+    <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Prestataires trouvés</h3>
+
+    <!-- Le conteneur 'providers-list' contiendra toutes les cartes -->
+    <div id="providers-list" class="space-y-6">
+
+      <!-- Carte Prestataire 1 : Fatou G. (Disponible Maintenant, Ménage Régulier, Dakar) -->
+      <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-emerald-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-service="menage,repassage"
+           data-availability="now"
+           data-location="Dakar">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <!-- Lien vers un profil générique pour l'instant -->
+          <a href="detaildomestique.html">
+            <img src="https://placehold.co/80x80/059669/ffffff?text=F1" alt="Photo de Fatou G." class="w-16 h-16 rounded-full border-2 border-emerald-500">
+          </a>
+          <div>
+            <!-- Lien vers un profil générique pour l'instant -->
+            <a href="detaildomestique.html" class="text-xl font-bold text-gray-900 hover:text-emerald-600 transition">Fatou G.</a>
+            <p class="text-gray-600">Aide Ménagère expérimentée | Ménage et Repassage</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">5.0</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(105 Avis)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Vert = Disponible Maintenant) -->
+          <div class="availability-status flex items-center font-semibold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
+                            <span class="relative flex h-2 w-2 mr-2">
+                                <span class="animate-ping-emerald absolute inline-flex h-full w-full rounded-full ping-emerald opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+            Disponible Maintenant
+          </div>
+
+          <p class="text-2xl font-bold text-emerald-600">8€ / heure</p>
+          <!-- Lien vers un profil générique pour l'instant -->
+          <a href="detaildomestique.html" class="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition duration-300">
+            Réserver
+          </a>
+        </div>
+      </div>
+
+      <!-- Carte Prestataire 2 : Modou L. (Prochain Créneau, Nettoyage en Profondeur, Rufisque) -->
+      <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-yellow-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-service="nettoyage_profondeur"
+           data-availability="soon"
+           data-location="Rufisque">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <!-- Lien vers un profil générique pour l'instant -->
+          <a href="detaildomestique.html">
+            <img src="https://placehold.co/80x80/facc15/ffffff?text=M2" alt="Photo de Modou L." class="w-16 h-16 rounded-full border-2 border-yellow-500">
+          </a>
+          <div>
+            <!-- Lien vers un profil générique pour l'instant -->
+            <a href="detaildomestique.html" class="text-xl font-bold text-gray-900 hover:text-emerald-600 transition">Modou L.</a>
+            <p class="text-gray-600">Spécialiste Nettoyage Post-Chantier | Équipement Pro</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">4.8</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="rating-star text-gray-300">&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(32 Avis)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Jaune = Bientôt) -->
+          <div class="availability-status flex items-center font-semibold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full">
+            <span class="w-2 h-2 mr-2 rounded-full bg-yellow-500"></span>
+            Prochain créneau : Demain 8h00
+          </div>
+
+          <p class="text-2xl font-bold text-emerald-600">Forfait 120€ / journée</p>
+          <!-- Lien vers un profil générique pour l'instant -->
+          <a href="detaildomestique.html" class="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition duration-300">
+            Détails et Réservation
+          </a>
+        </div>
+      </div>
+
+      <!-- Carte Prestataire 3 : Maimouna T. (Sur Réservation, Repassage Uniquement, Dakar) -->
+      <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-service="repassage"
+           data-availability="booking"
+           data-location="Dakar">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <!-- Lien vers un profil générique pour l'instant -->
+          <a href="detaildomestique.html">
+            <img src="https://placehold.co/80x80/9ca3af/ffffff?text=M3" alt="Photo de Maimouna T." class="w-16 h-16 rounded-full border-2 border-gray-400">
+          </a>
+          <div>
+            <!-- Lien vers un profil générique pour l'instant -->
+            <a href="detaildomestique.html" class="text-xl font-bold text-gray-900 hover:text-emerald-600 transition">Maimouna T.</a>
+            <p class="text-gray-600">Experte Repassage à Domicile | Service Rapide</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">4.5</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="rating-star text-gray-300">&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(45 Avis)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Gris = Réservation) -->
+          <div class="availability-status flex items-center font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+            <span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
+            Sur réservation (1 semaine de délai)
+          </div>
+
+          <p class="text-2xl font-bold text-emerald-600">10€ / heure</p>
+          <!-- Lien vers un profil générique pour l'instant -->
+          <a href="detaildomestique.html" class="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition duration-300">
+            Contacter
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- Message affiché si aucun résultat n'est trouvé -->
+    <div id="no-results" class="hidden text-center p-8 domestic-bg rounded-lg border border-emerald-200 mt-6">
+      <p class="text-xl domestic-color font-semibold">Aucun prestataire de travail domestique ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- Pied de Page (Footer) -->
+<footer class="bg-gray-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+    <p>&copy; 2025 Working Express. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<!-- Script JavaScript pour gérer les filtres et le bouton Appliquer les Filtres -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filter-form');
+    // Cibler toutes les cartes de prestataire avec la classe 'provider-card'
+    const providerCards = document.querySelectorAll('.provider-card');
+    const resultsCount = document.getElementById('results-count');
+    const noResultsMessage = document.getElementById('no-results');
+
+    /**
+     * Applique les filtres sélectionnés par l'utilisateur pour masquer/afficher les cartes.
+     */
+    function applyFilters(e) {
+      e.preventDefault(); // Empêche le rechargement de la page
+
+      // 1. Récupération des valeurs des filtres
+      const locationFilter = document.getElementById('filter-location').value.trim().toLowerCase();
+      // Utilisation de l'ID 'filter-service' pour la catégorie ménage
+      const serviceFilter = document.getElementById('filter-service').value;
+      const urgentFilter = document.getElementById('filter-urgent').checked;
+
+      let visibleCount = 0;
+
+      // 2. Parcourir toutes les cartes de prestataires
+      providerCards.forEach(card => {
+        // Récupération des données du prestataire via les attributs data-*
+        const cardLocation = card.dataset.location.toLowerCase();
+        // Utilisation de 'data-service'
+        const cardServices = card.dataset.service.split(',');
+        const cardAvailability = card.dataset.availability; // 'now', 'soon', 'booking'
+
+        let isMatch = true;
+
+        // --- Critère 1: Localisation ---
+        if (locationFilter && !cardLocation.includes(locationFilter)) {
+          isMatch = false;
+        }
+
+        // --- Critère 2: Type de Service ---
+        // Filtre si le service n'est pas 'all' ET si le service n'est pas inclus dans les capacités du prestataire
+        if (serviceFilter !== 'all' && !cardServices.includes(serviceFilter)) {
+          isMatch = false;
+        }
+
+        // --- Critère 3: Urgence (Disponible Maintenant) ---
+        // Filtre si le filtre Urgent est coché ET si la disponibilité n'est pas 'now'
+        if (urgentFilter && cardAvailability !== 'now') {
+          isMatch = false;
+        }
+
+        // 3. Afficher ou masquer la carte
+        if (isMatch) {
+          card.style.display = 'flex'; // Afficher la carte
+          visibleCount++;
+        } else {
+          card.style.display = 'none'; // Masquer la carte
+        }
+      });
+
+      // 4. Mettre à jour le compteur de résultats et le message "Aucun Résultat"
+      if (visibleCount > 0) {
+        resultsCount.textContent = `${visibleCount} Prestataire(s) trouvé(s) dans votre région`;
+        noResultsMessage.classList.add('hidden');
+      } else {
+        resultsCount.textContent = `0 Prestataire trouvé`;
+        noResultsMessage.classList.remove('hidden');
+      }
+    }
+
+    // Écouteur d'événement pour le bouton "Appliquer les Filtres"
+    filterForm.addEventListener('submit', applyFilters);
+  });
+</script>
+

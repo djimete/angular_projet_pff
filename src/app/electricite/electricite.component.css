@@ -1,0 +1,8 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+}
+.rating-star { color: #facc15; }
+/* Couleur primaire adaptée à l'électricité (bleu électrique/indigo) */
+.primary-color { background-color: #4f46e5; }
+.primary-text-color { color: #4f46e5; }

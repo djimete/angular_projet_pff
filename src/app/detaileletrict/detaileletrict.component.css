@@ -1,0 +1,36 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+}
+.rating-star { color: #facc15; }
+/* Couleur primaire adaptée à l'électricité (bleu électrique/indigo) */
+.primary-color { background-color: #4f46e5; }
+.primary-text-color { color: #4f46e5; }
+/* Style pour masquer initialement le message de non-résultat et la vue détaillée */
+.hidden { display: none; }
+/* CSS pour un simple indicateur de chargement (spinner) */
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4f46e5;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Styles spécifiques pour les boutons de paiement */
+.btn-card { background-color: #4f46e5; } /* Indigo (Neutre) */
+.btn-card:hover { background-color: #4338ca; }
+
+.btn-om { background-color: #ff7800; } /* Orange Money (Orange Vif) */
+.btn-om:hover { background-color: #e56b00; }
+
+.btn-wave { background-color: #1a73e8; } /* Wave (Bleu) */
+.btn-wave:hover { background-color: #1660c9; }
+

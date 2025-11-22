@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkingExpress | Réservation & Paiement</title>
+</head>
+<body>
+
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-pink-600 cursor-pointer" onclick="renderApp()">WorkingExpress</h1>
+    <a href="#" class="text-gray-600 hover:text-pink-600 transition duration-150 font-semibold">Mon Compte</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Contenu dynamique de l'application -->
+  <div id="dynamic-content">
+    <!-- Ce contenu sera géré par JavaScript -->
+  </div>
+
+  <!-- Zone de message pour les erreurs ou les confirmations -->
+  <div id="message-box" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 p-4 rounded-xl shadow-lg font-medium hidden" role="alert"></div>
+
+</main>
+
+<!-- Pied de Page (Footer) -->
+<footer class="bg-gray-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+    <p>&copy; 2025 Working Express. Tous droits réservés. | <a href="#" class="hover:underline">Contact</a></p>
+  </div>
+</footer>
+
+<script>
+  // Configuration de base
+  const dynamicContent = document.getElementById('dynamic-content');
+  const messageBox = document.getElementById('message-box');
+  const apiKey = ""; // Laissée vide pour le contexte de l'application
+
+  // --- Données des Prestataires ---
+  const providers = [
+    { id: 'F001', name: 'Fatou Diop', specialty: 'Thérapeute en Massages Certifiée', description: '**Spécialité :** Massage Californien et Suédois à domicile.', rate: 70, rating: 4.9, reviews: 155, status: 'Disponible', statusClass: 'bg-green-100 text-green-800', btnText: 'Réserver un soin', imgText: 'F.D', imgColor: 'ec4899', btnColor: 'bg-pink-600' },
+    { id: 'K002', name: 'Khadija Mbaye', specialty: 'Esthéticienne et Soins du Visage', description: '**Spécialité :** Soins hydratants, anti-âge et maquillage professionnel.', rate: 55, rating: 4.7, reviews: 89, status: 'Réservation sur délai', statusClass: 'bg-yellow-100 text-yellow-800', btnText: 'Voir les services', imgText: 'K.M', imgColor: '10b981', btnColor: 'bg-green-600' },
+    { id: 'I003', name: 'Ibrahima Cissé', specialty: 'Coiffeur Styliste à Domicile', description: '**Spécialité :** Coupes modernes, coloration, et mariage. Hommes/Femmes.', rate: 40, rating: 5.0, reviews: 210, status: 'Disponible', statusClass: 'bg-green-100 text-green-800', btnText: 'Prendre RDV', imgText: 'I.C', imgColor: '6366f1', btnColor: 'bg-indigo-600' },
+    { id: 'A004', name: 'Aïssatou Ba', specialty: 'Praticienne en Réflexologie', description: '**Spécialité :** Réflexologie plantaire et palmaire pour la gestion du stress.', rate: 65, rating: 4.6, reviews: 45, status: 'Non disponible', statusClass: 'bg-red-100 text-red-800', btnText: 'Indisponible', imgText: 'A.B', imgColor: 'f59e0b', btnColor: 'bg-gray-400' },
+    { id: 'D005', name: 'Demba Sow', specialty: 'Prothésiste Ongulaire', description: '**Spécialité :** Pose de gel/vernis semi-permanent et soins des pieds.', rate: 35, rating: 4.8, reviews: 112, status: 'Réservation sur délai', statusClass: 'bg-yellow-100 text-yellow-800', btnText: 'Réserver', imgText: 'D.S', imgColor: 'e879f9', btnColor: 'bg-fuchsia-600' },
+  ];
+
+  // --- État de l'application ---
+  let appState = {
+    step: 'list', // list, check_availability, select_payment, payment_form, complete
+    selectedProvider: null,
+    selectedPaymentMethod: null,
+    reservationDetails: null
+  };
+
+  // Fonction utilitaire pour afficher les messages (pas d'alertes)
+  function displayMessage(message, type = 'info') {
+    messageBox.textContent = message;
+    messageBox.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 p-4 rounded-xl shadow-lg font-medium'; // Reset classes
+    messageBox.classList.remove('hidden');
+
+    switch (type) {
+      case 'success':
+        messageBox.classList.add('bg-green-100', 'text-green-800', 'border-green-400', 'border');
+        break;
+      case 'error':
+        messageBox.classList.add('bg-red-100', 'text-red-800', 'border-red-400', 'border');
+        break;
+      case 'info':
+      default:
+        messageBox.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-400', 'border');
+        break;
+    }
+
+    // Masquer automatiquement le message après 5 secondes
+    setTimeout(() => {
+      messageBox.classList.add('hidden');
+    }, 5000);
+  }
+
+  // Fonction utilitaire pour générer les étoiles de notation
+  function generateRatingStars(rating) {
+    const fullStars = Math.floor(rating);
+    const emptyStars = rating < 5.0 ? 1 : 0; // Simplification pour afficher une étoile grise si la note n'est pas 5.0
+    let starsHtml = '';
+
+    // Étoiles pleines
+    for (let i = 0; i < fullStars; i++) {
+      starsHtml += '<span class="rating-star text-xl">&#9733;</span>';
+    }
+    // Étoile(s) vide(s) ou partielle
+    if (emptyStars > 0) {
+      starsHtml += '<span class="rating-star text-gray-300 text-xl">&#9733;</span>';
+    }
+
+    return starsHtml;
+  }
+
+  // --- LISTE DES PRESTATAIRES (Étape 0) ---
+  function renderProviderList() {
+    appState.step = 'list';
+    appState.selectedProvider = null;
+    appState.reservationDetails = null;
+
+    // Rendu du titre et des filtres
+    let html = `
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-4">
+                    Services Beauté & Bien-être ✨
+                </h2>
+                <p class="text-xl text-gray-600 mb-10">
+                    Trouvez le ou la professionnelle idéale pour vos soins, coiffure, ou moments de détente.
+                </p>
+
+                <!-- Filtres Simplifiés (Pour l'exemple) -->
+                <div class="flex flex-wrap gap-4 mb-10 p-4 bg-white rounded-xl shadow-inner border border-gray-100">
+                    <span class="text-gray-700 font-semibold mr-2">Filtrer par :</span>
+                    <button class="bg-pink-100 text-pink-700 font-medium px-4 py-2 rounded-full hover:bg-pink-200 transition">Massages</button>
+                    <button class="bg-gray-100 text-gray-700 font-medium px-4 py-2 rounded-full hover:bg-gray-200 transition">Soins du Visage</button>
+                    <button class="bg-gray-100 text-gray-700 font-medium px-4 py-2 rounded-full hover:bg-gray-200 transition">Coiffure</button>
+                    <button class="bg-gray-100 text-gray-700 font-medium px-4 py-2 rounded-full hover:bg-gray-200 transition">Épilation</button>
+                </div>
+
+                <!-- Grille des Prestataires -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            `;
+
+    // Rendu des cartes de prestataires
+    providers.forEach(provider => {
+      const isBookable = provider.status !== 'Non disponible';
+      const buttonClasses = isBookable
+        ? `${provider.btnColor} text-white font-bold rounded-lg hover:opacity-90 transition`
+        : 'bg-gray-400 text-white font-bold rounded-lg cursor-not-allowed';
+
+      html += `
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-shadow border border-pink-100 flex flex-col justify-between">
+                        <div>
+                            <!-- Placeholder image utilisant le nom du prestataire -->
+                            <img src="https://placehold.co/100x100/${provider.imgColor}/ffffff?text=${provider.imgText}" alt="Photo de ${provider.name}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-pink-300">
+                            <h3 class="text-2xl font-bold text-gray-900 text-center mb-1">${provider.name}</h3>
+                            <p class="text-center text-pink-600 font-semibold mb-3">${provider.specialty}</p>
+
+                            <!-- Statut de Disponibilité -->
+                            <div class="text-center mb-4">
+                                <span class="inline-block ${provider.statusClass} text-sm font-bold px-3 py-1 rounded-full">
+                                    ${provider.status}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-center mb-4">
+                                <span class="text-lg font-bold mr-1 text-gray-800">${provider.rating.toFixed(1)}</span>
+                                ${generateRatingStars(provider.rating)}
+                                <span class="text-sm text-gray-500 ml-2">(${provider.reviews} avis)</span>
+                            </div>
+
+                            <p class="text-gray-700 mb-4 text-center">
+                                ${provider.description}
+                            </p>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="text-center text-lg font-bold text-purple-700 mb-4">
+                                À partir de ${provider.rate}€
+                            </div>
+
+                            <button data-provider-id="${provider.id}" ${isBookable ? '' : 'disabled'}
+                                class="booking-btn block text-center w-full px-4 py-3 ${buttonClasses}">
+                                ${provider.btnText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+    });
+
+    html += `</div>`;
+    dynamicContent.innerHTML = html;
+
+    // Ajout des écouteurs d'événements pour la réservation
+    document.querySelectorAll('.booking-btn').forEach(button => {
+      if (!button.disabled) {
+        button.addEventListener('click', handleBookProvider);
+      }
+    });
+  }
+
+  function handleBookProvider(e) {
+    const providerId = e.currentTarget.dataset.providerId;
+    const provider = providers.find(p => p.id === providerId);
+
+    if (!provider) return;
+
+    // Mettre à jour l'état et passer à la vérification de disponibilité
+    appState.selectedProvider = provider;
+    appState.step = 'check_availability';
+    renderApp();
+    displayMessage(`Réservation pour ${provider.name}. Choisissez la date et l'heure. Le montant sera saisi à l'étape de paiement.`, 'info');
+  }
+
+
+  // --- VÉRIFICATION DE DISPONIBILITÉ (Étape 1) ---
+  function renderAvailabilityCheck() {
+    const provider = appState.selectedProvider;
+    dynamicContent.innerHTML = `
+                <div class="w-full max-w-lg mx-auto bg-white shadow-xl rounded-xl p-8 transition-all duration-300">
+                    <h2 class="text-3xl font-bold text-indigo-700 mb-4">
+                        Réserver avec ${provider.name}
+                    </h2>
+                    <p class="text-gray-600 mb-6">
+                        ${provider.specialty} | Tarif suggéré : ${provider.rate}€
+                    </p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="reservation-time" class="block text-sm font-medium text-gray-700 mb-1">Date et Heure Souhaitées</label>
+                            <!-- Input de type datetime-local pour la saisie de l'heure -->
+                            <input type="datetime-local" id="reservation-time" value="${new Date().toISOString().substring(0, 16)}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                        </div>
+
+                        <button id="check-btn"
+                                class="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition duration-200 shadow-md">
+                            Vérifier la Disponibilité
+                        </button>
+                        <button id="back-to-list"
+                            class="w-full text-gray-600 border border-gray-300 py-2 rounded-xl font-medium hover:bg-gray-50 transition duration-200">
+                            Annuler et Retour à la liste
+                        </button>
+                    </div>
+                </div>
+            `;
+    document.getElementById('check-btn').addEventListener('click', handleAvailabilityCheck);
+    document.getElementById('back-to-list').addEventListener('click', renderProviderList);
+  }
+
+  function handleAvailabilityCheck() {
+    const timeInput = document.getElementById('reservation-time').value;
+
+    if (!timeInput) {
+      displayMessage("Veuillez sélectionner une date et une heure.", 'error');
+      return;
+    }
+
+    // Simuler une vérification backend
+    const isAvailable = Math.random() > 0.3; // 70% de chance d'être disponible
+
+    // Affichage du loader pendant la vérification
+    dynamicContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-8 w-full max-w-lg mx-auto bg-white shadow-xl rounded-xl">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                    <p class="text-indigo-600 font-medium">Vérification en cours pour ${appState.selectedProvider.name}...</p>
+                </div>
+            `;
+
+    setTimeout(() => {
+      if (isAvailable) {
+        appState.step = 'select_payment';
+        appState.reservationDetails = {
+          providerId: appState.selectedProvider.id,
+          time: timeInput,
+          id: 'RES-' + crypto.randomUUID().substring(0, 8).toUpperCase(),
+          // Montant temporaire basé sur le tarif suggéré (sera mis à jour à l'étape de paiement)
+          amount: appState.selectedProvider.rate * 1000
+        };
+        renderApp();
+        displayMessage(`Félicitations ! Disponible. Veuillez choisir votre mode de paiement et confirmer le montant.`, 'success');
+      } else {
+        appState.step = 'check_availability';
+        renderApp();
+        displayMessage(`Désolé, ${appState.selectedProvider.name} est indisponible à cette heure. Veuillez choisir un autre créneau.`, 'error');
+      }
+    }, 1500);
+  }
+
+
+  // --- SÉLECTION DU PAIEMENT (Étape 2) ---
+  function renderPaymentSelection() {
+    const details = appState.reservationDetails;
+    const provider = appState.selectedProvider;
+    const suggestedAmountXOF = details.amount.toLocaleString('fr-FR');
+
+    dynamicContent.innerHTML = `
+                <div class="w-full max-w-lg mx-auto bg-white shadow-xl rounded-xl p-8 transition-all duration-300">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Paiement pour ${provider.name}</h2>
+                    <div class="bg-indigo-50 p-4 rounded-lg mb-6 shadow-inner">
+                        <p class="text-gray-700"><strong>Réservation ID:</strong> ${details.id}</p>
+                        <p class="text-gray-700"><strong>Heure:</strong> ${new Date(details.time).toLocaleString('fr-FR')}</p>
+                        <p class="text-gray-700 font-bold mt-2">Montant suggéré : <span class="text-indigo-600">${suggestedAmountXOF} XOF</span></p>
+                        <p class="text-sm text-gray-500 mt-1">Vous pourrez modifier ce montant à l'étape suivante.</p>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Choisissez votre mode de paiement</h3>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        ${createPaymentButton('Wave', 'wave', 'bg-purple-600', '&#128241;')}
+                        ${createPaymentButton('Orange Money', 'orange-money', 'bg-orange-500', '&#128241;')}
+                        ${createPaymentButton('Carte Bancaire', 'card', 'bg-blue-600', '&#127382;')}
+                    </div>
+
+                    <button id="back-to-check" class="w-full mt-6 text-indigo-600 border border-indigo-200 py-2 rounded-xl font-medium hover:bg-indigo-50 transition duration-200">
+                        Retour à la vérification d'heure
+                    </button>
+                </div>
+            `;
+
+    // Écouteurs pour la sélection du mode de paiement
+    document.querySelectorAll('.payment-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        appState.selectedPaymentMethod = e.currentTarget.dataset.method;
+        appState.step = 'payment_form';
+        renderApp();
+      });
+    });
+
+    document.getElementById('back-to-check').addEventListener('click', () => {
+      appState.step = 'check_availability';
+      renderApp();
+    });
+  }
+
+  function createPaymentButton(name, method, bgColor, icon) {
+    return `
+                <button data-method="${method}" data-name="${name}"
+                        class="payment-button ${bgColor} text-white p-4 rounded-xl font-bold flex flex-col items-center justify-center text-center shadow-lg hover:shadow-xl">
+                    <span class="text-2xl mb-1">${icon}</span>
+                    <span class="text-sm">${name}</span>
+                </button>
+            `;
+  }
+
+  // --- FORMULAIRE DE PAIEMENT (Étape 3) ---
+  function getPaymentFormHTML(method) {
+    const provider = appState.selectedProvider;
+    const suggestedAmountEUR = provider.rate; // Montant suggéré en EUR
+
+    let formFields = '';
+    let methodTitle = '';
+
+    // Champ de saisie du montant, commun à toutes les méthodes
+    const amountInputField = `
+                <div class="mb-5 p-3 bg-pink-50 rounded-lg border border-pink-200">
+                    <label for="input-payment-amount" class="block text-sm font-bold text-gray-700 mb-1">Montant à payer (en €) - Saisie Utilisateur</label>
+                    <input type="number" id="input-payment-amount" placeholder="Entrez le montant" required min="1" value="${suggestedAmountEUR}"
+                           class="w-full px-4 py-3 text-lg border-2 border-pink-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-150">
+                    <p class="text-xs text-gray-500 mt-1">Montant suggéré pour cette prestation : ${suggestedAmountEUR}€.</p>
+                </div>
+            `;
+
+    // Génération des champs de formulaire spécifiques à la méthode de paiement
+    switch (method) {
+      case 'wave':
+        methodTitle = 'Paiement par Wave';
+        formFields = amountInputField + `
+                        <p class="text-sm text-gray-500 mb-4">Veuillez entrer le numéro de téléphone lié à votre compte Wave pour initier la transaction.</p>
+                        <label for="wave-phone" class="block text-sm font-medium text-gray-700 mb-1">Numéro de Téléphone Wave (Saisie Utilisateur)</label>
+                        <input type="tel" id="wave-phone" placeholder="Ex: 77 000 00 00" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                    `;
+        break;
+      case 'orange-money':
+        methodTitle = 'Paiement par Orange Money';
+        formFields = amountInputField + `
+                        <p class="text-sm text-gray-500 mb-4">Veuillez entrer votre numéro de téléphone Orange Money. Un code vous sera envoyé pour confirmer la transaction.</p>
+                        <label for="om-phone" class="block text-sm font-medium text-gray-700 mb-1">Numéro de Téléphone OM (Saisie Utilisateur)</label>
+                        <input type="tel" id="om-phone" placeholder="Ex: 78 000 00 00" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150">
+                    `;
+        break;
+      case 'card':
+        methodTitle = 'Paiement par Carte Bancaire';
+        formFields = amountInputField + `
+                        <p class="text-sm text-gray-500 mb-4">Entrez les détails de votre carte bancaire (Visa, Mastercard).</p>
+
+                        <div class="mb-3">
+                            <label for="card-number" class="block text-sm font-medium text-gray-700 mb-1">Numéro de Carte (Saisie Utilisateur)</label>
+                            <input type="text" id="card-number" placeholder="XXXX XXXX XXXX XXXX" required maxlength="19"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mb-3">
+                            <div>
+                                <label for="card-expiry" class="block text-sm font-medium text-gray-700 mb-1">Date d'Expiration (MM/AA)</label>
+                                <input type="text" id="card-expiry" placeholder="MM/AA" required maxlength="5"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                            </div>
+                            <div>
+                                <label for="card-cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                                <input type="text" id="card-cvv" placeholder="123" required maxlength="4"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="card-name" class="block text-sm font-medium text-gray-700 mb-1">Nom sur la Carte</label>
+                            <input type="text" id="card-name" placeholder="JOHN DOE" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                        </div>
+                    `;
+        break;
+      default:
+        return `<p class="text-red-500">Méthode de paiement invalide.</p>`;
+    }
+
+    return `
+                <div class="w-full max-w-lg mx-auto bg-white shadow-xl rounded-xl p-8 transition-all duration-300">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">${methodTitle}</h2>
+
+                    <form id="payment-form" class="space-y-4">
+                        ${formFields}
+                        <button type="submit"
+                                class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-lg">
+                            Confirmer la Réservation et Payer
+                        </button>
+                        <button type="button" id="back-to-selection"
+                                class="w-full text-gray-600 border border-gray-300 py-2 rounded-xl font-medium hover:bg-gray-50 transition duration-200">
+                            Retour au choix de la méthode
+                        </button>
+                    </form>
+                </div>
+            `;
+  }
+
+  function renderPaymentForm() {
+    dynamicContent.innerHTML = getPaymentFormHTML(appState.selectedPaymentMethod);
+
+    document.getElementById('payment-form').addEventListener('submit', handlePaymentSubmission);
+    document.getElementById('back-to-selection').addEventListener('click', () => {
+      appState.step = 'select_payment';
+      appState.selectedPaymentMethod = null;
+      renderApp();
+    });
+  }
+
+  function handlePaymentSubmission(e) {
+    e.preventDefault();
+
+    const form = e.target;
+
+    // 1. Validation du Montant
+    const amountInputEl = document.getElementById('input-payment-amount');
+    const amountInput = amountInputEl ? amountInputEl.value : null;
+
+    if (!amountInput || isNaN(amountInput) || Number(amountInput) <= 0) {
+      displayMessage("Veuillez saisir un montant valide pour le paiement.", 'error');
+      return;
+    }
+
+    const baseAmountEUR = Number(amountInput);
+    // Conversion simulée : 1 EUR = 1000 XOF pour l'exemple
+    const finalAmountXOF = baseAmountEUR * 1000;
+
+    // Mise à jour du montant dans l'état de l'application
+    appState.reservationDetails.amount = finalAmountXOF;
+
+    // 2. Validation des autres champs (téléphone/carte)
+    let isValid = true;
+    for (let i = 0; i < form.elements.length; i++) {
+      // Vérification simple que les champs requis (sauf le bouton) ne sont pas vides
+      if (form.elements[i].hasAttribute('required') && !form.elements[i].value) {
+        isValid = false;
+        break;
+      }
+    }
+
+    if (!isValid) {
+      displayMessage("Veuillez remplir tous les champs obligatoires du formulaire de paiement.", 'error');
+      return;
+    }
+
+    // Affichage du loader pendant la simulation de paiement
+    dynamicContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-8 w-full max-w-lg mx-auto bg-white shadow-xl rounded-xl">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                    <p class="text-green-600 font-medium">Traitement du paiement de ${finalAmountXOF.toLocaleString('fr-FR')} XOF en cours...</p>
+                </div>
+            `;
+
+    // Simuler le processus de paiement réussi
+    setTimeout(() => {
+      const isSuccess = Math.random() > 0.1; // 90% de chance de succès
+
+      if (isSuccess) {
+        appState.step = 'complete';
+        renderApp();
+        displayMessage(`Paiement de ${appState.reservationDetails.amount.toLocaleString('fr-FR')} XOF réussi !`, 'success');
+      } else {
+        appState.step = 'select_payment';
+        renderApp();
+        displayMessage("Échec du paiement. Veuillez vérifier vos informations ou essayer une autre méthode.", 'error');
+      }
+    }, 2500);
+  }
+
+
+  // --- ACHAT TERMINÉ (Étape 4) ---
+  function renderCompletion() {
+    const details = appState.reservationDetails;
+    const provider = appState.selectedProvider;
+
+    dynamicContent.innerHTML = `
+                <div class="w-full max-w-lg mx-auto text-center p-8 bg-green-50 rounded-xl border border-green-300 shadow-xl">
+                    <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-bold text-green-700 mb-2">Réservation Confirmée !</h2>
+                    <p class="text-gray-600 mb-4">Votre rendez-vous avec **${provider.name}** est validé.</p>
+
+                    <div class="bg-white p-4 rounded-lg text-left inline-block shadow-inner">
+                        <p class="text-sm text-gray-700"><strong>ID:</strong> ${details.id}</p>
+                        <p class="text-sm text-gray-700"><strong>Heure:</strong> ${new Date(details.time).toLocaleString('fr-FR')}</p>
+                        <p class="text-sm text-gray-700"><strong>Montant payé:</strong> ${details.amount.toLocaleString('fr-FR')} XOF</p>
+                        <p class="text-sm text-gray-700"><strong>Paiement via:</strong> ${appState.selectedPaymentMethod}</p>
+                    </div>
+
+                    <button id="start-new-reservation"
+                            class="mt-6 bg-indigo-600 text-white py-2 px-4 rounded-xl font-semibold hover:bg-indigo-700 transition duration-200">
+                        Retourner à la liste des prestataires
+                    </button>
+                </div>
+            `;
+    document.getElementById('start-new-reservation').addEventListener('click', renderProviderList);
+  }
+
+
+  // --- FONCTION DE RENDU PRINCIPALE ---
+  function renderApp() {
+    // Ajustement du layout pour centrer les étapes de réservation/paiement
+    if (appState.step !== 'list') {
+      document.body.classList.add('min-h-screen', 'flex', 'flex-col', 'items-center', 'justify-center');
+    } else {
+      document.body.classList.remove('min-h-screen', 'flex', 'flex-col', 'items-center', 'justify-center');
+    }
+
+
+    switch (appState.step) {
+      case 'list':
+        renderProviderList();
+        break;
+      case 'check_availability':
+        renderAvailabilityCheck();
+        break;
+      case 'select_payment':
+        renderPaymentSelection();
+        break;
+      case 'payment_form':
+        renderPaymentForm();
+        break;
+      case 'complete':
+        renderCompletion();
+        break;
+      default:
+        renderProviderList();
+    }
+  }
+
+  // Initialisation de l'application au chargement de la page
+  document.addEventListener('DOMContentLoaded', renderApp);
+
+</script>
+</body>
+</html>
+

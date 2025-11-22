@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working Express - Électriciens et Disponibilités</title>
+</head>
+<body>
+
+<!-- Barre de Navigation (Header) -->
+<header class="bg-white shadow-md sticky top-0 z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-indigo-600"><a href="index.html">WorkingExpress</a></h1>
+    <a href="#" class="text-gray-600 hover:text-indigo-600 transition duration-150">Mon Tableau de Bord</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Titre et Description de la Catégorie (Électricité) -->
+  <section class="mb-10 text-center md:text-left">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
+      Électricité <span class="primary-text-color">💡</span>
+    </h2>
+    <p class="text-xl text-gray-500">Trouvez un électricien qualifié disponible près de chez vous.</p>
+  </section>
+
+  <!-- Barre de Filtres et de Recherche Spécifique -->
+  <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Filtre Localisation -->
+      <input type="text" id="filter-location" placeholder="Ville ou code postal (ex: Dakar)"
+             class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+      <!-- Filtre Type de Service (Électricité) -->
+      <select id="filter-service" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
+        <option value="all">Tous les services</option>
+        <option value="panne">Panne électrique urgente</option>
+        <option value="installation_prise">Installation de prise/lumière</option>
+        <option value="tableau">Remplacement tableau électrique</option>
+      </select>
+
+      <!-- Filtre Disponibilité Immédiate -->
+      <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+        <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+        <label for="filter-urgent" class="text-gray-700">Disponible Maintenant (Urgence)</label>
+      </div>
+
+      <!-- Bouton Appliquer les Filtres -->
+      <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+        Appliquer les Filtres
+      </button>
+    </div>
+  </form>
+
+  <!-- Liste des Prestataires Électriciens -->
+  <section>
+    <!-- L'ID 'results-count' sera mis à jour par le JavaScript -->
+    <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Électriciens trouvés dans votre région</h3>
+
+    <!-- Le conteneur 'plumbers-list' contiendra toutes les cartes -->
+    <div id="plumbers-list" class="space-y-6">
+
+      <!-- Carte Prestataire 1 : Fatou D. (Disponible Maintenant, Panne/Installation/Tableau, Dakar) -->
+      <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-service="panne,installation_prise,tableau"
+           data-availability="now"
+           data-location="Dakar">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <a href="detaileletrict.html">
+          <img src="https://placehold.co/80x80/059669/ffffff?text=F1" alt="Photo de Fatou D." class="w-16 h-16 rounded-full border-2 border-green-500">
+          </a>
+          <div>
+            <a href="detaileletrict.html" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">Fatou D.</a>
+            <p class="text-gray-600">Experte en dépannage urgent | 8 ans d'expérience (Dakar)</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">5.0</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(112 Avis)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Vert = Disponible) -->
+          <div class="availability-status flex items-center font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                            <span class="relative flex h-2 w-2 mr-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+            Disponible Maintenant
+          </div>
+
+          <p class="text-2xl font-bold text-indigo-600">50€ / heure (déplacement inclus)</p>
+          <a href="detaileletrict.html" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+            Voir les details
+          </a>
+        </div>
+      </div>
+
+      <!-- Carte Prestataire 2 : Ibrahima F. (Prochain Créneau, Installation/Tableau, Rufisque) -->
+      <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-orange-500 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-service="installation_prise,tableau"
+           data-availability="soon"
+           data-location="Rufisque">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <a href="detaileletrict.html">
+          <img src="https://placehold.co/80x80/f97316/ffffff?text=I2" alt="Photo de Ibrahima F." class="w-16 h-16 rounded-full border-2 border-orange-500">
+          </a>
+          <div>
+            <a href="detaileletrict.html" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">Ibrahima F.</a>
+            <p class="text-gray-600">Électricien certifié | Installation et rénovation (Rufisque)</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">4.7</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="rating-star text-gray-300">&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(45 Avis)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Orange = Bientôt) -->
+          <div class="availability-status flex items-center font-semibold text-orange-700 bg-orange-100 px-3 py-1 rounded-full">
+            <span class="w-2 h-2 mr-2 rounded-full bg-orange-500"></span>
+            Prochain créneau : Aujourd'hui 14h00
+          </div>
+
+          <p class="text-2xl font-bold text-indigo-600">80€ / forfait installation</p>
+          <a href="" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+            Voir les details
+          </a>
+        </div>
+      </div>
+
+      <!-- Carte Prestataire 3 : Aïcha G. (Sur Réservation, Installation, Dakar) -->
+      <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+           data-service="installation_prise"
+           data-availability="booking"
+           data-location="Dakar">
+
+        <div class="flex items-center space-x-4 w-full md:w-auto">
+          <a href="detaileletrict.html">
+            <img src="https://placehold.co/80x80/9ca3af/ffffff?text=A3" alt="Photo de Aïcha G." class="w-16 h-16 rounded-full border-2 border-gray-400">
+          </a>
+          <div>
+            <a href="detaileletrict.html" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">Aïcha G.</a>
+            <p class="text-gray-600">Spécialiste en petit appareillage (Dakar)</p>
+
+            <!-- Notation -->
+            <div class="flex items-center mt-1">
+              <span class="text-sm font-bold mr-1 text-gray-800">4.3</span>
+              <span class="rating-star">&#9733;&#9733;&#9733;&#9733;</span>
+              <span class="rating-star text-gray-300">&#9733;</span>
+              <span class="text-sm text-gray-500 ml-2">(18 Avis)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponibilité et Tarif -->
+        <div class="flex flex-col items-start md:items-end space-y-2">
+          <!-- Statut de Disponibilité (Gris = Réservation) -->
+          <div class="availability-status flex items-center font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+            <span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
+            Sur réservation (1 semaine d'attente)
+          </div>
+
+          <p class="text-2xl font-bold text-indigo-600">Prix sur devis</p>
+          <a href="" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+            Voir les details
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- Message affiché si aucun résultat n'est trouvé -->
+    <div id="no-results" class="hidden text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
+      <p class="text-xl text-yellow-800 font-semibold">Aucun électricien ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- Pied de Page (Footer) -->
+<footer class="bg-gray-800 text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+    <p>&copy; 2025 Working Express. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<!-- Script JavaScript pour gérer les filtres et le bouton Appliquer les Filtres -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterForm = document.getElementById('filter-form');
+    const plumberCards = document.querySelectorAll('.plumber-card'); // Nous réutilisons la classe pour la simplicité
+    const resultsCount = document.getElementById('results-count');
+    const noResultsMessage = document.getElementById('no-results');
+
+    /**
+     * Applique les filtres sélectionnés par l'utilisateur pour masquer/afficher les cartes de prestataires.
+     */
+    function applyFilters(e) {
+      e.preventDefault(); // Empêche le rechargement de la page
+
+      // 1. Récupération des valeurs des filtres
+      const locationFilter = document.getElementById('filter-location').value.trim().toLowerCase();
+      const serviceFilter = document.getElementById('filter-service').value;
+      const urgentFilter = document.getElementById('filter-urgent').checked;
+
+      let visibleCount = 0;
+
+      // 2. Parcourir toutes les cartes de prestataires
+      plumberCards.forEach(card => {
+        // Récupération des données du prestataire via les attributs data-*
+        const cardLocation = card.dataset.location.toLowerCase();
+        const cardServices = card.dataset.service.split(','); // Tableau de services
+        const cardAvailability = card.dataset.availability; // 'now', 'soon', 'booking'
+
+        let isMatch = true;
+
+        // --- Critère 1: Localisation ---
+        if (locationFilter && cardLocation !== locationFilter.toLowerCase()) {
+          // Nous vérifions si la localisation entrée est une sous-chaîne de la localisation de la carte
+          if (!cardLocation.includes(locationFilter.toLowerCase())) {
+            isMatch = false;
+          }
+        }
+
+        // --- Critère 2: Type de Service ---
+        if (serviceFilter !== 'all' && !cardServices.includes(serviceFilter)) {
+          isMatch = false;
+        }
+
+        // --- Critère 3: Urgence (Disponible Maintenant) ---
+        if (urgentFilter && cardAvailability !== 'now') {
+          isMatch = false;
+        }
+
+        // 3. Afficher ou masquer la carte
+        if (isMatch) {
+          card.style.display = 'flex'; // Afficher la carte
+          visibleCount++;
+        } else {
+          card.style.display = 'none'; // Masquer la carte
+        }
+      });
+
+      // 4. Mettre à jour le compteur de résultats et le message "Aucun Résultat"
+      if (visibleCount > 0) {
+        resultsCount.textContent = `${visibleCount} Électricien(s) trouvé(s) dans votre région`;
+        noResultsMessage.classList.add('hidden');
+      } else {
+        resultsCount.textContent = `0 Électricien trouvé`;
+        noResultsMessage.classList.remove('hidden');
+      }
+    }
+
+    // Écouteur d'événement pour le bouton "Appliquer les Filtres"
+    filterForm.addEventListener('submit', applyFilters);
+  });
+</script>
+
+</body>
+</html>
+

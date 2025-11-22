@@ -1,0 +1,23 @@
+/* Configuration de la police Inter et style de base */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+}
+/* Couleur pour la garde d'enfant (rose doux) */
+.childcare-color { color: #ec4899; }
+.childcare-bg { background-color: #fbcfe8; }
+.rating-star { color: #facc15; }
+
+/* Animation subtile pour le statut urgent */
+.ping-pink {
+  background-color: #f9a8d4;
+}
+.animate-ping-pink {
+  animation: ping-pink 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes ping-pink {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,29 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fb;
+}
+/* Couleur pour le bricolage (Bleu Marine/Indigo) */
+.brico-color { color: #1e3a8a; } /* indigo-900 */
+.brico-bg { background-color: #e0e7ff; } /* indigo-100 */
+.rating-star { color: #facc15; }
+
+/* Animation subtile pour le statut urgent */
+.ping-brico {
+  background-color: #6366f1; /* indigo-500 */
+}
+.animate-ping-brico {
+  animation: ping-brico 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes ping-brico {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
