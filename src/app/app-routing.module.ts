@@ -26,11 +26,11 @@ const routes: Routes = [
   { path: 'confirm-password', component: ConfirmPasswordComponent },
   {path :'plomberie',component:PlomberieComponent},
   {path:'nounou',component:NounouComponent},
-  {path:'eletricite', component:ElectriciteComponent},
+  {path:'electricite', component:ElectriciteComponent},
   {path:'domestique',component:DomestiqueComponent},
   {path:'bricolage',component:BricolageComponent},
   {path:'beaute',component:BeauteComponent},
-  {path:'reparateurtech',component:ReparationtechComponent},
+  { path:'reparationtech', component: ReparationtechComponent },
   {path:'coursdomicile',component:CoursdomicileComponent},
   {path:'detaileletrict', component:DetaileletrictComponent},
   {path:'detaildomestique',component: DetaildomestiqueComponent}
