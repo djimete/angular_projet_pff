@@ -1,6 +1,3 @@
-// Le contenu de ce fichier reste inchangé par rapport à la réponse précédente.
-// Il contient déjà la définition des interfaces, des données, et des méthodes
-// pour naviguer entre les vues et gérer les modales (openPaymentModal, etc.).
 import { Component } from '@angular/core';
 
 interface Plombier {
@@ -20,6 +17,7 @@ interface Plombier {
 
 @Component({
   selector: 'app-plomberie',
+  // Si vous utilisez Angular CLI avec des modules: 'standalone: false' est correct.
   standalone: false,
   templateUrl: './plomberie.component.html',
   styleUrls: ['./plomberie.component.css']
@@ -75,6 +73,17 @@ export class PlomberieComponent {
   reservationStatus: 'initial' | 'accepted' = 'initial';
   validationCode: string | null = null;
 
+  selectedPaymentMethod: string = ''; // 'orange_money', 'wave', 'carte', ou ''
+  paymentErrorMessage: string | null = null;
+
+  onPaymentMethodChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.selectedPaymentMethod = target.value;
+    // Réinitialiser le message d'erreur lorsque la méthode change
+    this.paymentErrorMessage = null;
+    console.log('Méthode de paiement sélectionnée:', this.selectedPaymentMethod);
+  }
+
   showPlumberDetails(id: string) {
     const plombier = this.plombiers.find(p => p.id === id);
 
@@ -83,6 +92,8 @@ export class PlomberieComponent {
 
       this.reservationStatus = 'initial';
       this.validationCode = null;
+      this.selectedPaymentMethod = '';
+      this.paymentErrorMessage = null; // Réinitialiser
 
       const listView = document.getElementById('list-view');
       const detailView = document.getElementById('detail-view');
@@ -107,6 +118,8 @@ export class PlomberieComponent {
     this.plombierSelectionne = null;
     this.reservationStatus = 'initial';
     this.validationCode = null;
+    this.selectedPaymentMethod = '';
+    this.paymentErrorMessage = null; // Réinitialiser
   }
 
   openReservationModal() {
@@ -114,7 +127,6 @@ export class PlomberieComponent {
       console.log("Réservation déjà acceptée. Affichage direct de la vue détail.");
       return;
     }
-    console.log('Ouverture de la modale de réservation pour:', this.plombierSelectionne?.nom);
     const modal = document.getElementById('reservation-modal');
     if (modal) modal.classList.remove('hidden');
   }
@@ -139,10 +151,9 @@ export class PlomberieComponent {
 
     this.closeReservationModal();
 
-    this.validationCode = Math.floor(1000 + Math.random() * 9000).toString();
+    // Simuler le code de validation (Ex: 5714 comme sur votre image)
+    this.validationCode = '5714'; // Code fixe pour la démonstration de succès/erreur
     this.reservationStatus = 'accepted';
-
-    console.log(`Réservation Acceptée. Code: ${this.validationCode}`);
 
     const listView = document.getElementById('list-view');
     const detailView = document.getElementById('detail-view');
@@ -153,8 +164,53 @@ export class PlomberieComponent {
     }
   }
 
+  // Gère la soumission du paiement et la simulation de l'erreur de code
+  submitPayment(event: Event) {
+    event.preventDefault();
+    this.paymentErrorMessage = null; // Réinitialiser l'erreur
+
+    if (!this.validationCode) {
+      this.paymentErrorMessage = "Erreur: Le code de validation n'a pas été généré ou est manquant. Veuillez rafraîchir.";
+      return;
+    }
+
+    const form = event.target as HTMLFormElement;
+    let codeInput: HTMLInputElement | null = null;
+    let codeSaisi: string = '';
+
+    // Déterminer l'ID de l'input du code en fonction de la méthode sélectionnée
+    if (this.selectedPaymentMethod === 'orange_money') {
+      codeInput = form.elements.namedItem('om-code') as HTMLInputElement;
+    } else if (this.selectedPaymentMethod === 'wave') {
+      codeInput = form.elements.namedItem('wave-code') as HTMLInputElement;
+    } else if (this.selectedPaymentMethod === 'carte') {
+      codeInput = form.elements.namedItem('card-3d-code') as HTMLInputElement;
+    }
+
+    if (codeInput) {
+      codeSaisi = codeInput.value.trim();
+    } else {
+      this.paymentErrorMessage = "Erreur interne: Impossible de trouver le champ de code pour la méthode sélectionnée.";
+      return;
+    }
+
+    // Logique de simulation de l'erreur (le code correct est '5714')
+    if (codeSaisi !== this.validationCode) {
+      this.paymentErrorMessage = "Erreur: Le code de validation/3D Secure entré est incorrect. Vérifiez le code à 4 chiffres affiché lors de l'acceptation.";
+      return;
+    }
+
+    // Si le code est correct (simulation de succès)
+    this.closePaymentModal();
+    this.showMessageModal("Paiement Réussi!",
+      `L'acompte a été réglé avec succès pour ${this.plombierSelectionne?.nom}. Il sera contacté immédiatement.`);
+
+  }
+
   openPaymentModal() {
-    console.log('Ouverture de la modale de paiement...');
+    // Réinitialiser la méthode de paiement et l'erreur lors de l'ouverture
+    this.selectedPaymentMethod = '';
+    this.paymentErrorMessage = null;
     const modal = document.getElementById('payment-modal');
     if (modal) modal.classList.remove('hidden');
   }

@@ -299,11 +299,12 @@
   <div class="modal-content">
     <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Payer Acompte pour {{plombierSelectionne?.nom}}</h2>
 
-    <form id="payment-form">
+    <form id="payment-form" (submit)="submitPayment($event)">
 
       <div class="mb-4">
         <label for="payment-method" class="block text-gray-700 font-medium mb-1">Méthode de Paiement</label>
         <select id="payment-method" name="method"
+                (change)="onPaymentMethodChange($event)"
                 class="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-white focus:ring-indigo-500 focus:border-indigo-500" required>
           <option value="">Sélectionner une méthode</option>
           <option value="orange_money">Orange Money (Simulé)</option>
@@ -312,23 +313,126 @@
         </select>
       </div>
 
-      <div class="mb-6">
-        <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant de l'acompte (XOF)</label>
-        <input type="number" id="acompte-montant" name="montant" placeholder="Ex: 5000"
-               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="1">
-        <p class="text-sm text-gray-500 mt-1">
-          Montant libre, mais nécessaire pour confirmer la venue du prestataire.
-        </p>
+      <div *ngIf="!selectedPaymentMethod" class="text-center p-4 bg-gray-50 text-gray-600 rounded-lg mb-6">
+        Veuillez choisir une méthode de paiement ci-dessus pour continuer.
       </div>
 
-      <div class="mt-6 flex justify-end space-x-3">
+
+      <ng-container *ngIf="selectedPaymentMethod === 'orange_money'">
+        <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 text-blue-800 mb-4">
+          <h4 class="font-semibold">Simulateur de Paiement ORANGE MONEY</h4>
+          <p class="text-sm">Entrez votre numéro et le code de validation (affiché lors de l'acceptation) pour la vérification simulée.</p>
+        </div>
+
+        <div class="mb-4">
+          <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant à Payer (XOF)</label>
+          <input type="number" id="acompte-montant-om" name="montant" placeholder="Minimum 100 XOF"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="100">
+        </div>
+
+        <div class="mb-4">
+          <label for="om-telephone" class="block text-gray-700 font-medium mb-1">Numéro de Téléphone ORANGE MONEY</label>
+          <input type="tel" id="om-telephone" name="telephone" placeholder="7x xxx xx xx"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+        </div>
+
+        <div class="mb-6">
+          <label for="om-code" class="block text-gray-700 font-medium mb-1">Code de Validation (Affiché lors de l'acceptation)</label>
+          <input type="text" id="om-code" name="om-code" placeholder="Entrez votre code à 4 chiffres"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="4">
+        </div>
+      </ng-container>
+
+
+      <ng-container *ngIf="selectedPaymentMethod === 'wave'">
+        <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 text-blue-800 mb-4">
+          <h4 class="font-semibold">Simulateur de Paiement WAVE</h4>
+          <p class="text-sm">Entrez votre numéro et le code de validation (affiché lors de l'acceptation) pour la vérification simulée.</p>
+        </div>
+
+        <div class="mb-4">
+          <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant à Payer (XOF)</label>
+          <input type="number" id="acompte-montant-wave" name="montant" placeholder="Minimum 100 XOF"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="100">
+        </div>
+
+        <div class="mb-4">
+          <label for="wave-telephone" class="block text-gray-700 font-medium mb-1">Numéro de Téléphone WAVE</label>
+          <input type="tel" id="wave-telephone" name="telephone" placeholder="7x xxx xx xx"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+        </div>
+
+        <div class="mb-6">
+          <label for="wave-code" class="block text-gray-700 font-medium mb-1">Code de Validation (Affiché lors de l'acceptation)</label>
+          <input type="text" id="wave-code" name="wave-code" placeholder="Entrez votre code à 4 chiffres"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="4">
+        </div>
+      </ng-container>
+
+
+      <ng-container *ngIf="selectedPaymentMethod === 'carte'">
+        <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 text-blue-800 mb-4">
+          <h4 class="font-semibold">Simulateur de Paiement par Carte Bancaire</h4>
+          <p class="text-sm">Utilisez n'importe quelle valeur pour les champs de carte, puis entrez le code de validation (affiché lors de l'acceptation) pour simuler la confirmation 3D Secure.</p>
+        </div>
+
+        <div class="mb-4">
+          <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant à Payer (XOF)</label>
+          <input type="number" id="acompte-montant-carte" name="montant" placeholder="Minimum 100 XOF"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="100">
+        </div>
+
+        <div class="mb-4">
+          <label for="card-number" class="block text-gray-700 font-medium mb-1">Numéro de Carte</label>
+          <input type="text" id="card-number" name="cardNumber" placeholder="xxxx xxxx xxxx xxxx"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="card-holder" class="block text-gray-700 font-medium mb-1">Nom du Titulaire</label>
+          <input type="text" id="card-holder" name="cardHolder" placeholder="Prénom Nom"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label for="card-expiry" class="block text-gray-700 font-medium mb-1">Date d'Expiration (MM/AA)</label>
+            <input type="text" id="card-expiry" name="cardExpiry" placeholder="MM/AA"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="5">
+          </div>
+          <div>
+            <label for="card-cvv" class="block text-gray-700 font-medium mb-1">CVV</label>
+            <input type="text" id="card-cvv" name="cardCvv" placeholder="123"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="3">
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label for="card-3d-code" class="block text-gray-700 font-medium mb-1">Code de Validation (Simulation 3D Secure)</label>
+          <input type="text" id="card-3d-code" name="card-3d-code" placeholder="Entrez votre code à 4 chiffres"
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="4">
+        </div>
+      </ng-container>
+
+      <div *ngIf="paymentErrorMessage" class="text-red-600 bg-red-50 p-3 rounded-lg border border-red-300 mb-4 font-semibold">
+        {{paymentErrorMessage}}
+      </div>
+
+      <div *ngIf="selectedPaymentMethod" class="mt-6 flex justify-end space-x-3">
         <button type="button" (click)="closePaymentModal()"
                 class="px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
           Annuler
         </button>
         <button type="submit"
-                class="px-5 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition">
-          Confirmer le Paiement
+                class="px-5 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition">
+          Confirmer et Payer
+        </button>
+      </div>
+
+      <div *ngIf="!selectedPaymentMethod" class="mt-6 flex justify-end">
+        <button type="button" (click)="closePaymentModal()"
+                class="px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+          Annuler
         </button>
       </div>
     </form>
