@@ -1,4 +1,3 @@
-<!-- Barre de Navigation (Header) -->
 <header class="bg-white shadow-md sticky top-0 z-10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
     <h1 class="text-3xl font-bold text-indigo-600"><a routerLink="/">WorkingExpress</a></h1>
@@ -8,7 +7,6 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-  <!-- Contenu Principal : Vue Liste -->
   <section id="list-view">
     <section class="mb-10 text-center md:text-left">
       <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
@@ -17,7 +15,6 @@
       <p class="text-xl text-gray-500">Trouvez un plombier qualifié disponible près de chez vous.</p>
     </section>
 
-    <!-- Barre de Filtres -->
     <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
       <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -44,7 +41,6 @@
       </div>
     </form>
 
-    <!-- Liste Plombiers -->
     <section>
       <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">
         3 Plombiers trouvés dans votre région
@@ -52,101 +48,104 @@
 
       <div id="plumbers-list" class="space-y-6">
 
-        <!-- *** Plombier 1 *** -->
         <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500"
              data-id="1" data-service="fuite,installation,debouchage"
              data-availability="now" data-location="dakar/rufisque">
 
-          <div class="flex items-center space-x-4">
-            <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()">
-              <img src="https://placehold.co/80x80/059669/ffffff?text=L1"
-                   class="w-16 h-16 rounded-full border-2 border-green-500">
-            </a>
-
-            <div>
-              <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
-                 class="text-xl font-bold text-gray-900 hover:text-indigo-600">
-                Louis M.
+          <div class="md:flex md:justify-between md:items-center">
+            <div class="flex items-center space-x-4">
+              <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()">
+                <img src="https://placehold.co/80x80/059669/ffffff?text=L1"
+                     class="w-16 h-16 rounded-full border-2 border-green-500">
               </a>
-              <p class="text-gray-600">Expert en détection de fuites | 12 ans d'expérience</p>
+
+              <div>
+                <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
+                   class="text-xl font-bold text-gray-900 hover:text-indigo-600">
+                  Louis M.
+                </a>
+                <p class="text-gray-600">Expert en détection de fuites | 12 ans d'expérience</p>
+              </div>
             </div>
-          </div>
 
-          <div class="flex flex-col items-start md:items-end space-y-2">
-            <div class="availability-status text-green-700 bg-green-100 px-3 py-1 rounded-full">
-              Disponible Maintenant
+            <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
+              <div class="availability-status text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Disponible Maintenant
+              </div>
+
+              <p class="text-2xl font-bold text-indigo-600">10 000 XOF / heure</p>
+
+              <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
+                 class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
+                Réservation
+              </a>
             </div>
-
-            <p class="text-2xl font-bold text-indigo-600">10 000 XOF / heure</p>
-
-            <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
-               class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
-              Voir le service
-            </a>
           </div>
         </div>
 
-        <!-- *** Plombier 2 *** -->
         <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-orange-500"
              data-id="2" data-service="debouchage,installation" data-availability="soon">
 
-          <div class="flex items-center space-x-4">
-            <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()">
-              <img src="https://placehold.co/80x80/f97316/ffffff?text=M2"
-                   class="w-16 h-16 rounded-full border-2 border-orange-500">
-            </a>
-
-            <div>
-              <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()"
-                 class="text-xl font-bold hover:text-indigo-600">
-                Marion T.
+          <div class="md:flex md:justify-between md:items-center">
+            <div class="flex items-center space-x-4">
+              <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()">
+                <img src="https://placehold.co/80x80/f97316/ffffff?text=M2"
+                     class="w-16 h-16 rounded-full border-2 border-orange-500">
               </a>
-              <p class="text-gray-600">Plombière certifiée RGE | 5 ans d'expérience</p>
-            </div>
-          </div>
 
-          <div class="flex flex-col items-start md:items-end space-y-2">
-            <div class="availability-status text-orange-700 bg-orange-100 px-3 py-1 rounded-full">
-              Prochain créneau : Demain 8h00
+              <div>
+                <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()"
+                   class="text-xl font-bold hover:text-indigo-600">
+                  Marion T.
+                </a>
+                <p class="text-gray-600">Plombière certifiée RGE | 5 ans d'expérience</p>
+              </div>
             </div>
-            <p class="text-2xl font-bold text-indigo-600">15 000 XOF / forfait</p>
 
-            <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()"
-               class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
-              Voir le service
-            </a>
+            <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
+              <div class="availability-status text-orange-700 bg-orange-100 px-3 py-1 rounded-full">
+                Prochain créneau : Demain 8h00
+              </div>
+              <p class="text-2xl font-bold text-indigo-600">15 000 XOF / forfait</p>
+
+              <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()"
+                 class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
+                Réservation
+              </a>
+            </div>
           </div>
         </div>
 
-        <!-- *** Plombier 3 *** -->
         <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400"
              data-id="3" data-service="installation" data-availability="booking">
 
-          <div class="flex items-center space-x-4">
-            <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()">
-              <img src="https://placehold.co/80x80/9ca3af/ffffff?text=J3"
-                   class="w-16 h-16 rounded-full border-2 border-gray-400">
-            </a>
-
-            <div>
-              <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()"
-                 class="text-xl font-bold hover:text-indigo-600">
-                Modou Diaw
+          <div class="md:flex md:justify-between md:items-center">
+            <div class="flex items-center space-x-4">
+              <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()">
+                <img src="https://placehold.co/80x80/9ca3af/ffffff?text=J3"
+                     class="w-16 h-16 rounded-full border-2 border-gray-400">
               </a>
-              <p class="text-gray-600">Réparation de robinet | 2 ans d'expérience</p>
-            </div>
-          </div>
 
-          <div class="flex flex-col items-start md:items-end space-y-2">
-            <div class="availability-status text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-              Sur réservation (3 jours)
+              <div>
+                <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()"
+                   class="text-xl font-bold hover:text-indigo-600">
+                  Modou Diaw
+                </a>
+                <p class="text-gray-600">Réparation de robinet | 2 ans d'expérience</p>
+              </div>
             </div>
-            <p class="text-2xl font-bold text-indigo-600">Prix sur devis</p>
 
-            <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()"
-               class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
-              Voir le service
-            </a>
+            <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
+              <div class="availability-status text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+                Sur réservation (3 jours)
+              </div>
+              <p class="text-2xl font-bold text-indigo-600">Prix sur devis</p>
+
+              <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()"
+                 class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
+                Réservation
+              </a>
+            </div>
           </div>
         </div>
 
@@ -161,7 +160,6 @@
     </section>
   </section>
 
-  <!-- Vue Détail -->
   <section id="detail-view" class="hidden">
     <button (click)="showListView()"
             class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800">
@@ -170,45 +168,173 @@
 
     <div id="plumber-details-container"
          class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
-      <h1>uytttttt</h1>
+
+      <div *ngIf="plombierSelectionne" class="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+
+        <div class="flex-shrink-0">
+          <div class="w-32 h-32 bg-green-600 rounded-full flex items-center justify-center text-5xl font-bold text-white">
+            {{plombierSelectionne.initiales}}
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mt-4">{{plombierSelectionne.nom}}</h2>
+          <p class="text-green-600 font-semibold">{{plombierSelectionne.specialite}}</p>
+        </div>
+
+        <div class="flex-grow">
+          <div class="flex items-center space-x-2 text-gray-500 mb-2">
+            <span class="text-red-500">📍</span>
+            <p>{{plombierSelectionne.zone}}</p>
+          </div>
+
+          <div class="flex items-center space-x-2 text-gray-800 mb-2">
+            <span class="text-yellow-400 text-xl">⭐️</span>
+            <p class="font-bold">{{plombierSelectionne.note}} <span class="text-sm font-normal">({{plombierSelectionne.avisCount}} Avis)</span></p>
+          </div>
+
+          <p class="text-4xl font-extrabold text-indigo-600 mb-4">
+            {{plombierSelectionne.tarif}}
+          </p>
+
+          <p class="text-gray-700 mb-4">
+            {{plombierSelectionne.description}} <br>
+            <span class="italic text-sm text-gray-500">Devis gratuit sur demande.</span>
+          </p>
+
+          <h3 class="text-lg font-bold text-gray-800 mb-2">Services Spécialisés</h3>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span *ngFor="let service of plombierSelectionne.services"
+                  class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+              {{service}}
+            </span>
+          </div>
+
+          <ng-container *ngIf="reservationStatus === 'accepted'">
+            <div class="bg-green-50 p-4 rounded-lg border border-green-300 mb-4">
+              <p class="text-green-700 font-semibold flex items-center space-x-2 mb-2">
+                <span class="text-2xl">✅</span>
+                <span>Réservation Acceptée !</span>
+              </p>
+              <p class="text-gray-900 mb-3 font-bold">
+                Votre code de validation pour le paiement et l'arrivée du prestataire est:
+                <span class="text-green-700 text-xl">{{validationCode}}</span>
+              </p>
+              <p class="text-sm text-gray-600 italic">
+                Veuillez effectuer le paiement de l'acompte (montant libre) pour confirmer la venue.
+              </p>
+            </div>
+
+            <button (click)="openPaymentModal()"
+                    class="w-full px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition">
+              Payer l'acompte
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="reservationStatus === 'initial'">
+            <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <ng-container *ngIf="plombierSelectionne.disponible; else nonDisponible">
+                <div class="bg-green-100 text-green-700 font-semibold px-4 py-2 rounded-full flex items-center space-x-2">
+                  <span class="w-3 h-3 bg-green-500 rounded-full block"></span>
+                  <span>Disponible Maintenant</span>
+                </div>
+              </ng-container>
+              <ng-template #nonDisponible>
+                <div class="bg-orange-100 text-orange-700 font-semibold px-4 py-2 rounded-full">
+                  Sur réservation
+                </div>
+              </ng-template>
+
+              <button (click)="openReservationModal()"
+                      class="px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition">
+                Réserver ce Plombier Maintenant
+              </button>
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
     </div>
   </section>
 
 </main>
 
-<!-- Modale Réservation -->
 <div id="reservation-modal" class="modal-overlay hidden">
   <div class="modal-content">
-    <h2 class="text-2xl font-bold text-indigo-600 mb-4">Finaliser la Réservation</h2>
+    <h2 class="text-2xl font-bold text-indigo-600 mb-6">Finaliser la Réservation</h2>
 
-    <form id="reservation-form">
-      <div class="flex justify-end space-x-3">
+    <form id="reservation-form" (submit)="submitReservation($event)">
+
+      <div class="mb-4">
+        <label for="reservation-nom" class="block text-gray-700 font-medium mb-1">Votre Nom Complet</label>
+        <input type="text" id="reservation-nom" name="nom" placeholder="Ex: Aliou Diallo"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="reservation-telephone" class="block text-gray-700 font-medium mb-1">Numéro de Téléphone (pour contact)</label>
+        <input type="tel" id="reservation-telephone" name="telephone" placeholder="Ex: 77 123 45 67"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+      </div>
+
+      <div class="mb-6">
+        <label for="reservation-description" class="block text-gray-700 font-medium mb-1">Description du Problème</label>
+        <textarea id="reservation-description" name="description" rows="4"
+                  placeholder="Décrivez brièvement la fuite, le débouchage, etc."
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-6">
         <button type="button" (click)="closeReservationModal()"
-                class="px-5 py-2 border border-gray-300 rounded-lg">
+                class="px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
           Annuler
+        </button>
+        <button type="submit"
+                class="px-5 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
+          Envoyer la demande de Réservation
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Modale Paiement -->
 <div id="payment-modal" class="modal-overlay hidden">
   <div class="modal-content">
-    <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Paiement</h2>
+    <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Payer Acompte pour {{plombierSelectionne?.nom}}</h2>
 
     <form id="payment-form">
+
+      <div class="mb-4">
+        <label for="payment-method" class="block text-gray-700 font-medium mb-1">Méthode de Paiement</label>
+        <select id="payment-method" name="method"
+                class="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-white focus:ring-indigo-500 focus:border-indigo-500" required>
+          <option value="">Sélectionner une méthode</option>
+          <option value="orange_money">Orange Money (Simulé)</option>
+          <option value="wave">Wave (Simulé)</option>
+          <option value="carte">Carte Bancaire (Simulé)</option>
+        </select>
+      </div>
+
+      <div class="mb-6">
+        <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant de l'acompte (XOF)</label>
+        <input type="number" id="acompte-montant" name="montant" placeholder="Ex: 5000"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="1">
+        <p class="text-sm text-gray-500 mt-1">
+          Montant libre, mais nécessaire pour confirmer la venue du prestataire.
+        </p>
+      </div>
+
       <div class="mt-6 flex justify-end space-x-3">
         <button type="button" (click)="closePaymentModal()"
-                class="px-5 py-2 border border-gray-300 rounded-lg">
+                class="px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
           Annuler
+        </button>
+        <button type="submit"
+                class="px-5 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition">
+          Confirmer le Paiement
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Modale Message -->
 <div id="message-modal" class="modal-overlay hidden message-modal">
   <div class="modal-content">
     <div id="message-content"></div>
