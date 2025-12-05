@@ -5,9 +5,9 @@
   </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:-px-8 py-12">
 
-  <section id="list-view">
+  <section id="list-view" *ngIf="!showDetailSection">
     <section class="mb-10 text-center md:text-left">
       <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
         Plomberie <span class="text-indigo-600">🛠️</span>
@@ -43,116 +43,50 @@
 
     <section>
       <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">
-        3 Plombiers trouvés dans votre région
+        {{ plombiers.length }} Plombiers trouvés dans votre région
       </h3>
 
       <div id="plumbers-list" class="space-y-6">
 
-        <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500"
-             data-id="1" data-service="fuite,installation,debouchage"
-             data-availability="now" data-location="dakar/rufisque">
+        <div *ngFor="let p of plombiers" class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4"
+             [ngClass]="p.disponible ? 'border-green-500' : 'border-orange-500'"
+             [attr.data-id]="p.id">
 
           <div class="md:flex md:justify-between md:items-center">
             <div class="flex items-center space-x-4">
-              <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()">
-                <img src="https://placehold.co/80x80/059669/ffffff?text=L1"
-                     class="w-16 h-16 rounded-full border-2 border-green-500">
+              <a href="#" (click)="showPlumberDetails(p.id); $event.preventDefault()">
+                <img [src]="'https://placehold.co/80x80/' + (p.disponible ? '059669' : 'f97316') + '/ffffff?text=' + p.initiales"
+                     class="w-16 h-16 rounded-full border-2" [ngClass]="p.disponible ? 'border-green-500' : 'border-orange-500'">
               </a>
 
               <div>
-                <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
+                <a href="#" (click)="showPlumberDetails(p.id); $event.preventDefault()"
                    class="text-xl font-bold text-gray-900 hover:text-indigo-600">
-                  Louis M.
+                  {{ p.nom }}
                 </a>
-                <p class="text-gray-600">Expert en détection de fuites | 12 ans d'expérience</p>
+                <p class="text-gray-600">{{ p.specialite }}</p>
               </div>
             </div>
 
             <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
-              <div class="availability-status text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Disponible Maintenant
+              <div class="availability-status px-3 py-1 rounded-full"
+                   [ngClass]="p.disponible ? 'text-green-700 bg-green-100' : 'text-orange-700 bg-orange-100'">
+                {{ p.disponible ? 'Disponible Maintenant' : 'Prochain créneau : Demain 8h00' }}
               </div>
 
-              <p class="text-2xl font-bold text-indigo-600">10 000 XOF / heure</p>
+              <p class="text-2xl font-bold text-indigo-600">{{ p.tarif }}</p>
 
-              <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
-                 class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
+              <button (click)="showPlumberDetails(p.id)"
+                      class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
                 Réservation
-              </a>
+              </button>
             </div>
           </div>
         </div>
-
-        <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-orange-500"
-             data-id="2" data-service="debouchage,installation" data-availability="soon">
-
-          <div class="md:flex md:justify-between md:items-center">
-            <div class="flex items-center space-x-4">
-              <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()">
-                <img src="https://placehold.co/80x80/f97316/ffffff?text=M2"
-                     class="w-16 h-16 rounded-full border-2 border-orange-500">
-              </a>
-
-              <div>
-                <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()"
-                   class="text-xl font-bold hover:text-indigo-600">
-                  Marion T.
-                </a>
-                <p class="text-gray-600">Plombière certifiée RGE | 5 ans d'expérience</p>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
-              <div class="availability-status text-orange-700 bg-orange-100 px-3 py-1 rounded-full">
-                Prochain créneau : Demain 8h00
-              </div>
-              <p class="text-2xl font-bold text-indigo-600">15 000 XOF / forfait</p>
-
-              <a href="#" (click)="showPlumberDetails('2'); $event.preventDefault()"
-                 class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
-                Réservation
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400"
-             data-id="3" data-service="installation" data-availability="booking">
-
-          <div class="md:flex md:justify-between md:items-center">
-            <div class="flex items-center space-x-4">
-              <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()">
-                <img src="https://placehold.co/80x80/9ca3af/ffffff?text=J3"
-                     class="w-16 h-16 rounded-full border-2 border-gray-400">
-              </a>
-
-              <div>
-                <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()"
-                   class="text-xl font-bold hover:text-indigo-600">
-                  Modou Diaw
-                </a>
-                <p class="text-gray-600">Réparation de robinet | 2 ans d'expérience</p>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
-              <div class="availability-status text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
-                Sur réservation (3 jours)
-              </div>
-              <p class="text-2xl font-bold text-indigo-600">Prix sur devis</p>
-
-              <a href="#" (click)="showPlumberDetails('3'); $event.preventDefault()"
-                 class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
-                Réservation
-              </a>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <div id="no-results"
-           class="hidden text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
+      <div *ngIf="plombiers.length === 0"
+           class="text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
         <p class="text-xl text-yellow-800 font-semibold">
           Aucun plombier ne correspond à vos critères.
         </p>
@@ -160,7 +94,7 @@
     </section>
   </section>
 
-  <section id="detail-view" class="hidden">
+  <section id="detail-view" *ngIf="showDetailSection && plombierSelectionne">
     <button (click)="showListView()"
             class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800">
       Retour à la liste
@@ -169,33 +103,34 @@
     <div id="plumber-details-container"
          class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
 
-      <div *ngIf="plombierSelectionne" class="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+      <div class="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
 
         <div class="flex-shrink-0">
-          <div class="w-32 h-32 bg-green-600 rounded-full flex items-center justify-center text-5xl font-bold text-white">
-            {{plombierSelectionne.initiales}}
+          <div class="w-32 h-32 rounded-full flex items-center justify-center text-5xl font-bold text-white"
+               [ngClass]="plombierSelectionne.disponible ? 'bg-green-600' : 'bg-orange-600'">
+            {{plombierSelectionne?.initiales}}
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 mt-4">{{plombierSelectionne.nom}}</h2>
-          <p class="text-green-600 font-semibold">{{plombierSelectionne.specialite}}</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-4">{{plombierSelectionne?.nom}}</h2>
+          <p class="font-semibold" [ngClass]="plombierSelectionne.disponible ? 'text-green-600' : 'text-orange-600'">{{plombierSelectionne?.specialite}}</p>
         </div>
 
         <div class="flex-grow">
           <div class="flex items-center space-x-2 text-gray-500 mb-2">
             <span class="text-red-500">📍</span>
-            <p>{{plombierSelectionne.zone}}</p>
+            <p>{{plombierSelectionne?.zone}}</p>
           </div>
 
           <div class="flex items-center space-x-2 text-gray-800 mb-2">
             <span class="text-yellow-400 text-xl">⭐️</span>
-            <p class="font-bold">{{plombierSelectionne.note}} <span class="text-sm font-normal">({{plombierSelectionne.avisCount}} Avis)</span></p>
+            <p class="font-bold">{{plombierSelectionne?.note}} <span class="text-sm font-normal">({{plombierSelectionne?.avisCount}} Avis)</span></p>
           </div>
 
           <p class="text-4xl font-extrabold text-indigo-600 mb-4">
-            {{plombierSelectionne.tarif}}
+            {{plombierSelectionne?.tarif}}
           </p>
 
           <p class="text-gray-700 mb-4">
-            {{plombierSelectionne.description}} <br>
+            {{plombierSelectionne?.description}} <br>
             <span class="italic text-sm text-gray-500">Devis gratuit sur demande.</span>
           </p>
 
@@ -256,7 +191,7 @@
 
 </main>
 
-<div id="reservation-modal" class="modal-overlay hidden">
+<div id="reservation-modal" class="modal-overlay" [ngClass]="{'hidden': !showReservationModal}">
   <div class="modal-content">
     <h2 class="text-2xl font-bold text-indigo-600 mb-6">Finaliser la Réservation</h2>
 
@@ -295,7 +230,7 @@
   </div>
 </div>
 
-<div id="payment-modal" class="modal-overlay hidden">
+<div id="payment-modal" class="modal-overlay" [ngClass]="{'hidden': !showPaymentModal}">
   <div class="modal-content">
     <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Payer Acompte pour {{plombierSelectionne?.nom}}</h2>
 
@@ -319,99 +254,12 @@
 
 
       <ng-container *ngIf="selectedPaymentMethod === 'orange_money'">
-        <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 text-blue-800 mb-4">
-          <h4 class="font-semibold">Simulateur de Paiement ORANGE MONEY</h4>
-          <p class="text-sm">Entrez votre numéro et le code de validation (affiché lors de l'acceptation) pour la vérification simulée.</p>
-        </div>
-
-        <div class="mb-4">
-          <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant à Payer (XOF)</label>
-          <input type="number" id="acompte-montant-om" name="montant" placeholder="Minimum 100 XOF"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="100">
-        </div>
-
-        <div class="mb-4">
-          <label for="om-telephone" class="block text-gray-700 font-medium mb-1">Numéro de Téléphone ORANGE MONEY</label>
-          <input type="tel" id="om-telephone" name="telephone" placeholder="7x xxx xx xx"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-        </div>
-
-        <div class="mb-6">
-          <label for="om-code" class="block text-gray-700 font-medium mb-1">Code de Validation (Affiché lors de l'acceptation)</label>
-          <input type="text" id="om-code" name="om-code" placeholder="Entrez votre code à 4 chiffres"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="4">
-        </div>
       </ng-container>
-
 
       <ng-container *ngIf="selectedPaymentMethod === 'wave'">
-        <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 text-blue-800 mb-4">
-          <h4 class="font-semibold">Simulateur de Paiement WAVE</h4>
-          <p class="text-sm">Entrez votre numéro et le code de validation (affiché lors de l'acceptation) pour la vérification simulée.</p>
-        </div>
-
-        <div class="mb-4">
-          <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant à Payer (XOF)</label>
-          <input type="number" id="acompte-montant-wave" name="montant" placeholder="Minimum 100 XOF"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="100">
-        </div>
-
-        <div class="mb-4">
-          <label for="wave-telephone" class="block text-gray-700 font-medium mb-1">Numéro de Téléphone WAVE</label>
-          <input type="tel" id="wave-telephone" name="telephone" placeholder="7x xxx xx xx"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-        </div>
-
-        <div class="mb-6">
-          <label for="wave-code" class="block text-gray-700 font-medium mb-1">Code de Validation (Affiché lors de l'acceptation)</label>
-          <input type="text" id="wave-code" name="wave-code" placeholder="Entrez votre code à 4 chiffres"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="4">
-        </div>
       </ng-container>
 
-
       <ng-container *ngIf="selectedPaymentMethod === 'carte'">
-        <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 text-blue-800 mb-4">
-          <h4 class="font-semibold">Simulateur de Paiement par Carte Bancaire</h4>
-          <p class="text-sm">Utilisez n'importe quelle valeur pour les champs de carte, puis entrez le code de validation (affiché lors de l'acceptation) pour simuler la confirmation 3D Secure.</p>
-        </div>
-
-        <div class="mb-4">
-          <label for="acompte-montant" class="block text-gray-700 font-medium mb-1">Montant à Payer (XOF)</label>
-          <input type="number" id="acompte-montant-carte" name="montant" placeholder="Minimum 100 XOF"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required min="100">
-        </div>
-
-        <div class="mb-4">
-          <label for="card-number" class="block text-gray-700 font-medium mb-1">Numéro de Carte</label>
-          <input type="text" id="card-number" name="cardNumber" placeholder="xxxx xxxx xxxx xxxx"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-        </div>
-
-        <div class="mb-4">
-          <label for="card-holder" class="block text-gray-700 font-medium mb-1">Nom du Titulaire</label>
-          <input type="text" id="card-holder" name="cardHolder" placeholder="Prénom Nom"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 mb-6">
-          <div>
-            <label for="card-expiry" class="block text-gray-700 font-medium mb-1">Date d'Expiration (MM/AA)</label>
-            <input type="text" id="card-expiry" name="cardExpiry" placeholder="MM/AA"
-                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="5">
-          </div>
-          <div>
-            <label for="card-cvv" class="block text-gray-700 font-medium mb-1">CVV</label>
-            <input type="text" id="card-cvv" name="cardCvv" placeholder="123"
-                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="3">
-          </div>
-        </div>
-
-        <div class="mb-6">
-          <label for="card-3d-code" class="block text-gray-700 font-medium mb-1">Code de Validation (Simulation 3D Secure)</label>
-          <input type="text" id="card-3d-code" name="card-3d-code" placeholder="Entrez votre code à 4 chiffres"
-                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required maxlength="4">
-        </div>
       </ng-container>
 
       <div *ngIf="paymentErrorMessage" class="text-red-600 bg-red-50 p-3 rounded-lg border border-red-300 mb-4 font-semibold">
@@ -439,9 +287,9 @@
   </div>
 </div>
 
-<div id="message-modal" class="modal-overlay hidden message-modal">
+<div id="message-modal" class="modal-overlay message-modal" [ngClass]="{'hidden': !showMessageModal}">
   <div class="modal-content">
-    <div id="message-content"></div>
+    <div id="message-content" [innerHTML]="messageContent"></div>
 
     <button (click)="closeMessageModal()"
             class="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-lg">

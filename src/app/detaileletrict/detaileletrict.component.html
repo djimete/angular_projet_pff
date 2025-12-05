@@ -4,10 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Working Express - Électriciens et Disponibilités</title>
+  <style>
+    /* Styles pour les étoiles de notation */
+    .rating-star {
+      color: #f59e0b;
+    }
+    /* Couleur principale pour le titre de la catégorie (Gris foncé) */
+    .primary-text-color {
+      color: #1f2937;
+    }
+    /* Styles pour le Loader */
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4f46e5; /* Indigo 600 */
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Styles spécifiques aux boutons de paiement */
+    .btn-card { background-color: #3b82f6; }
+    .btn-om { background-color: #f97316; }
+    .btn-wave { background-color: #0d9488; }
+    .btn-card:hover { background-color: #2563eb; }
+    .btn-om:hover { background-color: #ea580c; }
+    .btn-wave:hover { background-color: #0f766e; }
+  </style>
 </head>
 <body>
 
-<!-- Barre de Navigation (Header) -->
 <header class="bg-white shadow-md sticky top-0 z-10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
     <h1 class="text-3xl font-bold text-indigo-600"><a href="#" onclick="showListView()">WorkingExpress</a></h1>
@@ -17,12 +47,8 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-  <!-- ============================================== -->
-  <!-- SECTION 1: VUE DE LA LISTE DES PRESTATAIRES -->
-  <!-- ============================================== -->
   <div id="list-view">
 
-    <!-- Titre et Description de la Catégorie (Électricité) -->
     <section class="mb-10 text-center md:text-left">
       <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
         Électricité <span class="primary-text-color">💡</span>
@@ -30,16 +56,13 @@
       <p class="text-xl text-gray-500">Trouvez un électricien qualifié disponible près de chez vous.</p>
     </section>
 
-    <!-- Barre de Filtres et de Recherche Spécifique -->
     <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
       <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-        <!-- Filtre Localisation -->
         <input type="text" id="filter-location" placeholder="Ville ou code postal (ex: Dakar)"
                class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
 
-        <!-- Filtre Type de Service (Électricité) -->
         <select id="filter-service" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
           <option value="all">Tous les services</option>
           <option value="panne">Panne électrique urgente</option>
@@ -47,154 +70,123 @@
           <option value="tableau">Remplacement tableau électrique</option>
         </select>
 
-        <!-- Filtre Disponibilité Immédiate -->
         <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
           <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
           <label for="filter-urgent" class="text-gray-700">Disponible Maintenant (Urgence)</label>
         </div>
 
-        <!-- Bouton Appliquer les Filtres -->
         <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
           Appliquer les Filtres
         </button>
       </div>
     </form>
 
-    <!-- Liste des Prestataires Électriciens -->
     <section>
-      <!-- L'ID 'results-count' sera mis à jour par le JavaScript -->
       <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">3 Électriciens trouvés dans votre région</h3>
 
       <div id="plumbers-list" class="space-y-6">
-        <!-- Les cartes des prestataires seront générées ici par JavaScript -->
       </div>
 
-      <!-- Message affiché si aucun résultat n'est trouvé -->
       <div id="no-results" class="hidden text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
         <p class="text-xl text-yellow-800 font-semibold">Aucun électricien ne correspond à vos critères de recherche. Essayez d'élargir votre zone ou vos filtres.</p>
       </div>
     </section>
 
-  </div> <!-- Fin #list-view -->
+  </div> <div id="detail-view" class="hidden">
+  <button onclick="showListView()" class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition">
+    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+    Retour à la liste des électriciens
+  </button>
 
-  <!-- ============================================== -->
-  <!-- SECTION 2: VUE DÉTAILLÉE DU PRESTATAIRE -->
-  <!-- ============================================== -->
-  <div id="detail-view" class="hidden">
-    <button onclick="showListView()" class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition">
-      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-      Retour à la liste des électriciens
-    </button>
+  <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
 
-    <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+    <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-x-8 md:space-y-0 pb-6 border-b border-gray-200">
+      <img id="detail-img" src="" alt="Photo du prestataire" class="w-24 h-24 rounded-full border-4 border-indigo-500 object-cover">
+      <div class="text-center md:text-left">
+        <h2 id="detail-name" class="text-4xl font-extrabold text-gray-900 mb-1">Nom du Prestataire</h2>
+        <p id="detail-title" class="text-xl text-gray-600 mb-2">Titre/Spécialité</p>
 
-      <!-- En-tête du Profil -->
-      <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-x-8 md:space-y-0 pb-6 border-b border-gray-200">
-        <img id="detail-img" src="" alt="Photo du prestataire" class="w-24 h-24 rounded-full border-4 border-indigo-500 object-cover">
-        <div class="text-center md:text-left">
-          <h2 id="detail-name" class="text-4xl font-extrabold text-gray-900 mb-1">Nom du Prestataire</h2>
-          <p id="detail-title" class="text-xl text-gray-600 mb-2">Titre/Spécialité</p>
-
-          <!-- Notation Détaillée -->
-          <div class="flex items-center justify-center md:justify-start">
-            <span id="detail-rating-stars" class="rating-star text-2xl mr-2"></span>
-            <span id="detail-rating-value" class="text-2xl font-bold text-gray-800 mr-2">5.0</span>
-            <span id="detail-reviews-count" class="text-md text-gray-500">(112 Avis)</span>
-          </div>
+        <div class="flex items-center justify-center md:justify-start">
+          <span id="detail-rating-stars" class="rating-star text-2xl mr-2"></span>
+          <span id="detail-rating-value" class="text-2xl font-bold text-gray-800 mr-2">5.0</span>
+          <span id="detail-reviews-count" class="text-md text-gray-500">(112 Avis)</span>
         </div>
       </div>
-
-      <!-- Détails du Service et Description -->
-      <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        <!-- Colonne 1 : Description -->
-        <div class="lg:col-span-2">
-          <h3 class="text-2xl font-bold primary-text-color mb-4">À propos de ce prestataire</h3>
-          <p id="detail-description" class="text-gray-700 leading-relaxed mb-6"></p>
-
-          <h4 class="text-xl font-bold text-gray-800 mb-3">Services Spécialisés</h4>
-          <div id="detail-services" class="flex flex-wrap gap-2">
-            <!-- Les services seront injectés ici -->
-          </div>
-        </div>
-
-        <!-- Colonne 2 : Disponibilité & Action (Incluant le flux de réservation) -->
-        <div class="lg:col-span-1 bg-indigo-50 p-6 rounded-xl shadow-inner sticky top-28">
-          <h4 class="text-lg font-bold text-indigo-800 mb-3">Statut Actuel</h4>
-          <div id="detail-availability" class="mb-4 text-xl font-bold text-green-700"></div>
-
-          <h4 class="text-lg font-bold text-indigo-800 mb-3">Tarification</h4>
-          <p id="detail-rate" class="text-3xl font-extrabold text-indigo-600 mb-6"></p>
-
-          <!-- CONTENEUR DU FLUX DE RÉSERVATION -->
-          <div id="booking-container" class="space-y-4">
-
-            <!-- ÉTAPE 0: Bouton Initial (visible par défaut) -->
-            <button id="detail-action-btn" onclick="initiateBooking(this.dataset.providerId)" data-provider-id="" class="w-full px-5 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-lg">
-              Réserver l'intervention
-            </button>
-
-            <!-- ÉTAPE 1: Confirmation en attente (cachée) -->
-            <div id="booking-step-1" class="hidden text-center p-4 bg-yellow-100 rounded-lg shadow-md border border-yellow-300">
-              <p class="font-bold text-yellow-800 mb-2">Demande de Réservation Envoyée !</p>
-              <p class="text-sm text-yellow-700">En attente de la confirmation du prestataire...</p>
-              <div class="loader mt-3"></div>
-            </div>
-
-            <!-- ÉTAPE 2: Options de Paiement et Champs Détaillés (cachée) -->
-            <div id="booking-step-2" class="hidden text-center p-4 bg-green-100 rounded-xl shadow-md border border-green-300">
-              <p class="font-bold text-green-800 text-xl mb-4">Confirmation Reçue ! Choisissez le mode de paiement</p>
-
-              <!-- Sélection du mode de paiement (visible initialement) -->
-              <div id="payment-selection" class="space-y-3 mb-4">
-                <button onclick="showPaymentFields('Card')" class="w-full py-3 text-white font-semibold rounded-lg transition shadow-md btn-card flex items-center justify-center">
-                  <span class="text-2xl mr-2">💳</span> Payer par Carte Bancaire
-                </button>
-                <button onclick="showPaymentFields('OrangeMoney')" class="w-full py-3 text-white font-semibold rounded-lg transition shadow-md btn-om flex items-center justify-center">
-                  <span class="text-2xl mr-2">🍊</span> Payer par Orange Money
-                </button>
-                <button onclick="showPaymentFields('Wave')" class="w-full py-3 text-white font-semibold rounded-lg transition shadow-md btn-wave flex items-center justify-center">
-                  <span class="text-2xl mr-2">🌊</span> Payer par Wave
-                </button>
-              </div>
-
-              <!-- Conteneur pour les champs de paiement dynamiques (caché initialement) -->
-              <div id="payment-fields" class="hidden text-left p-4 border border-green-400 bg-white rounded-lg">
-                <!-- Le formulaire de champs détaillés apparaîtra ici -->
-              </div>
-            </div>
-
-            <!-- ÉTAPE 3: Succès (cachée) -->
-            <div id="booking-step-3" class="hidden text-center p-6 bg-lime-100 rounded-xl shadow-lg border border-lime-300">
-              <p class="text-2xl font-extrabold text-lime-800 mb-2">✅ Paiement Réussi !</p>
-              <p class="text-gray-700">Votre réservation est confirmée. Le prestataire vous contactera sous peu.</p>
-              <button onclick="showListView()" class="mt-4 px-4 py-2 bg-lime-700 text-white rounded-lg hover:bg-lime-800 transition">Retourner à la liste</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section des Avis Clients -->
-      <div class="mt-12 pt-8 border-t border-gray-200">
-        <h3 class="text-3xl font-bold text-gray-900 mb-6">Avis Clients (<span id="review-count-header">112</span>)</h3>
-        <div id="detail-reviews-list" class="space-y-6">
-          <!-- Les avis seront injectés ici -->
-        </div>
-      </div>
-
     </div>
-  </div> <!-- Fin #detail-view -->
 
-</main>
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-<!-- Pied de Page (Footer) -->
+      <div class="lg:col-span-2">
+        <h3 class="text-2xl font-bold primary-text-color mb-4">À propos de ce prestataire</h3>
+        <p id="detail-description" class="text-gray-700 leading-relaxed mb-6"></p>
+
+        <h4 class="text-xl font-bold text-gray-800 mb-3">Services Spécialisés</h4>
+        <div id="detail-services" class="flex flex-wrap gap-2">
+        </div>
+      </div>
+
+      <div class="lg:col-span-1 bg-indigo-50 p-6 rounded-xl shadow-inner sticky top-28">
+        <h4 class="text-lg font-bold text-indigo-800 mb-3">Statut Actuel</h4>
+        <div id="detail-availability" class="mb-4 text-xl font-bold text-green-700"></div>
+
+        <h4 class="text-lg font-bold text-indigo-800 mb-3">Tarification</h4>
+        <p id="detail-rate" class="text-3xl font-extrabold text-indigo-600 mb-6"></p>
+
+        <div id="booking-container" class="space-y-4">
+
+          <button id="detail-action-btn" onclick="initiateBooking(this.dataset.providerId)" data-provider-id="" class="w-full px-5 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-lg">
+            Réserver l'intervention
+          </button>
+
+          <div id="booking-step-1" class="hidden text-center p-4 bg-yellow-100 rounded-lg shadow-md border border-yellow-300">
+            <p class="font-bold text-yellow-800 mb-2">Demande de Réservation Envoyée !</p>
+            <p class="text-sm text-yellow-700">En attente de la confirmation du prestataire...</p>
+            <div class="loader mt-3"></div>
+          </div>
+
+          <div id="booking-step-2" class="hidden text-center p-4 bg-green-100 rounded-xl shadow-md border border-green-300">
+            <p class="font-bold text-green-800 text-xl mb-4">Confirmation Reçue ! Choisissez le mode de paiement</p>
+
+            <div id="payment-selection" class="space-y-3 mb-4">
+              <button onclick="showPaymentFields('Card')" class="w-full py-3 text-white font-semibold rounded-lg transition shadow-md btn-card flex items-center justify-center">
+                <span class="text-2xl mr-2">💳</span> Payer par Carte Bancaire
+              </button>
+              <button onclick="showPaymentFields('OrangeMoney')" class="w-full py-3 text-white font-semibold rounded-lg transition shadow-md btn-om flex items-center justify-center">
+                <span class="text-2xl mr-2">🍊</span> Payer par Orange Money
+              </button>
+              <button onclick="showPaymentFields('Wave')" class="w-full py-3 text-white font-semibold rounded-lg transition shadow-md btn-wave flex items-center justify-center">
+                <span class="text-2xl mr-2">🌊</span> Payer par Wave
+              </button>
+            </div>
+
+            <div id="payment-fields" class="hidden text-left p-4 border border-green-400 bg-white rounded-lg">
+            </div>
+          </div>
+
+          <div id="booking-step-3" class="hidden text-center p-6 bg-lime-100 rounded-xl shadow-lg border border-lime-300">
+            <p class="text-2xl font-extrabold text-lime-800 mb-2">✅ Paiement Réussi !</p>
+            <p class="text-gray-700">Votre réservation est confirmée. Le prestataire vous contactera sous peu.</p>
+            <button onclick="showListView()" class="mt-4 px-4 py-2 bg-lime-700 text-white rounded-lg hover:bg-lime-800 transition">Retourner à la liste</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-gray-200">
+      <h3 class="text-3xl font-bold text-gray-900 mb-6">Avis Clients (<span id="review-count-header">112</span>)</h3>
+      <div id="detail-reviews-list" class="space-y-6">
+      </div>
+    </div>
+
+  </div>
+</div> </main>
+
 <footer class="bg-gray-800 text-white mt-12">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
     <p>&copy; 2025 Working Express. Tous droits réservés. Navigation SPA activée.</p>
   </div>
 </footer>
 
-<!-- Script JavaScript pour gérer les données, les filtres et l'affichage des vues -->
 <script>
   // ==============================================
   // 1. DATA MODEL
@@ -284,10 +276,8 @@
   function generateRatingHtml(rating) {
     let html = '';
     for (let i = 1; i <= 5; i++) {
-      if (i <= Math.floor(rating)) {
+      if (i <= Math.floor(rating) || (i - rating < 1 && i - rating > 0)) {
         html += '<span class="rating-star">&#9733;</span>'; // Étoile pleine
-      } else if (i - rating < 1 && i - rating > 0) {
-        html += '<span class="rating-star">&#9733;</span>'; // Pour simplifier, on garde l'étoile pleine si > X.0
       } else {
         html += '<span class="rating-star text-gray-300">&#9733;</span>'; // Étoile vide
       }
@@ -304,15 +294,16 @@
     let statusIndicator;
     if (provider.availabilityCode === 'now') {
       statusIndicator = `
-                    <span class="relative flex h-3 w-3 mr-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-600"></span>
-                    </span>
-                `;
+            <span class="relative flex h-3 w-3 mr-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-600"></span>
+            </span>
+        `;
     } else {
       statusIndicator = `<span class="w-3 h-3 mr-2 rounded-full ${provider.availabilityCode === 'soon' ? 'bg-orange-500' : 'bg-gray-500'}"></span>`;
     }
 
+    // Le lien de la carte appelle showDetailView, qui gère la navigation SPA
     return `
                 <div class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-${provider.borderColor} flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 cursor-pointer"
                      data-provider-id="${provider.id}"
@@ -326,7 +317,6 @@
                             <p class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">${provider.name}</p>
                             <p class="text-gray-600">${provider.title} (${provider.location})</p>
 
-                            <!-- Notation -->
                             <div class="flex items-center mt-1">
                                 <span class="text-sm font-bold mr-1 text-gray-800">${provider.rating.toFixed(1)}</span>
                                 ${generateRatingHtml(provider.rating)}
@@ -335,7 +325,6 @@
                         </div>
                     </div>
 
-                    <!-- Disponibilité et Tarif -->
                     <div class="flex flex-col items-start md:items-end space-y-2">
                         <div class="availability-status flex items-center font-bold ${provider.statusText} ${provider.statusBg} px-4 py-1.5 rounded-full border border-${provider.borderColor.replace('-500', '-300')} text-xs">
                             ${statusIndicator}
@@ -353,10 +342,17 @@
 
   /**
    * Affiche la vue de la liste et masque la vue détaillée.
+   * Gère également l'URL pour la navigation SPA.
    */
   function showListView() {
     document.getElementById('list-view').classList.remove('hidden');
     document.getElementById('detail-view').classList.add('hidden');
+    window.scrollTo(0, 0);
+
+    // Mettre à jour l'URL sans recharger la page (SPA)
+    const currentUrl = window.location.pathname;
+    // Supprime les paramètres de requête de l'URL pour revenir à la vue liste
+    history.pushState(null, 'Électriciens', currentUrl);
   }
 
   // ==============================================
@@ -447,54 +443,54 @@
       case 'Card':
         formTitle = 'Paiement par Carte Bancaire';
         formHtml = `
-                        <div class="space-y-3">
-                            <input type="text" placeholder="Nom sur la Carte (ex: Jean Dupont)" id="card-name" required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                            <input type="text" placeholder="Numéro de Carte (simulé)" id="card-number" required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                            <div class="flex space-x-2">
-                                <input type="text" placeholder="MM/AA" id="card-expiry" required
-                                       class="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                <input type="text" placeholder="CVC" id="card-cvc" required
-                                       class="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                        </div>
-                    `;
+            <div class="space-y-3">
+              <input type="text" placeholder="Nom sur la Carte (ex: Jean Dupont)" id="card-name" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+              <input type="text" placeholder="Numéro de Carte (simulé)" id="card-number" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+              <div class="flex space-x-2">
+                  <input type="text" placeholder="MM/AA" id="card-expiry" required
+                          class="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                  <input type="text" placeholder="CVC" id="card-cvc" required
+                          class="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+            </div>
+          `;
         break;
 
       case 'OrangeMoney':
         formTitle = 'Paiement par Orange Money (OM)';
         formHtml = `
-                        <p class="text-sm text-gray-600 mb-2">Entrez votre numéro pour recevoir l'invite de paiement sur votre téléphone.</p>
-                        <input type="tel" placeholder="Numéro de Téléphone Orange Money (ex: 77XXXXXXX)" id="om-phone" required
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500">
-                    `;
+            <p class="text-sm text-gray-600 mb-2">Entrez votre numéro pour recevoir l'invite de paiement sur votre téléphone.</p>
+            <input type="tel" placeholder="Numéro de Téléphone Orange Money (ex: 77XXXXXXX)" id="om-phone" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500">
+          `;
         break;
 
       case 'Wave':
         formTitle = 'Paiement par Wave';
         formHtml = `
-                        <p class="text-sm text-gray-600 mb-2">Entrez votre numéro pour recevoir l'invite de paiement sur votre application Wave.</p>
-                        <input type="tel" placeholder="Numéro de Téléphone Wave (ex: 77XXXXXXX)" id="wave-phone" required
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    `;
+            <p class="text-sm text-gray-600 mb-2">Entrez votre numéro pour recevoir l'invite de paiement sur votre application Wave.</p>
+            <input type="tel" placeholder="Numéro de Téléphone Wave (ex: 77XXXXXXX)" id="wave-phone" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+          `;
         break;
     }
 
     // Conteneur du formulaire avec le bouton de validation
     fieldsContainer.innerHTML = `
-                <h5 class="text-lg font-bold text-gray-800 mb-3 text-center">${formTitle}</h5>
-                <form id="payment-form" onsubmit="event.preventDefault(); processPayment('${method}')">
-                    ${formHtml}
-                    <button type="submit" class="mt-4 w-full px-5 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-300 shadow-lg">
-                        Valider et Payer
-                    </button>
-                    <button type="button" onclick="resetPaymentSelection()" class="mt-2 w-full px-5 py-2 text-gray-600 font-semibold rounded-lg hover:bg-gray-100 transition duration-300 border border-gray-300">
-                        Changer de méthode
-                    </button>
-                    <p id="payment-error" class="text-red-500 mt-2 text-sm hidden">Veuillez remplir tous les champs.</p>
-                </form>
-            `;
+          <h5 class="text-lg font-bold text-gray-800 mb-3 text-center">${formTitle}</h5>
+          <form id="payment-form" onsubmit="event.preventDefault(); processPayment('${method}')">
+              ${formHtml}
+              <button type="submit" class="mt-4 w-full px-5 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-300 shadow-lg">
+                  Valider et Payer
+              </button>
+              <button type="button" onclick="resetPaymentSelection()" class="mt-2 w-full px-5 py-2 text-gray-600 font-semibold rounded-lg hover:bg-gray-100 transition duration-300 border border-gray-300">
+                  Changer de méthode
+              </button>
+              <p id="payment-error" class="text-red-500 mt-2 text-sm hidden">Veuillez remplir tous les champs.</p>
+          </form>
+      `;
   }
 
   /**
@@ -526,11 +522,11 @@
     // Remplacer le formulaire par un indicateur de traitement
     const fieldsContainer = document.getElementById('payment-fields');
     fieldsContainer.innerHTML = `
-                <div class="text-center p-4 bg-indigo-50 rounded-xl">
-                    <p class="text-xl font-bold text-indigo-600 mb-3">Traitement du paiement par ${method}...</p>
-                    <div class="loader mt-3"></div>
-                </div>
-            `;
+          <div class="text-center p-4 bg-indigo-50 rounded-xl">
+              <p class="text-xl font-bold text-indigo-600 mb-3">Traitement du paiement par ${method}...</p>
+              <div class="loader mt-3"></div>
+          </div>
+      `;
 
     // Simulation du temps de traitement du paiement (1.5 seconde)
     setTimeout(() => {
@@ -540,6 +536,7 @@
 
   /**
    * Affiche la vue détaillée pour le prestataire donné et masque la vue de la liste.
+   * Gère également l'URL pour la navigation SPA.
    * @param {string} providerId - L'ID unique du prestataire.
    */
   function showDetailView(providerId) {
@@ -590,10 +587,14 @@
                 </div>
             `).join('');
 
-    // 5. Bascule de l'affichage
+    // 5. Bascule de l'affichage et mise à jour de l'URL
     document.getElementById('list-view').classList.add('hidden');
     document.getElementById('detail-view').classList.remove('hidden');
-    window.scrollTo(0, 0); // Remonter en haut de la page pour la nouvelle vue
+    window.scrollTo(0, 0);
+
+    // **CORRECTION/AJOUT**: Mise à jour de l'URL sans rechargement (pour gérer les liens partageables)
+    const newUrl = window.location.pathname + '?id=' + providerId;
+    history.pushState({ providerId: providerId }, provider.name, newUrl);
   }
 
   // ==============================================
@@ -624,6 +625,9 @@
     let visibleCount = 0;
     const plumberList = document.getElementById('plumbers-list');
     const plumberCards = plumberList.querySelectorAll('.plumber-card');
+    const noResultsMessage = document.getElementById('no-results');
+    const resultsCount = document.getElementById('results-count');
+
 
     plumberCards.forEach(card => {
       const cardLocation = card.dataset.location.toLowerCase();
@@ -649,17 +653,14 @@
 
       // Afficher/Masquer
       if (isMatch) {
-        card.style.display = 'flex';
+        card.style.display = 'flex'; // Afficher la carte
         visibleCount++;
       } else {
-        card.style.display = 'none';
+        card.style.display = 'none'; // Masquer la carte
       }
     });
 
-    // Mise à jour du compteur
-    const resultsCount = document.getElementById('results-count');
-    const noResultsMessage = document.getElementById('no-results');
-
+    // Mettre à jour le compteur et le message 'Aucun Résultat'
     if (visibleCount > 0) {
       resultsCount.textContent = `${visibleCount} Électricien(s) trouvé(s) dans votre région`;
       noResultsMessage.classList.add('hidden');
@@ -670,17 +671,45 @@
   }
 
   // ==============================================
-  // 5. EVENT LISTENERS
+  // 5. GESTION DE L'HISTORIQUE ET INITIALISATION
   // ==============================================
-  document.addEventListener('DOMContentLoaded', () => {
-    const filterForm = document.getElementById('filter-form');
-    filterForm.addEventListener('submit', applyFilters);
 
+  /**
+   * Gère le bouton "Retour" du navigateur (popstate).
+   */
+  window.addEventListener('popstate', (event) => {
+    // Récupérer l'ID dans les paramètres de l'URL actuelle
+    const urlParams = new URLSearchParams(window.location.search);
+    const providerId = urlParams.get('id');
+
+    if (providerId) {
+      // Si un ID est présent dans l'URL, réafficher la vue détaillée
+      showDetailView(providerId);
+    } else {
+      // Si l'ID est manquant ou supprimé, revenir à la vue liste
+      showListView();
+    }
+  });
+
+
+  // Initialisation au chargement de la page
+  document.addEventListener('DOMContentLoaded', () => {
     initializeCards();
-    showListView(); // Assure que la liste est la vue par défaut au chargement
+    document.getElementById('filter-form').addEventListener('submit', applyFilters);
+
+    // Vérifier l'URL au chargement initial (pour les liens directs/rechargements)
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialProviderId = urlParams.get('id');
+
+    if (initialProviderId) {
+      // Si un ID est dans l'URL, on affiche directement les détails (simulate initial load)
+      showDetailView(initialProviderId);
+    } else {
+      // Sinon, on s'assure d'être sur la vue liste
+      showListView();
+    }
   });
 </script>
 
 </body>
 </html>
-
