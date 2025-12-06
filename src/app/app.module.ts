@@ -18,7 +18,8 @@ import { DomestiqueComponent } from './domestique/domestique.component';
 import { BricolageComponent } from './bricolage/bricolage.component';
 import { BeauteComponent } from './beaute/beaute.component';
 import { ReparationtechComponent } from './reparationtech/reparationtech.component';
-import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component'; // ⭐️ Casse corrigée
+import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component';// ⭐️ Casse corrigée
+// Assurez-vous que le chemin ('./composant-chemin/...') est correct par rapport à app.module.ts
 import { DetaileletrictComponent } from './detaileletrict/detaileletrict.component';
 import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.component';
 // ----------------------------------------
@@ -42,6 +43,8 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
     ReparationtechComponent,
     DetaileletrictComponent,
     DetaildomestiqueComponent,
+    CoursDomicileComponent,
+
   ],
   // ⭐️ [IMPORTANT] Assurez-vous que FormsModule et AppRoutingModule sont importés
   imports: [
