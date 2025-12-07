@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // 👈 [IMPORTANT] Pour [(ngModel)]
+import { CommonModule } from '@angular/common'; // ⬅️ NÉCESSAIRE pour ngClass, *ngIf, *ngFor
+import { NgClass } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -36,14 +38,16 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
     ConfirmPasswordComponent,
     PlomberieComponent, // 👈 CORRECTION DE L'ERREUR "not declared"
     NounouComponent,
-    ElectriciteComponent,
     DomestiqueComponent,
     BricolageComponent,
     BeauteComponent,
-    ReparationtechComponent,
     DetaileletrictComponent,
     DetaildomestiqueComponent,
     CoursDomicileComponent,
+    ElectriciteComponent,
+   // ReparationtechComponent,
+
+
 
   ],
   // ⭐️ [IMPORTANT] Assurez-vous que FormsModule et AppRoutingModule sont importés
@@ -51,7 +55,10 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
     BrowserModule,
     AppRoutingModule,
     FormsModule, // Nécessaire pour [(ngModel)] dans PlomberieComponent
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CommonModule,
+    NgClass,
+    ReparationtechComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]

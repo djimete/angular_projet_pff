@@ -8,6 +8,7 @@
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:-px-8 py-12">
 
   <section id="list-view" *ngIf="!showDetailSection">
+
     <section class="mb-10 text-center md:text-left">
       <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
         Plomberie <span class="text-indigo-600">🛠️</span>
@@ -97,6 +98,7 @@
   <section id="detail-view" *ngIf="showDetailSection && plombierSelectionne">
     <button (click)="showListView()"
             class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800">
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
       Retour à la liste
     </button>
 
@@ -108,29 +110,29 @@
         <div class="flex-shrink-0">
           <div class="w-32 h-32 rounded-full flex items-center justify-center text-5xl font-bold text-white"
                [ngClass]="plombierSelectionne.disponible ? 'bg-green-600' : 'bg-orange-600'">
-            {{plombierSelectionne?.initiales}}
+            {{plombierSelectionne.initiales}}
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 mt-4">{{plombierSelectionne?.nom}}</h2>
-          <p class="font-semibold" [ngClass]="plombierSelectionne.disponible ? 'text-green-600' : 'text-orange-600'">{{plombierSelectionne?.specialite}}</p>
+          <h2 class="text-2xl font-bold text-gray-900 mt-4">{{plombierSelectionne.nom}}</h2>
+          <p class="font-semibold" [ngClass]="plombierSelectionne.disponible ? 'text-green-600' : 'text-orange-600'">{{plombierSelectionne.specialite}}</p>
         </div>
 
         <div class="flex-grow">
           <div class="flex items-center space-x-2 text-gray-500 mb-2">
             <span class="text-red-500">📍</span>
-            <p>{{plombierSelectionne?.zone}}</p>
+            <p>{{plombierSelectionne.zone}}</p>
           </div>
 
           <div class="flex items-center space-x-2 text-gray-800 mb-2">
             <span class="text-yellow-400 text-xl">⭐️</span>
-            <p class="font-bold">{{plombierSelectionne?.note}} <span class="text-sm font-normal">({{plombierSelectionne?.avisCount}} Avis)</span></p>
+            <p class="font-bold">{{plombierSelectionne.note}} <span class="text-sm font-normal">({{plombierSelectionne.avisCount}} Avis)</span></p>
           </div>
 
           <p class="text-4xl font-extrabold text-indigo-600 mb-4">
-            {{plombierSelectionne?.tarif}}
+            {{plombierSelectionne.tarif}}
           </p>
 
           <p class="text-gray-700 mb-4">
-            {{plombierSelectionne?.description}} <br>
+            {{plombierSelectionne.description}} <br>
             <span class="italic text-sm text-gray-500">Devis gratuit sur demande.</span>
           </p>
 
@@ -150,7 +152,7 @@
               </p>
               <p class="text-gray-900 mb-3 font-bold">
                 Votre code de validation pour le paiement et l'arrivée du prestataire est:
-                <span class="text-green-700 text-xl">{{validationCode}}</span>
+                <span class="text-green-700 text-xl">{{validationCode!}}</span>
               </p>
               <p class="text-sm text-gray-600 italic">
                 Veuillez effectuer le paiement de l'acompte (montant libre) pour confirmer la venue.
@@ -195,23 +197,23 @@
   <div class="modal-content">
     <h2 class="text-2xl font-bold text-indigo-600 mb-6">Finaliser la Réservation</h2>
 
-    <form id="reservation-form" (submit)="submitReservation($event)">
+    <form id="reservation-form" (ngSubmit)="submitReservation($event)">
 
       <div class="mb-4">
         <label for="reservation-nom" class="block text-gray-700 font-medium mb-1">Votre Nom Complet</label>
-        <input type="text" id="reservation-nom" name="nom" placeholder="Ex: Aliou Diallo"
+        <input type="text" id="reservation-nom" name="nom" [(ngModel)]="reservationNom" placeholder="Ex: Aliou Diallo"
                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
       </div>
 
       <div class="mb-4">
         <label for="reservation-telephone" class="block text-gray-700 font-medium mb-1">Numéro de Téléphone (pour contact)</label>
-        <input type="tel" id="reservation-telephone" name="telephone" placeholder="Ex: 77 123 45 67"
+        <input type="tel" id="reservation-telephone" name="telephone" [(ngModel)]="reservationTelephone" placeholder="Ex: 77 123 45 67"
                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
       </div>
 
       <div class="mb-6">
         <label for="reservation-description" class="block text-gray-700 font-medium mb-1">Description du Problème</label>
-        <textarea id="reservation-description" name="description" rows="4"
+        <textarea id="reservation-description" name="description" rows="4" [(ngModel)]="reservationDescription"
                   placeholder="Décrivez brièvement la fuite, le débouchage, etc."
                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
       </div>
@@ -234,7 +236,7 @@
   <div class="modal-content">
     <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Payer Acompte pour {{plombierSelectionne?.nom}}</h2>
 
-    <form id="payment-form" (submit)="submitPayment($event)">
+    <form id="payment-form" (ngSubmit)="submitPayment($event)">
 
       <div class="mb-4">
         <label for="payment-method" class="block text-gray-700 font-medium mb-1">Méthode de Paiement</label>

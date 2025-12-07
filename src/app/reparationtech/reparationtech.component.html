@@ -1,770 +1,324 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Working Express - Réparation Tech & Paiement</title>
-</head>
-<body>
-
-<!-- Barre de Navigation (Header) -->
 <header class="bg-white shadow-md sticky top-0 z-10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-    <h1 class="text-3xl font-bold text-indigo-600"><a href="#" onclick="showListView(); return false;">WorkingExpress</a></h1>
+    <h1 class="text-3xl font-bold text-indigo-600">
+      <a href="#" (click)="showListView()">WorkingExpress</a>
+    </h1>
     <a href="#" class="text-gray-600 hover:text-indigo-600 transition duration-150">Mon Tableau de Bord</a>
   </div>
 </header>
 
 <main id="app-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <!-- Le contenu dynamique (Liste, Détail, Demande, Paiement) sera injecté ici -->
-  <h1>hgfteteyy</h1>
+
+  <ng-container *ngIf="currentDemand.status === 'list'">
+    <nav class="flex space-x-4 mb-8 justify-center border-b pb-4 overflow-x-auto whitespace-nowrap">
+      <a href="#" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-pink-100 hover:text-pink-700 transition duration-300">🧸 Garde d'Enfants</a>
+      <a href="#" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-emerald-100 hover:text-emerald-700 transition duration-300">🧹 Travail Domestique</a>
+      <a href="#" class="px-6 py-2 rounded-full tech-bg tech-color font-bold border-2 border-lime-500 shadow-lg transition duration-300">💻 Réparation Tech</a>
+    </nav>
+
+    <section class="mb-10 text-center md:text-left">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Réparation & Support <span class="tech-color">💻</span></h2>
+      <p class="text-xl text-gray-500">Trouvez des experts pour réparer votre téléphone, ordinateur ou électronique à domicile ou en atelier.</p>
+    </section>
+
+    <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
+      <button type="submit" class="px-6 py-3 bg-lime-600 text-white font-bold rounded-lg shadow-md hover:bg-lime-700 transition duration-300">
+        Appliquer les Filtres
+      </button>
+    </form>
+
+    <section>
+      <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">{{ providerData.length }} Techniciens trouvés</h3>
+      <div id="providers-list" class="space-y-6">
+
+        <div *ngFor="let provider of providerData"
+             class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 {{ provider.isUrgent ? 'border-lime-600' : 'border-gray-400' }} flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+             [attr.data-id]="provider.id">
+
+          <div class="flex items-center space-x-4 w-full md:w-auto">
+            <img [src]="provider.image" [alt]="'Photo de ' + provider.name" class="w-16 h-16 rounded-full border-2 {{ provider.isUrgent ? 'border-lime-600' : 'border-gray-400' }}">
+            <div>
+              <span class="text-xl font-bold text-gray-900">{{ provider.name }}</span>
+              <p class="text-gray-600">{{ provider.title }}</p>
+
+              <div class="flex items-center mt-1">
+                <span class="text-sm font-bold mr-1 text-gray-800">{{ provider.rating.toFixed(1) }}</span>
+                <span [innerHTML]="renderRatingStars(provider.rating)"></span>
+                <span class="text-sm text-gray-500 ml-2">({{ provider.reviews }} Avis)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-start md:items-end space-y-2">
+            <div class="availability-status flex items-center font-semibold px-3 py-1 rounded-full {{ provider.isUrgent ? 'text-lime-700 bg-lime-100' : 'text-gray-700 bg-gray-100' }} text-sm">
+              <ng-container *ngIf="provider.isUrgent">
+                        <span class="relative flex h-2 w-2 mr-2">
+                            <span class="animate-pulse-tech absolute inline-flex h-full w-full rounded-full pulse-tech opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-lime-600"></span>
+                        </span>
+              </ng-container>
+              <ng-container *ngIf="!provider.isUrgent">
+                <span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
+              </ng-container>
+              {{ provider.status }}
+            </div>
+
+            <p class="text-2xl font-bold tech-color">{{ provider.price }}</p>
+            <button (click)="renderProviderDetails(provider.id)"
+                    class="px-5 py-2 bg-lime-600 text-white font-semibold rounded-lg hover:bg-lime-700 transition duration-300">
+              Contacter
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="currentDemand.status === 'detail' && currentProvider">
+    <div class="max-w-4xl mx-auto">
+      <button (click)="showListView()" class="mb-6 flex items-center text-gray-600 hover:text-lime-600 font-medium transition duration-150">
+        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Retour à la liste des techniciens
+      </button>
+
+      <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-lime-600 mb-8">
+        <div class="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+          <img [src]="currentProvider.image" [alt]="'Photo de ' + currentProvider.name" class="w-24 h-24 rounded-full border-4 border-lime-600 flex-shrink-0">
+
+          <div class="flex-grow">
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-1">{{ currentProvider.name }}</h2>
+            <p class="text-xl text-gray-600">{{ currentProvider.title }}</p>
+
+            <div class="flex items-center space-x-4 mt-3">
+              <div class="flex items-center">
+                <span class="text-lg font-bold mr-1 text-gray-800">{{ currentProvider.rating.toFixed(1) }}</span>
+                <span [innerHTML]="renderRatingStars(currentProvider.rating)"></span>
+                <span class="text-sm text-gray-500 ml-2">({{ currentProvider.reviews }} Avis)</span>
+              </div>
+              <div class="flex items-center text-gray-500">
+                <span class="mr-1">📍</span> {{ currentProvider.location }}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center md:items-end flex-shrink-0 space-y-3 w-full md:w-auto">
+            <p class="text-3xl font-bold tech-color">{{ currentProvider.price }}</p>
+            <div class="font-semibold px-4 py-2 rounded-full"
+                 [ngClass]="currentProvider.isUrgent ? 'text-lime-700 bg-lime-100' : 'text-gray-700 bg-gray-100'">
+              {{ currentProvider.status }}
+            </div>
+            <button (click)="renderBookingForm(currentProvider.id)" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-md">
+              Contacter & Soumettre Demande
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">À propos de {{ currentProvider.name }}</h3>
+          <p class="text-gray-600 leading-relaxed whitespace-pre-line">{{ currentProvider.description }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">Prestations Clés</h3>
+          <ul class="space-y-3">
+            <li *ngFor="let service of currentProvider.services" class="flex items-start text-gray-700">
+              <span class="tech-color mr-2 mt-0.5">✔️</span>
+              <span>{{ service }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentDemand.status === 'booking' && currentProvider">
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-8 border-lime-600">
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Soumettre une demande de réparation</h2>
+      <p class="text-gray-600 mb-6">Vous réservez auprès de
+        <span class="font-semibold text-lime-700">{{ currentProvider.name }}</span>,
+        {{ currentProvider.title }}.</p>
+
+      <form (ngSubmit)="handleBookingSubmit()">
+        <div class="mb-5">
+          <label for="device_type" class="block text-sm font-medium text-gray-700 mb-2">Type d'appareil concerné</label>
+          <select id="device_type" name="deviceType" [(ngModel)]="bookingForm.deviceType" required
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500">
+            <option value="" disabled selected>Sélectionnez un type</option>
+            <option value="smartphone">Smartphone</option>
+            <option value="pc">Ordinateur / Mac</option>
+            <option value="console">Console de Jeu</option>
+            <option value="autre">Autre appareil électronique</option>
+          </select>
+        </div>
+
+        <div class="mb-5">
+          <label for="problem_description" class="block text-sm font-medium text-gray-700 mb-2">Description détaillée du problème <span class="text-red-500">*</span></label>
+          <textarea id="problem_description" name="problemDescription" rows="5" [(ngModel)]="bookingForm.problemDescription" required
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
+                    placeholder="Décrivez le modèle, la marque et la panne (ex: Écran cassé sur iPhone 13, PC ne s'allume plus après mise à jour)."></textarea>
+        </div>
+
+        <div class="flex justify-between items-center mt-8">
+          <button type="button" (click)="renderProviderDetails(currentProvider.id)" class="px-6 py-3 text-gray-600 font-semibold rounded-xl hover:bg-gray-100 transition duration-300">
+            Annuler et Retour
+          </button>
+          <button type="submit" [disabled]="!bookingForm.deviceType || !bookingForm.problemDescription"
+                  class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-lg">
+            Soumettre la Demande
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentDemand.status === 'submitted' && currentProvider">
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-indigo-500">
+      <div class="text-6xl mb-4 text-indigo-500">💬</div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Demande Soumise !</h2>
+      <p class="text-gray-600 mb-6">
+        Votre demande a été envoyée à <span class="font-semibold">{{ currentProvider.name }}</span>.
+        Il est en cours d'examen.
+      </p>
+      <p class="text-sm text-gray-400 mb-6">Simulation : La réponse du prestataire arrive immédiatement...</p>
+
+      <button (click)="simulateAcceptance()" class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md">
+        Voir la Réponse du Prestataire
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentDemand.status === 'accepted' && currentProvider">
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-lime-600">
+      <div class="text-6xl mb-4 text-lime-600">🎉</div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Demande Acceptée !</h2>
+      <p class="text-gray-600 mb-6">
+        {{ currentProvider.name }} a examiné votre demande de réparation et le devis est établi.
+        <br>Le montant à régler pour démarrer l'intervention est de :
+        <span class="text-2xl font-extrabold text-lime-600">{{ currentDemand.amountDue! }} €</span>.
+      </p>
+      <button (click)="renderPaymentForm(currentProvider.id)" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-md">
+        Procéder au Paiement
+      </button>
+      <button (click)="showListView()" class="mt-4 block w-full text-gray-500 hover:text-gray-700">Annuler / Retourner à la liste</button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentDemand.status === 'payment' && currentProvider">
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-8 border-lime-600">
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Finaliser le Paiement</h2>
+      <p class="text-gray-600 mb-6">Paiement requis pour la demande de {{ currentProvider.name }}.</p>
+
+      <div class="flex justify-between items-center bg-lime-50 p-4 rounded-lg mb-6 border border-lime-200">
+        <span class="text-xl font-medium text-gray-700">Montant à régler :</span>
+        <span class="text-3xl font-extrabold text-lime-600">{{ currentDemand.amountDue! }} €</span>
+      </div>
+
+      <form #paymentForm="ngForm" (ngSubmit)="handlePaymentSubmit(amountToPay.value)">
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Sélectionnez votre méthode de paiement</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="payment-option border-2 border-gray-200 p-4 rounded-xl text-center hover:border-lime-500 cursor-pointer"
+               [class.border-lime-500]="selectedPaymentMethod === 'wave'"
+               (click)="selectPaymentMethod('wave')">
+            <img src="https://placehold.co/40x40/004B8D/ffffff?text=WAVE" alt="Wave" class="mx-auto mb-2 rounded-full">
+            <span class="font-semibold text-gray-700">Wave</span>
+          </div>
+          <div class="payment-option border-2 border-gray-200 p-4 rounded-xl text-center hover:border-lime-500 cursor-pointer"
+               [class.border-lime-500]="selectedPaymentMethod === 'orange-money'"
+               (click)="selectPaymentMethod('orange-money')">
+            <img src="https://placehold.co/40x40/FF7900/ffffff?text=OM" alt="Orange Money" class="mx-auto mb-2 rounded-full">
+            <span class="font-semibold text-gray-700">Orange Money</span>
+          </div>
+          <div class="payment-option border-2 border-gray-200 p-4 rounded-xl text-center hover:border-lime-500 cursor-pointer"
+               [class.border-lime-500]="selectedPaymentMethod === 'card'"
+               (click)="selectPaymentMethod('card')">
+            <img src="https://placehold.co/40x40/000000/ffffff?text=CB" alt="Carte Bancaire" class="mx-auto mb-2 rounded-full">
+            <span class="font-semibold text-gray-700">Carte Bancaire</span>
+          </div>
+        </div>
+
+        <div [class.hidden]="!selectedPaymentMethod" class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+
+          <ng-container *ngIf="selectedPaymentMethod === 'wave' || selectedPaymentMethod === 'orange-money'">
+            <h4 class="text-lg font-semibold mb-3">Informations {{ selectedPaymentMethod!.toUpperCase() }}</h4>
+            <div class="mb-4">
+              <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">Numéro de téléphone <span class="text-red-500">*</span></label>
+              <input type="tel" id="phone_number" name="phoneNumber" required
+                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
+                     placeholder="Ex: 77 123 45 67">
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="selectedPaymentMethod === 'card'">
+            <h4 class="text-lg font-semibold mb-3">Informations de Carte Bancaire</h4>
+            <div class="mb-4">
+              <label for="card_number" class="block text-sm font-medium text-gray-700 mb-2">Numéro de carte <span class="text-red-500">*</span></label>
+              <input type="text" id="card_number" name="cardNumber" required
+                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
+                     placeholder="XXXX XXXX XXXX XXXX">
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="col-span-2">
+                <label for="expiry_date" class="block text-sm font-medium text-gray-700 mb-2">Date d'expiration (MM/AA) <span class="text-red-500">*</span></label>
+                <input type="text" id="expiry_date" name="expiryDate" required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
+                       placeholder="MM/AA">
+              </div>
+              <div class="col-span-1">
+                <label for="cvv" class="block text-sm font-medium text-gray-700 mb-2">CVV <span class="text-red-500">*</span></label>
+                <input type="text" id="cvv" name="cvv" required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
+                       placeholder="123">
+              </div>
+            </div>
+          </ng-container>
+
+        </div>
+
+        <div class="mt-6 mb-8">
+          <label for="amount_to_pay" class="block text-sm font-medium text-gray-700 mb-2">Montant à saisir par vous-même (Minimum {{ currentDemand.amountDue! }} €)</label>
+          <input type="number" #amountToPay="ngModel" name="amountToPay" required [min]="currentDemand.amountDue!" [ngModel]="currentDemand.amountDue!"
+                 class="w-full p-3 border border-gray-300 rounded-lg text-2xl font-bold text-gray-800 focus:ring-lime-500 focus:border-lime-500"
+                 placeholder="Saisissez le montant exact">
+        </div>
+
+        <div class="flex justify-end">
+          <button type="submit" id="pay-button" [disabled]="!selectedPaymentMethod || paymentForm.invalid"
+                  class="px-8 py-3 text-white font-semibold rounded-xl shadow-lg transition duration-300"
+                  [class.bg-gray-400]="!selectedPaymentMethod || paymentForm.invalid"
+                  [class.bg-lime-600]="selectedPaymentMethod && paymentForm.valid"
+                  [class.hover:bg-lime-700]="selectedPaymentMethod && paymentForm.valid">
+            Payer
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="currentDemand.status === 'paid' && currentProvider">
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-lime-600">
+      <div class="text-6xl mb-4 text-lime-600">✅</div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Paiement Réussi !</h2>
+      <p class="text-gray-600 mb-4">
+        Votre paiement de <span class="text-2xl font-extrabold text-lime-600">{{ currentDemand.amountDue! }} €</span> a été effectué avec succès pour la demande auprès de
+        {{ currentProvider.name }}.
+      </p>
+      <p class="text-gray-600 mb-6">
+        Le prestataire va maintenant commencer la réparation.
+      </p>
+      <button (click)="showListView()" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-md">
+        Retourner à la liste des techniciens
+      </button>
+    </div>
+  </ng-container>
+
 </main>
 
-<!-- Pied de Page (Footer) -->
 <footer class="bg-gray-800 text-white mt-12">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
     <p>&copy; 2025 Working Express. Tous droits réservés.</p>
   </div>
 </footer>
-
-<!-- Script JavaScript pour gérer les vues et la logique d'application -->
-<script>
-
-  // --- 1. Base de Données des Prestataires & État Global ---
-  const providerData = [
-    { id: 'mame_d', name: 'Mame D.', title: 'Réparation Tél. & Ordinateurs | Certifiée', location: 'Dakar', devices: ['smartphone', 'pc'], brands: ['apple', 'samsung'], rating: 5.0, reviews: 95, status: 'Diagnostic sous 1h Garanti', price: '20€ / Diagnostic', description: "Mame est notre spécialiste certifiée Apple et Samsung. Forte de 8 ans d'expérience...", services: ["Remplacement écran", "Réparation de connecteur de charge"], image: "https://placehold.co/80x80/65a30d/ffffff?text=M1", isUrgent: true },
-    { id: 'cheikh_a', name: 'Cheikh A.', title: 'Spécialiste Logiciel & Sécurité (Windows/Linux)', location: 'Fann', devices: ['pc', 'logiciel'], brands: ['dell', 'hp'], rating: 4.6, reviews: 70, status: 'Disponible pour RDV à distance', price: '30€ / heure', description: "Cheikh excelle dans la résolution des problèmes logiciels complexes, la suppression de virus...", services: ["Suppression de virus", "Installation/Configuration de systèmes"], image: "https://placehold.co/80x80/9ca3af/ffffff?text=C2", isUrgent: false },
-    { id: 'fatou_s', name: 'Fatou S.', title: 'Réparation Consoles de Jeu & Appareils photo', location: 'Guédiawaye', devices: ['console', 'electronique'], brands: ['all'], rating: 4.9, reviews: 15, status: 'Atelier ouvert (lundi-vendredi)', price: 'Devis gratuit en atelier', description: "Fatou est la référence pour les réparations fines d'électronique et de consoles...", services: ["Réparation port HDMI", "Microsoudure sur carte mère"], image: "https://placehold.co/80x80/65a30d/ffffff?text=F3", isUrgent: true },
-  ];
-
-  const appContent = document.getElementById('app-content');
-
-  // État global pour suivre la demande en cours (simulée)
-  let currentDemand = {
-    providerId: null,
-    problemDescription: '',
-    status: 'pending', // 'pending', 'accepted', 'paid'
-    amountDue: 0,
-    paymentMethod: null
-  };
-
-  // --- 2. Fonctions Utilitaires : Rendu des Étoiles et des Cartes ---
-
-  /**
-   * Génère la chaîne HTML pour les étoiles de notation.
-   */
-  function renderRatingStars(rating) {
-    const fullStars = Math.floor(rating);
-    const halfStar = (rating % 1 >= 0.25) ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStar;
-
-    let starsHtml = '';
-    for (let i = 0; i < fullStars; i++) {
-      starsHtml += '<span class="rating-star">&#9733;</span>';
-    }
-    if (halfStar) {
-      // Utilisation d'un demi-cercle (non standard, mais simule)
-      starsHtml += '<span class="rating-star" style="clip-path: inset(0 50% 0 0); display: inline-block;">&#9733;</span>';
-    }
-    for (let i = 0; i < emptyStars; i++) {
-      starsHtml += '<span class="rating-star text-gray-300">&#9733;</span>';
-    }
-    return starsHtml;
-  }
-
-  /**
-   * Génère le HTML pour une carte de prestataire dans la vue liste.
-   */
-  function createProviderCardHTML(provider) {
-    const statusClass = provider.isUrgent ? 'text-lime-700 bg-lime-100' : 'text-gray-700 bg-gray-100';
-    const borderClass = provider.isUrgent ? 'border-lime-600' : 'border-gray-400';
-    const statusIndicator = provider.isUrgent ?
-      `<span class="relative flex h-2 w-2 mr-2">
-                    <span class="animate-pulse-tech absolute inline-flex h-full w-full rounded-full pulse-tech opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-lime-600"></span>
-                </span>` :
-      `<span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>`;
-
-    return `
-                <div class="provider-card bg-white p-6 rounded-xl shadow-lg border-l-4 ${borderClass} flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
-                    data-id="${provider.id}"
-                    data-device="${provider.devices.join(',')}"
-                    data-brand="${provider.brands.join(',')}"
-                    data-location="${provider.location.toLowerCase()}">
-
-                    <div class="flex items-center space-x-4 w-full md:w-auto">
-                        <img src="${provider.image}" alt="Photo de ${provider.name}" class="w-16 h-16 rounded-full border-2 ${borderClass}">
-                        <div>
-                            <span class="text-xl font-bold text-gray-900">${provider.name}</span>
-                            <p class="text-gray-600">${provider.title}</p>
-
-                            <!-- Notation -->
-                            <div class="flex items-center mt-1">
-                                <span class="text-sm font-bold mr-1 text-gray-800">${provider.rating.toFixed(1)}</span>
-                                ${renderRatingStars(provider.rating)}
-                                <span class="text-sm text-gray-500 ml-2">(${provider.reviews} Avis)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Disponibilité et Tarif -->
-                    <div class="flex flex-col items-start md:items-end space-y-2">
-                        <div class="availability-status flex items-center font-semibold px-3 py-1 rounded-full ${statusClass} text-sm">
-                            ${statusIndicator}
-                            ${provider.status}
-                        </div>
-
-                        <p class="text-2xl font-bold tech-color">${provider.price}</p>
-                        <button class="px-5 py-2 bg-lime-600 text-white font-semibold rounded-lg hover:bg-lime-700 transition duration-300">
-                            Contacter
-                        </button>
-                    </div>
-                </div>
-            `;
-  }
-
-  // Simule l'acceptation de la demande par le prestataire et passe à la vue Paiement
-  function simulateAcceptance(providerId) {
-    const provider = providerData.find(p => p.id === providerId);
-
-    // Simuler la validation des informations et l'acceptation
-    const amount = Math.floor(Math.random() * 200) + 50; // Montant simulé entre 50€ et 250€
-
-    currentDemand.providerId = providerId;
-    currentDemand.status = 'accepted';
-    currentDemand.amountDue = amount;
-
-    // Afficher une boîte de message de confirmation avant de passer au paiement
-    appContent.innerHTML = `
-                <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-lime-600">
-                    <div class="text-6xl mb-4 text-lime-600">🎉</div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Demande Acceptée !</h2>
-                    <p class="text-gray-600 mb-6">
-                        ${provider.name} a examiné votre demande de réparation et le devis est établi.
-                        <br>Le montant à régler pour démarrer l'intervention est de :
-                        <span class="text-2xl font-extrabold text-lime-600">${currentDemand.amountDue} €</span>.
-                    </p>
-                    <button onclick="renderPaymentForm(currentDemand.providerId)" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-md">
-                        Procéder au Paiement
-                    </button>
-                    <button onclick="showListView()" class="mt-4 block w-full text-gray-500 hover:text-gray-700">Annuler / Retourner à la liste</button>
-                </div>
-            `;
-
-    // Mettre à jour l'état de l'historique
-    window.history.pushState({ view: 'acceptance', id: providerId }, `Demande Acceptée`, `#accepted=${providerId}`);
-  }
-
-  // --- 3. Vues Principales ---
-
-  /**
-   * Rendu de la vue par défaut (Liste) avec les filtres.
-   */
-  function showListView(pushState = true) {
-    if (pushState) {
-      window.history.pushState({ view: 'list' }, 'Liste des Réparateurs', '');
-    }
-
-    // ... (HTML de la liste et des filtres) ...
-    appContent.innerHTML = `
-                <!-- Navigation entre Catégories -->
-                <nav class="flex space-x-4 mb-8 justify-center border-b pb-4 overflow-x-auto whitespace-nowrap">
-                    <a href="#" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-pink-100 hover:text-pink-700 transition duration-300">
-                        🧸 Garde d'Enfants
-                    </a>
-                    <a href="#" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-emerald-100 hover:text-emerald-700 transition duration-300">
-                        🧹 Travail Domestique
-                    </a>
-                    <a href="#" class="px-6 py-2 rounded-full bg-gray-100 text-gray-700 font-medium hover:bg-indigo-100 hover:text-indigo-700 transition duration-300">
-                        🛠️ Services de Bricolage
-                    </a>
-                    <a href="#" class="px-6 py-2 rounded-full tech-bg tech-color font-bold border-2 border-lime-500 shadow-lg transition duration-300">
-                        💻 Réparation Tech
-                    </a>
-                </nav>
-
-                <!-- Titre et Description de la Catégorie (Réparation Tech) -->
-                <section class="mb-10 text-center md:text-left">
-                    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
-                        Réparation & Support <span class="tech-color">💻</span>
-                    </h2>
-                    <p class="text-xl text-gray-500">Trouvez des experts pour réparer votre téléphone, ordinateur ou électronique à domicile ou en atelier.</p>
-                </section>
-
-                <!-- Barre de Filtres et de Recherche Spécifique -->
-                <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <input type="text" id="filter-location" placeholder="Ville ou quartier (ex: Dakar)"
-                            class="p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500">
-
-                        <select id="filter-device" class="p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500 appearance-none">
-                            <option value="all">Tous les appareils</option>
-                            <option value="smartphone">Smartphones (iPhone, Android)</option>
-                            <option value="pc">PC/Mac (Ordinateurs)</option>
-                            <option value="console">Consoles & Jeux</option>
-                            <option value="logiciel">Assistance Logicielle</option>
-                        </select>
-
-                        <select id="filter-brand" class="p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500 appearance-none">
-                            <option value="all">Toutes les marques</option>
-                            <option value="apple">Apple</option>
-                            <option value="samsung">Samsung</option>
-                            <option value="dell">Dell/HP</option>
-                        </select>
-
-                        <button type="submit" id="apply-filters-btn" class="px-6 py-3 bg-lime-600 text-white font-bold rounded-lg shadow-md hover:bg-lime-700 transition duration-300">
-                            Appliquer les Filtres
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Liste des Prestataires de Réparation Tech -->
-                <section>
-                    <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6"></h3>
-
-                    <div id="providers-list" class="space-y-6">
-                        ${providerData.map(createProviderCardHTML).join('')}
-                    </div>
-
-                    <div id="no-results" class="hidden text-center p-8 tech-bg rounded-lg border border-lime-200 mt-6">
-                        <p class="text-xl tech-color font-semibold">Aucun technicien ne correspond à vos critères de recherche. Essayez d'élargir vos filtres.</p>
-                    </div>
-                </section>
-            `;
-
-    setupEventListeners();
-  }
-
-  /**
-   * Affiche la vue détaillée d'un prestataire.
-   */
-  function renderProviderDetails(providerId, pushState = true) {
-    const provider = providerData.find(p => p.id === providerId);
-    if (!provider) { showListView(); return; }
-
-    if (pushState) {
-      window.history.pushState({ view: 'detail', id: providerId }, `Détails de ${provider.name}`, `#detail=${providerId}`);
-    }
-
-    const statusClass = provider.isUrgent ? 'text-lime-700 bg-lime-100' : 'text-gray-700 bg-gray-100';
-    const statusIndicator = provider.isUrgent ?
-      `<span class="relative flex h-2 w-2 mr-2"><span class="animate-pulse-tech absolute inline-flex h-full w-full rounded-full pulse-tech opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-lime-600"></span></span>` :
-      `<span class="w-2 h-2 mr-2 rounded-full bg-gray-500"></span>`;
-
-
-    appContent.innerHTML = `
-                <div class="max-w-4xl mx-auto">
-                    <!-- Bouton de retour -->
-                    <button onclick="showListView()" class="mb-6 flex items-center text-gray-600 hover:text-lime-600 font-medium transition duration-150">
-                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        Retour à la liste des techniciens
-                    </button>
-
-                    <!-- Section Profil Principal -->
-                    <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-lime-600 mb-8">
-                        <div class="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
-                            <img src="${provider.image}" alt="Photo de ${provider.name}" class="w-24 h-24 rounded-full border-4 border-lime-600 flex-shrink-0">
-
-                            <div class="flex-grow">
-                                <h2 class="text-4xl font-extrabold text-gray-900 mb-1">${provider.name}</h2>
-                                <p class="text-xl text-gray-600">${provider.title}</p>
-
-                                <div class="flex items-center space-x-4 mt-3">
-                                    <div class="flex items-center">
-                                        <span class="text-lg font-bold mr-1 text-gray-800">${provider.rating.toFixed(1)}</span>
-                                        ${renderRatingStars(provider.rating)}
-                                        <span class="text-sm text-gray-500 ml-2">(${provider.reviews} Avis)</span>
-                                    </div>
-                                    <div class="flex items-center text-gray-500">
-                                        <span class="mr-1">📍</span> ${provider.location}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col items-center md:items-end flex-shrink-0 space-y-3 w-full md:w-auto">
-                                <p class="text-3xl font-bold tech-color">${provider.price}</p>
-                                <div class="font-semibold px-4 py-2 rounded-full ${statusClass} flex items-center text-sm">
-                                    ${statusIndicator}
-                                    ${provider.status}
-                                </div>
-                                <button onclick="renderBookingForm('${providerId}')" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-md">
-                                    Contacter & Soumettre Demande
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Description et Services -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-4">À propos de ${provider.name}</h3>
-                            <p class="text-gray-600 leading-relaxed whitespace-pre-line">${provider.description}</p>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-lg">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Prestations Clés</h3>
-                            <ul class="space-y-3">
-                                ${provider.services.map(service =>
-      `<li class="flex items-start text-gray-700">
-                                        <span class="tech-color mr-2 mt-0.5">✔️</span>
-                                        <span>${service}</span>
-                                    </li>`
-    ).join('')}
-                            </ul>
-                            <div class="mt-6 text-center">
-                                <a href="#" class="text-sm tech-color font-semibold hover:underline">Voir tous les services</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section Avis (Placeholder) -->
-                    <div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Avis des Clients (${provider.reviews})</h3>
-                        <p class="text-gray-500">Zone en construction...</p>
-                    </div>
-
-                </div>
-            `;
-  }
-
-  // --- 4. Vue Formulaire de Réservation (Demande) ---
-
-  /**
-   * Affiche le formulaire pour soumettre une demande au prestataire.
-   */
-  function renderBookingForm(providerId, pushState = true) {
-    const provider = providerData.find(p => p.id === providerId);
-    if (!provider) { showListView(); return; }
-
-    if (pushState) {
-      window.history.pushState({ view: 'booking', id: providerId }, `Demande à ${provider.name}`, `#booking=${providerId}`);
-    }
-
-    appContent.innerHTML = `
-                <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-8 border-lime-600">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Soumettre une demande de réparation</h2>
-                    <p class="text-gray-600 mb-6">Vous réservez auprès de <span class="font-semibold text-lime-700">${provider.name}</span>, ${provider.title}.</p>
-
-                    <form id="booking-form">
-                        <input type="hidden" name="providerId" value="${providerId}">
-
-                        <div class="mb-5">
-                            <label for="device_type" class="block text-sm font-medium text-gray-700 mb-2">Type d'appareil concerné</label>
-                            <select id="device_type" name="deviceType" required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500">
-                                <option value="" disabled selected>Sélectionnez un type</option>
-                                <option value="smartphone">Smartphone</option>
-                                <option value="pc">Ordinateur / Mac</option>
-                                <option value="console">Console de Jeu</option>
-                                <option value="autre">Autre appareil électronique</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-5">
-                            <label for="problem_description" class="block text-sm font-medium text-gray-700 mb-2">Description détaillée du problème <span class="text-red-500">*</span></label>
-                            <textarea id="problem_description" name="problemDescription" rows="5" required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
-                                placeholder="Décrivez le modèle, la marque et la panne (ex: Écran cassé sur iPhone 13, PC ne s'allume plus après mise à jour)."></textarea>
-                        </div>
-
-                        <div class="flex justify-between items-center mt-8">
-                            <button type="button" onclick="renderProviderDetails('${providerId}')" class="px-6 py-3 text-gray-600 font-semibold rounded-xl hover:bg-gray-100 transition duration-300">
-                                Annuler et Retour
-                            </button>
-                            <button type="submit" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-lg">
-                                Soumettre la Demande
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            `;
-
-    // Ajouter l'écouteur pour la soumission du formulaire
-    document.getElementById('booking-form').addEventListener('submit', handleBookingSubmit);
-  }
-
-  /**
-   * Gère la soumission du formulaire de demande.
-   */
-  function handleBookingSubmit(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const providerId = form.elements['providerId'].value;
-    const problemDescription = form.elements['problemDescription'].value;
-
-    // Mise à jour de l'état global de la demande
-    currentDemand.providerId = providerId;
-    currentDemand.problemDescription = problemDescription;
-    currentDemand.status = 'pending';
-
-    // Simuler la réception et l'acceptation immédiate de la demande par le prestataire
-    // En réalité, ici on enverrait la demande au serveur.
-
-    // Afficher le message d'attente
-    const provider = providerData.find(p => p.id === providerId);
-    appContent.innerHTML = `
-                <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-indigo-500">
-                    <div class="text-6xl mb-4 text-indigo-500">💬</div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Demande Soumise !</h2>
-                    <p class="text-gray-600 mb-6">
-                        Votre demande a été envoyée à <span class="font-semibold">${provider.name}</span>.
-                        Il est en cours d'examen.
-                    </p>
-                    <p class="text-sm text-gray-400 mb-6">Simulation : La réponse du prestataire arrive immédiatement...</p>
-
-                    <button onclick="simulateAcceptance('${providerId}')" class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition duration-300 shadow-md">
-                        Voir la Réponse du Prestataire
-                    </button>
-                </div>
-            `;
-    window.history.pushState({ view: 'submitted', id: providerId }, `Demande Soumise`, `#submitted=${providerId}`);
-  }
-
-  // --- 5. Vue Formulaire de Paiement ---
-
-  /**
-   * Affiche le formulaire de paiement.
-   */
-  function renderPaymentForm(providerId, pushState = true) {
-    const provider = providerData.find(p => p.id === providerId);
-    if (!provider || currentDemand.status !== 'accepted') { showListView(); return; }
-
-    if (pushState) {
-      window.history.pushState({ view: 'payment', id: providerId }, `Paiement pour ${provider.name}`, `#payment=${providerId}`);
-    }
-
-    appContent.innerHTML = `
-                <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-8 border-lime-600">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Finaliser le Paiement</h2>
-                    <p class="text-gray-600 mb-6">Paiement requis pour la demande de ${provider.name}.</p>
-
-                    <div class="flex justify-between items-center bg-lime-50 p-4 rounded-lg mb-6 border border-lime-200">
-                        <span class="text-xl font-medium text-gray-700">Montant à régler :</span>
-                        <span class="text-3xl font-extrabold text-lime-600">${currentDemand.amountDue} €</span>
-                    </div>
-
-                    <form id="payment-form">
-
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Sélectionnez votre méthode de paiement</h3>
-
-                        <!-- Options de Paiement -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="payment-options">
-                            <!-- WAVE -->
-                            <div class="payment-option border-2 border-gray-200 p-4 rounded-xl text-center hover:border-lime-500" data-method="wave">
-                                <img src="https://placehold.co/40x40/004B8D/ffffff?text=WAVE" alt="Wave" class="mx-auto mb-2 rounded-full">
-                                <span class="font-semibold text-gray-700">Wave</span>
-                            </div>
-                            <!-- ORANGE MONEY -->
-                            <div class="payment-option border-2 border-gray-200 p-4 rounded-xl text-center hover:border-lime-500" data-method="orange-money">
-                                <img src="https://placehold.co/40x40/FF7900/ffffff?text=OM" alt="Orange Money" class="mx-auto mb-2 rounded-full">
-                                <span class="font-semibold text-gray-700">Orange Money</span>
-                            </div>
-                            <!-- CARTE BANCAIRE -->
-                            <div class="payment-option border-2 border-gray-200 p-4 rounded-xl text-center hover:border-lime-500" data-method="card">
-                                <img src="https://placehold.co/40x40/000000/ffffff?text=CB" alt="Carte Bancaire" class="mx-auto mb-2 rounded-full">
-                                <span class="font-semibold text-gray-700">Carte Bancaire</span>
-                            </div>
-                        </div>
-
-                        <!-- Champs de Saisie Dynamiques -->
-                        <div id="dynamic-payment-fields" class="bg-gray-50 p-6 rounded-lg border border-gray-200 hidden">
-                            <!-- Le contenu sera injecté ici en JS -->
-                        </div>
-
-                        <!-- Montant Saisissable par l'Utilisateur -->
-                        <div class="mt-6 mb-8">
-                            <label for="amount_to_pay" class="block text-sm font-medium text-gray-700 mb-2">Montant à saisir par vous-même (Minimum ${currentDemand.amountDue} €)</label>
-                            <input type="number" id="amount_to_pay" name="amountToPay" required min="${currentDemand.amountDue}" value="${currentDemand.amountDue}"
-                                class="w-full p-3 border border-gray-300 rounded-lg text-2xl font-bold text-gray-800 focus:ring-lime-500 focus:border-lime-500"
-                                placeholder="Saisissez le montant exact">
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit" id="pay-button" disabled class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-xl shadow-lg transition duration-300">
-                                Payer
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            `;
-
-    // Initialisation des écouteurs de paiement
-    setupPaymentListeners();
-  }
-
-  /**
-   * Gère la sélection de la méthode de paiement et met à jour les champs dynamiques.
-   */
-  function setupPaymentListeners() {
-    const optionsContainer = document.getElementById('payment-options');
-    const fieldsContainer = document.getElementById('dynamic-payment-fields');
-    const payButton = document.getElementById('pay-button');
-    const paymentForm = document.getElementById('payment-form');
-
-    // 1. Écouteurs pour la sélection des options
-    optionsContainer.querySelectorAll('.payment-option').forEach(option => {
-      option.addEventListener('click', () => {
-        const method = option.dataset.method;
-
-        // Réinitialiser la sélection
-        optionsContainer.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected', 'border-lime-500'));
-
-        // Sélectionner l'option cliquée
-        option.classList.add('selected', 'border-lime-500');
-        currentDemand.paymentMethod = method;
-        payButton.disabled = false;
-        payButton.classList.remove('bg-gray-400');
-        payButton.classList.add('bg-lime-600', 'hover:bg-lime-700');
-
-        fieldsContainer.classList.remove('hidden');
-        updateDynamicFields(method);
-      });
-    });
-
-    // 2. Écouteur pour la soumission du paiement
-    paymentForm.addEventListener('submit', handlePaymentSubmit);
-  }
-
-  /**
-   * Met à jour le HTML des champs de saisie spécifiques au mode de paiement.
-   */
-  function updateDynamicFields(method) {
-    const container = document.getElementById('dynamic-payment-fields');
-    let fieldsHtml = '';
-
-    if (method === 'wave' || method === 'orange-money') {
-      const label = method === 'wave' ? 'Numéro de téléphone Wave/Moov' : 'Numéro de téléphone Orange Money';
-      fieldsHtml = `
-                    <h4 class="text-lg font-semibold mb-3">Informations ${method.toUpperCase()}</h4>
-                    <div class="mb-4">
-                        <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">${label} <span class="text-red-500">*</span></label>
-                        <input type="tel" id="phone_number" name="phoneNumber" required
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
-                            placeholder="Ex: 77 123 45 67">
-                    </div>
-                `;
-    } else if (method === 'card') {
-      fieldsHtml = `
-                    <h4 class="text-lg font-semibold mb-3">Informations de Carte Bancaire</h4>
-                    <div class="mb-4">
-                        <label for="card_number" class="block text-sm font-medium text-gray-700 mb-2">Numéro de carte <span class="text-red-500">*</span></label>
-                        <input type="text" id="card_number" name="cardNumber" required
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
-                            placeholder="XXXX XXXX XXXX XXXX">
-                    </div>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div class="col-span-2">
-                            <label for="expiry_date" class="block text-sm font-medium text-gray-700 mb-2">Date d'expiration (MM/AA) <span class="text-red-500">*</span></label>
-                            <input type="text" id="expiry_date" name="expiryDate" required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
-                                placeholder="01/25">
-                        </div>
-                        <div>
-                            <label for="cvv" class="block text-sm font-medium text-gray-700 mb-2">CVV <span class="text-red-500">*</span></label>
-                            <input type="text" id="cvv" name="cvv" required
-                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-lime-500 focus:border-lime-500"
-                                placeholder="123">
-                        </div>
-                    </div>
-                `;
-    }
-
-    container.innerHTML = fieldsHtml;
-  }
-
-  /**
-   * Gère la soumission du formulaire de paiement.
-   */
-  function handlePaymentSubmit(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const amountToPay = parseFloat(form.elements['amountToPay'].value);
-
-    if (amountToPay < currentDemand.amountDue) {
-      // Utilisation de console.error au lieu d'alert pour l'environnement Canvas
-      console.error(`Le montant saisi (${amountToPay} €) est inférieur au montant dû (${currentDemand.amountDue} €). Veuillez saisir au moins le montant dû.`);
-      appContent.insertAdjacentHTML('afterbegin', `<div id="error-message" class="fixed top-0 left-1/2 -translate-x-1/2 mt-4 p-3 bg-red-100 text-red-700 rounded-lg shadow-lg z-50">Erreur: Montant insuffisant. Veuillez saisir au moins ${currentDemand.amountDue} €.</div>`);
-      setTimeout(() => document.getElementById('error-message')?.remove(), 4000);
-      return;
-    }
-
-    // Simuler le traitement du paiement
-    currentDemand.status = 'paid';
-    currentDemand.amountDue = amountToPay; // Le montant payé est le montant saisi
-
-    // Afficher la confirmation de paiement
-    renderPaymentConfirmation();
-  }
-
-  /**
-   * Affiche la vue de confirmation de paiement.
-   */
-  function renderPaymentConfirmation(pushState = true) {
-    if (pushState) {
-      window.history.pushState({ view: 'confirmation' }, `Paiement Confirmé`, `#confirmation`);
-    }
-
-    const provider = providerData.find(p => p.id === currentDemand.providerId);
-
-    appContent.innerHTML = `
-                <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-emerald-500">
-                    <div class="text-6xl mb-4 text-emerald-500">✅</div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Paiement Réussi !</h2>
-                    <p class="text-gray-600 mb-4">
-                        Votre paiement de <span class="text-2xl font-extrabold text-emerald-600">${currentDemand.amountDue} €</span> a été effectué.
-                    </p>
-                    <div class="text-left bg-emerald-50 p-4 rounded-lg mb-6 border border-emerald-200">
-                        <p class="font-semibold text-emerald-800">Détails de la transaction :</p>
-                        <p class="text-sm text-gray-700">Prestataire : ${provider.name}</p>
-                        <p class="text-sm text-gray-700">Méthode : ${currentDemand.paymentMethod.replace('-', ' ').toUpperCase()}</p>
-                        <p class="text-sm text-gray-700">Problème : ${currentDemand.problemDescription.substring(0, 50)}...</p>
-                    </div>
-                    <p class="text-gray-600 mb-8">
-                        Le prestataire ${provider.name} va maintenant commencer l'intervention.
-                    </p>
-                    <button onclick="showListView()" class="px-8 py-3 bg-lime-600 text-white font-semibold rounded-xl hover:bg-lime-700 transition duration-300 shadow-md">
-                        Terminer et Retourner à l'Accueil
-                    </button>
-                </div>
-            `;
-  }
-
-  /**
-   * Configure les écouteurs d'événements (filtres et clics sur les cartes).
-   */
-  function setupEventListeners() {
-    // 1. Écouteur pour le formulaire de filtre
-    const filterForm = document.getElementById('filter-form');
-    if (filterForm) {
-      filterForm.addEventListener('submit', applyFilters);
-      // Appliquer les filtres initiaux (pour définir le compteur)
-      applyFilters();
-    }
-
-    // 2. Écouteurs pour le clic sur les cartes de prestataire
-    document.querySelectorAll('.provider-card').forEach(card => {
-      card.onclick = (event) => {
-        const providerId = card.dataset.id;
-        renderProviderDetails(providerId);
-      };
-    });
-  }
-
-  /**
-   * Applique les filtres à la liste des prestataires affichée.
-   */
-  function applyFilters(e) {
-    // S'assurer que e existe et qu'il a preventDefault, sinon on utilise une fonction vide
-    if (e && e.preventDefault) {
-      e.preventDefault();
-    }
-
-    // Récupérer les éléments après le rendu
-    const providerCards = document.querySelectorAll('.provider-card');
-    const resultsCount = document.getElementById('results-count');
-    const noResultsMessage = document.getElementById('no-results');
-    const locationFilter = document.getElementById('filter-location').value.trim().toLowerCase();
-    const deviceFilter = document.getElementById('filter-device').value;
-    const brandFilter = document.getElementById('filter-brand').value;
-
-    let visibleCount = 0;
-
-    providerCards.forEach(card => {
-      const cardLocation = card.dataset.location;
-      const cardDevices = card.dataset.device.split(',');
-      const cardBrands = card.dataset.brand.split(',');
-
-      let isMatch = true;
-
-      // --- Critère 1: Localisation ---
-      if (locationFilter && !cardLocation.includes(locationFilter)) {
-        isMatch = false;
-      }
-
-      // --- Critère 2: Type d'Appareil ---
-      if (deviceFilter !== 'all' && !cardDevices.includes(deviceFilter)) {
-        isMatch = false;
-      }
-
-      // --- Critère 3: Marque ---
-      // Le filtre 'all' passe si la carte est soit 'all' soit si elle inclut la marque sélectionnée.
-      if (brandFilter !== 'all' && cardBrands[0] !== 'all' && !cardBrands.includes(brandFilter)) {
-        isMatch = false;
-      }
-
-      // 3. Afficher ou masquer la carte
-      if (isMatch) {
-        card.style.display = 'flex'; // Afficher la carte
-        visibleCount++;
-      } else {
-        card.style.display = 'none'; // Masquer la carte
-      }
-    });
-
-    // 4. Mettre à jour le compteur de résultats et le message "Aucun Résultat"
-    if (visibleCount > 0) {
-      resultsCount.textContent = `${visibleCount} Technicien(s) trouvé(s) dans votre région`;
-      noResultsMessage.classList.add('hidden');
-    } else {
-      resultsCount.textContent = `0 Technicien trouvé`;
-      noResultsMessage.classList.remove('hidden');
-    }
-  }
-
-  // --- 6. Gestion du Bouton "Retour" du Navigateur et Initialisation ---
-
-  window.addEventListener('popstate', (event) => {
-    const state = event.state;
-    if (state) {
-      switch(state.view) {
-        case 'list':
-          showListView(false);
-          break;
-        case 'detail':
-          renderProviderDetails(state.id, false);
-          break;
-        case 'booking':
-          renderBookingForm(state.id, false);
-          break;
-        case 'payment':
-          renderPaymentForm(state.id, false);
-          break;
-        case 'confirmation':
-          renderPaymentConfirmation(false);
-          break;
-        default:
-          showListView(false);
-      }
-    } else {
-      showListView(false);
-    }
-  });
-
-  // Initialisation au chargement de la page
-  document.addEventListener('DOMContentLoaded', () => {
-    // Logique d'initialisation (gère l'état initial basé sur le hachage de l'URL)
-    const hash = window.location.hash.substring(1);
-    if (hash.startsWith('detail=')) {
-      renderProviderDetails(hash.substring(7));
-    } else if (hash.startsWith('booking=')) {
-      renderBookingForm(hash.substring(8));
-    } else if (hash.startsWith('payment=')) {
-      // Pour un vrai paiement, il faudrait charger l'état de la demande ici.
-      // Ici, on revient simplement au détail si l'état de la demande n'est pas prêt.
-      if (currentDemand.status === 'accepted') {
-        renderPaymentForm(hash.substring(8));
-      } else {
-        renderProviderDetails(hash.substring(8));
-      }
-    } else {
-      showListView();
-    }
-  });
-</script>
-</body>
-</html>
-
