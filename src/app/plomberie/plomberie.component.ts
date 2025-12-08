@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Nécessaire si le composant est standalone
+import { FormsModule } from '@angular/forms'; // Nécessaire pour [(ngModel)]
 
+// Interface pour le modèle de données du Plombier
 interface Plombier {
   id: string;
   nom: string;
@@ -17,13 +20,16 @@ interface Plombier {
 
 @Component({
   selector: 'app-plomberie',
-  standalone: false,
+  // Si vous utilisez un module, vous pouvez commenter ou supprimer 'standalone: true' et les 'imports'
+  // Si standalone: false, assurez-vous que ce composant est dans les 'declarations' de votre AppModule
+  // Et que FormsModule est dans les 'imports' de votre AppModule
+  standalone: false, // laissé à 'false' comme dans votre dernière version
   templateUrl: './plomberie.component.html',
   styleUrls: ['./plomberie.component.css']
 })
 export class PlomberieComponent implements OnInit {
 
-  // --- Propriétés de gestion de l'état ---
+  // --- Propriétés de gestion de l'état des Vues et Modales ---
   public showDetailSection: boolean = false;
   public showReservationModal: boolean = false;
   public showPaymentModal: boolean = false;
@@ -32,26 +38,37 @@ export class PlomberieComponent implements OnInit {
   public messageTitle: string = '';
   public messageContent: string = '';
 
-  // --- Data ---
+  // --- Data & États du Plombier ---
   plombiers: Plombier[] = [];
-
-  // Déclaration sécurisée (pour corriger les erreurs NG1 dans le template)
+  filteredPlombiers: Plombier[] = []; // Liste filtrée affichée
   plombierSelectionne: Plombier | null = null;
-  reservationStatus: 'initial' | 'accepted' = 'initial';
-  validationCode: string | null = null;
 
+  reservationStatus: 'initial' | 'accepted' = 'initial'; // État de la réservation
+  validationCode: string | null = null; // Code généré à l'acceptation
+
+  // --- États du Paiement ---
   selectedPaymentMethod: string = '';
   paymentErrorMessage: string | null = null;
 
-  // --- Propriétés de Formulaire (Utilisation de [(ngModel)]) ---
+  // --- Propriétés de Formulaire (Filtres) ---
   public filterLocation: string = '';
   public filterService: string = 'all';
   public filterUrgent: boolean = false;
 
-  // Formulaire Réservation : liées aux inputs dans le template
+  // --- Propriétés de Formulaire (Réservation) ---
   public reservationNom: string = '';
   public reservationTelephone: string = '';
   public reservationDescription: string = '';
+
+  // --- Propriétés de Formulaire (Paiement) ---
+  public paymentAmount: number | null = 5000;
+  // Mobile Money
+  public paymentPhoneNumber: string = '';
+  // Carte Bancaire
+  public cardName: string = '';
+  public cardNumber: string = '';
+  public cardExpiry: string = '';
+  public cardCVC: string = '';
   // -----------------------------------------------------------
 
 
@@ -59,6 +76,8 @@ export class PlomberieComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPlombiersData();
+    // Afficher tous les plombiers au démarrage
+    this.filteredPlombiers = this.plombiers;
   }
 
   // --- Data Loading (MOCK) ---
@@ -110,6 +129,23 @@ export class PlomberieComponent implements OnInit {
     ];
   }
 
+  // --- Fonction de Filtrage (Ajoutée) ---
+
+  applyFilters(event: Event) {
+    event.preventDefault(); // Empêcher le comportement par défaut du formulaire
+
+    this.filteredPlombiers = this.plombiers.filter(p => {
+      const locationMatch = !this.filterLocation ||
+        p.zone.toLowerCase().includes(this.filterLocation.toLowerCase());
+
+      const serviceMatch = this.filterService === 'all' ||
+        p.services.some(s => s.toLowerCase().includes(this.filterService.toLowerCase()));
+
+      const urgentMatch = !this.filterUrgent || p.disponible;
+
+      return locationMatch && serviceMatch && urgentMatch;
+    });
+  }
 
   // --- Fonctions de VUE / Navigation ---
 
@@ -122,10 +158,12 @@ export class PlomberieComponent implements OnInit {
       this.showDetailSection = true;
       this.reservationStatus = 'initial';
       this.validationCode = null;
+
+      // Réinitialiser les états du paiement
       this.selectedPaymentMethod = '';
       this.paymentErrorMessage = null;
+      this.paymentAmount = 5000;
 
-      // Fermer toutes les modales lors du changement de vue
       this.closeAllModals();
     } else {
       console.error(`Plombier avec l'ID ${id} non trouvé.`);
@@ -137,12 +175,11 @@ export class PlomberieComponent implements OnInit {
     this.plombierSelectionne = null;
     this.reservationStatus = 'initial';
     this.validationCode = null;
-    this.selectedPaymentMethod = '';
-    this.paymentErrorMessage = null;
     this.closeAllModals();
+    this.applyFilters(new Event('submit')); // Réappliquer les filtres si existants
   }
 
-  // --- Gestion des Modales (Angular Idiomatic) ---
+  // --- Gestion des Modales ---
 
   private closeAllModals() {
     this.showReservationModal = false;
@@ -153,7 +190,7 @@ export class PlomberieComponent implements OnInit {
   openReservationModal() {
     if (this.reservationStatus === 'accepted') return;
     this.showReservationModal = true;
-    this.showDetailSection = true; // S'assurer que le fond est la vue détail
+
     // Réinitialiser les champs du formulaire lors de l'ouverture
     this.reservationNom = '';
     this.reservationTelephone = '';
@@ -165,11 +202,17 @@ export class PlomberieComponent implements OnInit {
   }
 
   openPaymentModal() {
-    this.reservationStatus = 'accepted';
+    // Initialisation des champs de paiement
     this.selectedPaymentMethod = '';
     this.paymentErrorMessage = null;
+    this.paymentAmount = 5000;
+    this.paymentPhoneNumber = '';
+    this.cardName = '';
+    this.cardNumber = '';
+    this.cardExpiry = '';
+    this.cardCVC = '';
+
     this.showPaymentModal = true;
-    this.showDetailSection = true;
   }
 
   closePaymentModal() {
@@ -192,69 +235,97 @@ export class PlomberieComponent implements OnInit {
     const target = event.target as HTMLSelectElement;
     this.selectedPaymentMethod = target.value;
     this.paymentErrorMessage = null;
+    // Réinitialiser le numéro de téléphone pour éviter les confusions entre OM et Wave
+    this.paymentPhoneNumber = '';
   }
 
   submitReservation(event: Event) {
     event.preventDefault();
 
     if (!this.plombierSelectionne) {
-      console.error("Aucun plombier sélectionné pour la réservation.");
+      this.showMessage("Erreur", "Aucun plombier sélectionné pour la réservation.");
       return;
     }
 
-    // ⭐️ CORRECTION : Utilisation des variables liées par [(ngModel)]
     if (!this.reservationNom || !this.reservationTelephone || !this.reservationDescription) {
-      alert("Veuillez remplir tous les champs du formulaire.");
+      this.showMessage("Champs Manquants", "Veuillez remplir tous les champs du formulaire de réservation.");
       return;
     }
 
     this.closeReservationModal();
 
-    // Simuler le code de validation (Code fixe pour la démonstration)
-    this.validationCode = '5714';
+    // Simuler l'acceptation immédiate et générer un code de validation à 4 chiffres
+    this.validationCode = (Math.floor(1000 + Math.random() * 9000)).toString();
     this.reservationStatus = 'accepted';
 
-    this.showDetailSection = true;
-
-    this.showMessage("Demande de Réservation Envoyée et Acceptée",
-      `Le plombier ${this.plombierSelectionne.nom} a accepté votre demande ! Procédez au paiement de l'acompte. Votre code de validation est : <strong>${this.validationCode}</strong>.`);
+    this.showMessage("Demande de Réservation Acceptée ✅",
+      `Le plombier **${this.plombierSelectionne.nom}** a accepté votre demande ! Procédez au paiement de l'acompte. Votre code de validation est : <strong>${this.validationCode}</strong>.`);
   }
 
   submitPayment(event: Event) {
     event.preventDefault();
     this.paymentErrorMessage = null;
 
-    if (!this.validationCode) {
-      this.paymentErrorMessage = "Erreur: Le code de validation est manquant.";
+    if (!this.validationCode || !this.plombierSelectionne) {
+      this.paymentErrorMessage = "Erreur critique : Code de validation ou Plombier manquant.";
+      return;
+    }
+    if (!this.paymentAmount || this.paymentAmount <= 0) {
+      this.paymentErrorMessage = "Veuillez entrer un montant d'acompte valide (min 1 XOF).";
+      return;
+    }
+    if (!this.selectedPaymentMethod) {
+      this.paymentErrorMessage = "Veuillez sélectionner une méthode de paiement.";
       return;
     }
 
-    const form = event.target as HTMLFormElement;
-    let codeInput: HTMLInputElement | null = null;
+    let validationOK = false;
+    let confirmationMessage = '';
 
-    // NOTE : Si vous implémentez les champs dans le HTML, vous devez les lier à des variables TS
-    // (via [(ngModel)] ) et utiliser ces variables ici pour la validation.
-    // Le code ci-dessous repose toujours sur l'accès direct au DOM (form.elements)
-    // que vous aviez dans la version précédente.
+    // --- Validation selon la méthode ---
+    if (this.selectedPaymentMethod === 'orange_money' || this.selectedPaymentMethod === 'wave') {
+      if (!this.paymentPhoneNumber || this.paymentPhoneNumber.length < 8) {
+        this.paymentErrorMessage = "Veuillez entrer un numéro de téléphone valide (min. 8 chiffres).";
+        return;
+      }
+      // Simulation: L'utilisateur confirme la transaction sur son téléphone.
+      // On utilise le code de validation pour simuler le code secret du Mobile Money
+      const codeSaisi = prompt(`Veuillez entrer le code de validation à 4 chiffres (**${this.validationCode}**) pour confirmer la transaction Mobile Money.`);
 
-    if (this.selectedPaymentMethod === 'orange_money') {
-      codeInput = form.elements.namedItem('om-code') as HTMLInputElement;
-    } else if (this.selectedPaymentMethod === 'wave') {
-      codeInput = form.elements.namedItem('wave-code') as HTMLInputElement;
+      if (codeSaisi && codeSaisi.trim() === this.validationCode) {
+        validationOK = true;
+      } else {
+        this.paymentErrorMessage = "Code de confirmation incorrect. Annulation du paiement.";
+        return;
+      }
+      confirmationMessage = `sur le numéro ${this.paymentPhoneNumber}`;
+
     } else if (this.selectedPaymentMethod === 'carte') {
-      codeInput = form.elements.namedItem('card-3d-code') as HTMLInputElement;
+      if (!this.cardName || !this.cardNumber || !this.cardExpiry || !this.cardCVC) {
+        this.paymentErrorMessage = "Veuillez remplir toutes les informations de la carte.";
+        return;
+      }
+      // Simulation 3D Secure
+      const code3dSecure = prompt(`Simulateur 3D Secure: Veuillez entrer le code de validation à 4 chiffres (**${this.validationCode}**) pour confirmer le paiement.`);
+
+      if (code3dSecure && code3dSecure.trim() === this.validationCode) {
+        validationOK = true;
+      } else {
+        this.paymentErrorMessage = "Code 3D Secure incorrect. Annulation du paiement.";
+        return;
+      }
+      confirmationMessage = `avec la carte se terminant par **${this.cardNumber.slice(-4)}**`;
     }
 
-    const codeSaisi = codeInput ? codeInput.value.trim() : '';
+    // --- Finalisation du Paiement ---
+    if (validationOK) {
+      this.closePaymentModal();
+      this.showMessage("Paiement Réussi ! 💰",
+        `L'acompte de **${this.paymentAmount} XOF** a été réglé avec succès ${confirmationMessage}. Le prestataire est en route. Présentez-lui ce code à son arrivée : <strong>${this.validationCode}</strong>.`);
 
-    if (codeSaisi !== this.validationCode) {
-      this.paymentErrorMessage = "Erreur: Le code de validation/3D Secure entré est incorrect. Vérifiez le code à 4 chiffres.";
-      return;
+      // Réinitialiser les états post-paiement
+      this.reservationStatus = 'initial';
+      this.validationCode = null;
     }
-
-    // Simulation de succès
-    this.closePaymentModal();
-    this.showMessage("Paiement Réussi!",
-      `L'acompte a été réglé avec succès pour ${this.plombierSelectionne?.nom}. Il sera contacté immédiatement.`);
   }
 }

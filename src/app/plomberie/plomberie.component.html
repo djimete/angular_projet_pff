@@ -16,13 +16,17 @@
       <p class="text-xl text-gray-500">Trouvez un plombier qualifié disponible près de chez vous.</p>
     </section>
 
-    <form id="filter-form" class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+    <form id="filter-form" (ngSubmit)="applyFilters($event)"
+          class="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
       <h3 class="text-xl font-bold text-gray-800 mb-4">Affiner votre recherche</h3>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
         <input type="text" id="filter-location" placeholder="Ville ou code postal"
+               [(ngModel)]="filterLocation" name="filterLocation"
                class="p-3 border border-gray-300 rounded-lg">
 
         <select id="filter-service"
+                [(ngModel)]="filterService" name="filterService"
                 class="p-3 border border-gray-300 rounded-lg appearance-none">
           <option value="all">Tous les services</option>
           <option value="fuite">Fuite d'eau urgente</option>
@@ -31,25 +35,26 @@
         </select>
 
         <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-          <input type="checkbox" id="filter-urgent" class="w-4 h-4 text-indigo-600">
+          <input type="checkbox" id="filter-urgent"
+                 [(ngModel)]="filterUrgent" name="filterUrgent"
+                 class="w-4 h-4 text-indigo-600">
           <label for="filter-urgent" class="text-gray-700">Disponible maintenant</label>
         </div>
 
         <button type="submit" id="apply-filters-btn"
-                class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg">
+                class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
           Appliquer les filtres
         </button>
       </div>
     </form>
-
     <section>
       <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">
-        {{ plombiers.length }} Plombiers trouvés dans votre région
+        {{ filteredPlombiers.length }} Plombiers trouvés dans votre région
       </h3>
 
       <div id="plumbers-list" class="space-y-6">
 
-        <div *ngFor="let p of plombiers" class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4"
+        <div *ngFor="let p of filteredPlombiers" class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4"
              [ngClass]="p.disponible ? 'border-green-500' : 'border-orange-500'"
              [attr.data-id]="p.id">
 
@@ -78,7 +83,7 @@
               <p class="text-2xl font-bold text-indigo-600">{{ p.tarif }}</p>
 
               <button (click)="showPlumberDetails(p.id)"
-                      class="px-5 py-2 bg-indigo-600 text-white rounded-lg">
+                      class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                 Réservation
               </button>
             </div>
@@ -86,7 +91,7 @@
         </div>
       </div>
 
-      <div *ngIf="plombiers.length === 0"
+      <div *ngIf="filteredPlombiers.length === 0"
            class="text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
         <p class="text-xl text-yellow-800 font-semibold">
           Aucun plombier ne correspond à vos critères.
@@ -97,7 +102,7 @@
 
   <section id="detail-view" *ngIf="showDetailSection && plombierSelectionne">
     <button (click)="showListView()"
-            class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800">
+            class="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800 transition">
       <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
       Retour à la liste
     </button>
@@ -152,7 +157,7 @@
               </p>
               <p class="text-gray-900 mb-3 font-bold">
                 Votre code de validation pour le paiement et l'arrivée du prestataire est:
-                <span class="text-green-700 text-xl">{{validationCode!}}</span>
+                <span class="text-green-700 text-xl">{{validationCode}}</span>
               </p>
               <p class="text-sm text-gray-600 italic">
                 Veuillez effectuer le paiement de l'acompte (montant libre) pour confirmer la venue.
@@ -190,11 +195,11 @@
       </div>
     </div>
   </section>
-
 </main>
 
-<div id="reservation-modal" class="modal-overlay" [ngClass]="{'hidden': !showReservationModal}">
-  <div class="modal-content">
+<div id="reservation-modal" class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300"
+     [ngClass]="{'opacity-100 visible': showReservationModal, 'opacity-0 invisible hidden': !showReservationModal}">
+  <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300">
     <h2 class="text-2xl font-bold text-indigo-600 mb-6">Finaliser la Réservation</h2>
 
     <form id="reservation-form" (ngSubmit)="submitReservation($event)">
@@ -231,9 +236,9 @@
     </form>
   </div>
 </div>
-
-<div id="payment-modal" class="modal-overlay" [ngClass]="{'hidden': !showPaymentModal}">
-  <div class="modal-content">
+<div id="payment-modal" class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300"
+     [ngClass]="{'opacity-100 visible': showPaymentModal, 'opacity-0 invisible hidden': !showPaymentModal}">
+  <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300">
     <h2 id="payment-title" class="text-2xl font-bold text-indigo-600 mb-4">Payer Acompte pour {{plombierSelectionne?.nom}}</h2>
 
     <form id="payment-form" (ngSubmit)="submitPayment($event)">
@@ -254,14 +259,77 @@
         Veuillez choisir une méthode de paiement ci-dessus pour continuer.
       </div>
 
+      <div *ngIf="selectedPaymentMethod" class="mb-6">
+        <label for="payment-amount" class="block text-gray-700 font-medium mb-1">Montant de l'Acompte (XOF)</label>
+        <input type="number" id="payment-amount" name="amount"
+               [(ngModel)]="paymentAmount"
+               placeholder="Montant libre, ex: 5000" min="1"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+        <p class="text-sm text-gray-500 mt-1">Montant libre, mais il est recommandé d'entrer au moins 5000 XOF.</p>
+      </div>
 
       <ng-container *ngIf="selectedPaymentMethod === 'orange_money'">
+        <div class="p-4 bg-orange-50 rounded-lg border border-orange-200 mb-6">
+          <h4 class="font-bold text-orange-700 mb-3">Détails Orange Money</h4>
+          <div class="mb-4">
+            <label for="om-phone" class="block text-gray-700 font-medium mb-1">Numéro Orange Money</label>
+            <input type="tel" id="om-phone" name="om-phone"
+                   [(ngModel)]="paymentPhoneNumber"
+                   placeholder="Ex: 77 123 45 67"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+          </div>
+          <p class="text-sm text-orange-700">Vous recevrez une notification sur ce numéro pour confirmer la transaction avec votre code secret OM.</p>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="selectedPaymentMethod === 'wave'">
+        <div class="p-4 bg-cyan-50 rounded-lg border border-cyan-200 mb-6">
+          <h4 class="font-bold text-cyan-700 mb-3">Détails Wave</h4>
+          <div class="mb-4">
+            <label for="wave-phone" class="block text-gray-700 font-medium mb-1">Numéro Wave</label>
+            <input type="tel" id="wave-phone" name="wave-phone"
+                   [(ngModel)]="paymentPhoneNumber"
+                   placeholder="Ex: 78 123 45 67"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+          </div>
+          <p class="text-sm text-cyan-700">Vous recevrez une notification sur ce numéro pour confirmer la transaction avec votre code secret Wave.</p>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="selectedPaymentMethod === 'carte'">
+        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200 mb-6">
+          <h4 class="font-bold text-blue-700 mb-3">Détails Carte Bancaire</h4>
+          <div class="mb-4">
+            <label for="card-name" class="block text-gray-700 font-medium mb-1">Nom sur la Carte</label>
+            <input type="text" id="card-name" name="card-name"
+                   [(ngModel)]="cardName"
+                   placeholder="Nom et Prénom"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+          </div>
+          <div class="mb-4">
+            <label for="card-number" class="block text-gray-700 font-medium mb-1">Numéro de Carte</label>
+            <input type="text" id="card-number" name="card-number"
+                   [(ngModel)]="cardNumber"
+                   placeholder="Ex: 4XXX XXXX XXXX XXXX"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="card-expiry" class="block text-gray-700 font-medium mb-1">Expiration (MM/AA)</label>
+              <input type="text" id="card-expiry" name="card-expiry"
+                     [(ngModel)]="cardExpiry"
+                     placeholder="MM/AA"
+                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+            <div>
+              <label for="card-cvc" class="block text-gray-700 font-medium mb-1">CVC</label>
+              <input type="text" id="card-cvc" name="card-cvc"
+                     [(ngModel)]="cardCVC"
+                     placeholder="Ex: 123"
+                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+          </div>
+        </div>
       </ng-container>
 
       <div *ngIf="paymentErrorMessage" class="text-red-600 bg-red-50 p-3 rounded-lg border border-red-300 mb-4 font-semibold">
@@ -275,7 +343,7 @@
         </button>
         <button type="submit"
                 class="px-5 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition">
-          Confirmer et Payer
+          Confirmer et Payer {{ paymentAmount ? '(' + paymentAmount + ' XOF)' : '' }}
         </button>
       </div>
 
@@ -288,14 +356,16 @@
     </form>
   </div>
 </div>
-
-<div id="message-modal" class="modal-overlay message-modal" [ngClass]="{'hidden': !showMessageModal}">
-  <div class="modal-content">
+<div id="message-modal" class="modal-overlay fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300"
+     [ngClass]="{'opacity-100 visible': showMessageModal, 'opacity-0 invisible hidden': !showMessageModal}">
+  <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm transform transition-transform duration-300">
+    <h2 class="text-xl font-bold text-gray-900 mb-3">{{messageTitle}}</h2>
     <div id="message-content" [innerHTML]="messageContent"></div>
 
     <button (click)="closeMessageModal()"
-            class="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-lg">
+            class="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
       OK
     </button>
   </div>
 </div>
+plomberi.html

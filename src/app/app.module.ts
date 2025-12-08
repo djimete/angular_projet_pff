@@ -1,3 +1,5 @@
+// app.module.ts
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // 👈 [IMPORTANT] Pour [(ngModel)]
@@ -13,30 +15,29 @@ import { LoginComponent } from './login/login.component';
 import { InscriptionComponent } from './inscription/inscription.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
-import { PlomberieComponent } from './plomberie/plomberie.component'; // 👈 Le composant à déclarer
+import { PlomberieComponent } from './plomberie/plomberie.component';
 import { NounouComponent } from './nounou/nounou.component';
 import { ElectriciteComponent } from './electricite/electricite.component';
 import { DomestiqueComponent } from './domestique/domestique.component';
 import { BricolageComponent } from './bricolage/bricolage.component';
 import { BeauteComponent } from './beaute/beaute.component';
 import { ReparationtechComponent } from './reparationtech/reparationtech.component';
-import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component';// ⭐️ Casse corrigée
-// Assurez-vous que le chemin ('./composant-chemin/...') est correct par rapport à app.module.ts
+import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component';
 import { DetaileletrictComponent } from './detaileletrict/detaileletrict.component';
 import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.component';
 // ----------------------------------------
 
 
 @NgModule({
-  // ⭐️ [CORRECTION] TOUS les composants doivent être listés ici
+  // ⭐️ [CORRECTION] LoginComponent a été retiré, car il est standalone.
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent,
+    // LoginComponent, <--- RETIRÉ CAR IL EST DÉFINI COMME STANDALONE DANS SON FICHIER .TS
     InscriptionComponent,
     ResetPasswordComponent,
     ConfirmPasswordComponent,
-    PlomberieComponent, // 👈 CORRECTION DE L'ERREUR "not declared"
+    PlomberieComponent,
     NounouComponent,
     DomestiqueComponent,
     BricolageComponent,
@@ -45,20 +46,21 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
     DetaildomestiqueComponent,
     CoursDomicileComponent,
     ElectriciteComponent,
-   // ReparationtechComponent,
-
-
-
   ],
-  // ⭐️ [IMPORTANT] Assurez-vous que FormsModule et AppRoutingModule sont importés
+  // [IMPORTANT] Les composants standalone doivent être importés s'ils sont utilisés
+  // dans le template d'un composant de ce module ou dans le routing.
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule, // Nécessaire pour [(ngModel)] dans PlomberieComponent
+    FormsModule,
     ReactiveFormsModule,
     CommonModule,
     NgClass,
-    ReparationtechComponent,
+
+    // Ajoutez LoginComponent ici si vous l'utilisez directement dans le template de AppComponent
+    // ou si vous l'utilisez dans le routing (si ce n'est pas déjà géré par AppRoutingModule)
+    LoginComponent,
+    ReparationtechComponent, // J'assume qu'il est aussi standalone et utilisé ici
   ],
   providers: [],
   bootstrap: [AppComponent]
