@@ -3,30 +3,31 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common'; // ⬅️ NOUVEL IMPORT NÉCESSAIRE POUR *ngIf
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  // CORRECTION : Ajout de CommonModule pour supporter *ngIf
   imports: [FormsModule, RouterModule, CommonModule]
 })
 export class LoginComponent implements OnInit {
-  // E-mail pré-rempli pour correspondre à l'image
-  email: string = 'djimou.meta081@gmail.com';
+  email: string = ''; // Initialisation vide
+  password: string = ''; // <-- NOUVEAU : Variable pour le mot de passe
 
-  // Variables pour gérer l'affichage du message de simulation
+  // 🚩 NOUVEAU : État pour contrôler l'étape de connexion
+  emailVerified: boolean = false;
+
   simulationMessage: string = '';
   isSimulationSuccess: boolean = false;
-
-  // Variable pour contrôler le style de l'input (bleu)
   emailEntered: boolean = false;
 
-  constructor() { }
+  constructor(private router: Router) { } // Ajout de Router pour une redirection simulée
 
   ngOnInit(): void {
+    // Si vous voulez pré-remplir l'e-mail, faites-le ici
+    // this.email = 'djimou.meta081@gmail.com';
     if (this.email) {
       this.emailEntered = true;
     }
@@ -36,27 +37,52 @@ export class LoginComponent implements OnInit {
   onSubmit(event: Event): void {
     event.preventDefault();
 
-    if (this.email) {
-      this.simulateEmailVerification(this.email);
+    if (!this.emailVerified) {
+      // 1. Étape de l'e-mail
+      if (this.email) {
+        this.simulateEmailVerification(this.email);
+      } else {
+        this.isSimulationSuccess = false;
+        this.simulationMessage = "Veuillez entrer une adresse e-mail valide.";
+        this.emailEntered = false;
+      }
+      console.log('Email soumis:', this.email);
+
     } else {
-      this.isSimulationSuccess = false;
-      this.simulationMessage = "Veuillez entrer une adresse e-mail valide.";
-      this.emailEntered = false;
+      // 2. Étape du mot de passe
+      this.simulateLogin();
     }
-    console.log('Email soumis:', this.email);
   }
 
-  // Logique pour simuler la vérification et définir le message exact
+  // Simule la vérification de l'e-mail
   simulateEmailVerification(email: string): void {
+    // Simule la vérification réussie (par exemple, l'utilisateur existe)
     this.emailEntered = true;
     this.isSimulationSuccess = true;
+    this.emailVerified = true; // <-- PASSER À L'ÉTAPE DU MOT DE PASSE
 
-    // Le message exact demandé
-    this.simulationMessage = `Connexion simulée. Vérification de l'e-mail (${email}) réussie ! Vous seriez redirigé pour saisir votre mot de passe.`;
+    this.simulationMessage = `E-mail (${email}) vérifié ! Veuillez saisir votre mot de passe.`;
+  }
+
+  // 🚩 NOUVEAU : Simule la connexion
+  simulateLogin(): void {
+    if (this.password && this.password.length >= 6) {
+      this.isSimulationSuccess = true;
+      this.simulationMessage = `Connexion réussie pour ${this.email} ! Redirection...`;
+      console.log('Mot de passe soumis:', this.password);
+      // Simuler une redirection après un court délai
+      // setTimeout(() => { this.router.navigate(['/home']); }, 1500);
+
+    } else {
+      this.isSimulationSuccess = false;
+      this.simulationMessage = "Mot de passe invalide (6 caractères minimum pour la simulation).";
+    }
   }
 
   // Gère les clics sur les boutons de connexion sociale
   handleSocialSignIn(provider: string): void {
+    // La connexion sociale contourne les étapes e-mail/mdp, donc réinitialisation de l'état
+    this.emailVerified = false;
     console.log(`Tentative de connexion avec ${provider}.`);
     this.simulationMessage = `Tentative de connexion via ${provider}.`;
     this.isSimulationSuccess = false;

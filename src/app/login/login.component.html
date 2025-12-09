@@ -6,7 +6,7 @@
         Working_Express
       </h2>
 
-      <p class="text-lg text-gray-500 mb-8 text-center">
+      <p class="text-lg text-gray-500 mb-8 text-center" *ngIf="!emailVerified">
         <span class="text-xl">
             Vous n'avez pas de compte ?
             <a routerLink="/inscription" class="font-semibold text-blue-500 hover:text-blue-600 transition-colors">
@@ -16,42 +16,67 @@
       </p>
 
       <form id="primary-form" (ngSubmit)="onSubmit($event)">
-        <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-700 text-left mb-1">Adresse e-mail</label>
-          <input type="email" id="email" name="emailInput" placeholder="votre@email.com" required
-                 [(ngModel)]="email"
-                 (ngModelChange)="onEmailChange()"
-                 class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none
-                 {{ emailEntered ? 'bg-blue-100 text-blue-800 font-medium' : '' }}">
+
+        <div *ngIf="!emailVerified">
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700 text-left mb-1">Adresse e-mail</label>
+            <input type="email" id="email" name="emailInput" placeholder="votre@email.com" required
+                   [(ngModel)]="email"
+                   (ngModelChange)="onEmailChange()"
+                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none
+                   {{ emailEntered ? 'bg-blue-100 text-blue-800 font-medium' : '' }}">
+          </div>
+
+          <button type="submit"
+                  class="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-150 ease-in-out shadow-lg
+                         transform hover:scale-[1.01]">
+            Continuer avec l'e-mail
+          </button>
         </div>
 
-        <button type="submit"
-                class="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-150 ease-in-out shadow-lg
-                       transform hover:scale-[1.01]">
-          Continuer avec l'e-mail
-        </button>
+
+        <div *ngIf="emailVerified">
+          <p class="text-sm text-gray-600 mb-4 text-left">
+            Connexion pour: <span class="font-bold text-gray-800">{{ email }}</span>
+          </p>
+
+          <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-700 text-left mb-1">Mot de passe</label>
+            <input type="password" id="password" name="passwordInput" placeholder="Saisissez votre mot de passe" required
+                   [(ngModel)]="password"
+                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          </div>
+
+          <button type="submit"
+                  [disabled]="!password"
+                  class="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-150 ease-in-out shadow-lg
+                           transform hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed">
+            Se Connecter
+          </button>
+        </div>
+
+
       </form>
 
-      <div class="flex items-center my-6">
-        <div class="flex-grow border-t border-gray-300"></div>
-        <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">ou</span>
-        <div class="flex-grow border-t border-gray-300"></div>
-      </div>
+      <div *ngIf="!emailVerified">
+        <div class="flex items-center my-6">
+          <div class="flex-grow border-t border-gray-300"></div>
+          <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">ou</span>
+          <div class="flex-grow border-t border-gray-300"></div>
+        </div>
 
-      <p class="text-sm font-semibold text-gray-600 mb-4 text-left">Ou connectez-vous avec :</p>
-      <div class="flex justify-between space-x-4">
-
-        <button (click)="handleSocialSignIn('Google')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
-          <span class="text-3xl font-bold text-red-600">G</span>
-        </button>
-
-        <button (click)="handleSocialSignIn('Facebook')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
-          <span class="text-3xl font-bold text-blue-600">f</span>
-        </button>
-
-        <button (click)="handleSocialSignIn('Apple')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
-          <span class="text-3xl font-bold text-gray-800"></span>
-        </button>
+        <p class="text-sm font-semibold text-gray-600 mb-4 text-left">Ou connectez-vous avec :</p>
+        <div class="flex justify-between space-x-4">
+          <button (click)="handleSocialSignIn('Google')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
+            <span class="text-3xl font-bold text-red-600">G</span>
+          </button>
+          <button (click)="handleSocialSignIn('Facebook')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
+            <span class="text-3xl font-bold text-blue-600">f</span>
+          </button>
+          <button (click)="handleSocialSignIn('Apple')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
+            <span class="text-3xl font-bold text-gray-800"></span>
+          </button>
+        </div>
       </div>
 
       <div *ngIf="simulationMessage"
@@ -60,11 +85,12 @@
         {{ simulationMessage }}
       </div>
 
-      <p class="mt-6 text-center text-sm text-gray-600">
+      <p class="mt-6 text-center text-sm text-gray-600" *ngIf="emailVerified">
         <a routerLink="/reinitialisation" class="font-semibold text-blue-500 hover:text-blue-600 transition-colors">
           Mot de passe oublié ?
         </a>
       </p>
+
     </div>
   </div>
 </div>

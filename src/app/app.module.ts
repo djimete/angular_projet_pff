@@ -2,6 +2,7 @@
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // 👈 [IMPORTANT] Pour [(ngModel)]
 import { CommonModule } from '@angular/common'; // ⬅️ NÉCESSAIRE pour ngClass, *ngIf, *ngFor
 import { NgClass } from '@angular/common';
@@ -51,6 +52,7 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
   // dans le template d'un composant de ce module ou dans le routing.
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
