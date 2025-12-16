@@ -1,96 +1,102 @@
-<div class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-  <div class="w-full max-w-sm">
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-gray-200">
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-lg">
 
-      <h2 class="text-3xl font-extrabold text-gray-900 mb-2 text-center">
-        Working_Express
-      </h2>
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      {{ emailVerified ? 'Saisissez votre mot de passe' : 'Connectez-vous à votre compte' }}
+    </h2>
 
-      <p class="text-lg text-gray-500 mb-8 text-center" *ngIf="!emailVerified">
-        <span class="text-xl">
-            Vous n'avez pas de compte ?
-            <a routerLink="/inscription" class="font-semibold text-blue-500 hover:text-blue-600 transition-colors">
-                S'inscrire
-            </a>
-        </span>
-      </p>
+    <div *ngIf="!emailVerified" class="space-y-3">
+      <button
+        type="button"
+        (click)="handleSocialSignIn('Google')"
+        class="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Connexion avec Google
+      </button>
+      <button
+        type="button"
+        (click)="handleSocialSignIn('Facebook')"
+        class="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Connexion avec Facebook
+      </button>
+    </div>
 
-      <form id="primary-form" (ngSubmit)="onSubmit($event)">
-
-        <div *ngIf="!emailVerified">
-          <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700 text-left mb-1">Adresse e-mail</label>
-            <input type="email" id="email" name="emailInput" placeholder="votre@email.com" required
-                   [(ngModel)]="email"
-                   (ngModelChange)="onEmailChange()"
-                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none
-                   {{ emailEntered ? 'bg-blue-100 text-blue-800 font-medium' : '' }}">
-          </div>
-
-          <button type="submit"
-                  class="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-150 ease-in-out shadow-lg
-                         transform hover:scale-[1.01]">
-            Continuer avec l'e-mail
-          </button>
-        </div>
-
-
-        <div *ngIf="emailVerified">
-          <p class="text-sm text-gray-600 mb-4 text-left">
-            Connexion pour: <span class="font-bold text-gray-800">{{ email }}</span>
-          </p>
-
-          <div class="mb-4">
-            <label for="password" class="block text-sm font-medium text-gray-700 text-left mb-1">Mot de passe</label>
-            <input type="password" id="password" name="passwordInput" placeholder="Saisissez votre mot de passe" required
-                   [(ngModel)]="password"
-                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-          </div>
-
-          <button type="submit"
-                  [disabled]="!password"
-                  class="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-150 ease-in-out shadow-lg
-                           transform hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed">
-            Se Connecter
-          </button>
-        </div>
-
-
-      </form>
-
-      <div *ngIf="!emailVerified">
-        <div class="flex items-center my-6">
-          <div class="flex-grow border-t border-gray-300"></div>
-          <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">ou</span>
-          <div class="flex-grow border-t border-gray-300"></div>
-        </div>
-
-        <p class="text-sm font-semibold text-gray-600 mb-4 text-left">Ou connectez-vous avec :</p>
-        <div class="flex justify-between space-x-4">
-          <button (click)="handleSocialSignIn('Google')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
-            <span class="text-3xl font-bold text-red-600">G</span>
-          </button>
-          <button (click)="handleSocialSignIn('Facebook')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
-            <span class="text-3xl font-bold text-blue-600">f</span>
-          </button>
-          <button (click)="handleSocialSignIn('Apple')" class="flex-1 flex items-center justify-center p-3 rounded-xl shadow-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white">
-            <span class="text-3xl font-bold text-gray-800"></span>
-          </button>
-        </div>
+    <div *ngIf="!emailVerified" class="relative">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-gray-300"></div>
       </div>
+      <div class="relative flex justify-center text-sm">
+        <span class="px-2 bg-white text-gray-500">Ou continuez avec l'e-mail</span>
+      </div>
+    </div>
 
-      <div *ngIf="simulationMessage"
-           class="mt-6 p-4 rounded-lg text-sm font-medium text-left shadow-md
-                  {{ isSimulationSuccess ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300' }}">
+    <form class="mt-8 space-y-6" (ngSubmit)="onSubmit($event)">
+
+      <div *ngIf="simulationMessage" class="p-3 rounded-md text-sm"
+           [ngClass]="{'bg-green-100 text-green-700': isSimulationSuccess, 'bg-red-100 text-red-700': !isSimulationSuccess}">
         {{ simulationMessage }}
       </div>
 
-      <p class="mt-6 text-center text-sm text-gray-600" *ngIf="emailVerified">
-        <a routerLink="/reinitialisation" class="font-semibold text-blue-500 hover:text-blue-600 transition-colors">
-          Mot de passe oublié ?
+      <div *ngIf="loginError" class="text-red-600 text-sm p-3 bg-red-100 rounded-md">
+        {{ loginError }}
+      </div>
+
+      <div *ngIf="!emailVerified">
+        <label for="email-address" class="sr-only">Adresse e-mail</label>
+        <input id="email-address" name="email" type="email" autocomplete="email" required
+               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+               placeholder="Adresse e-mail"
+               [(ngModel)]="email"
+               (ngModelChange)="onEmailChange()">
+      </div>
+
+      <div *ngIf="emailVerified">
+        <label for="password" class="sr-only">Mot de passe</label>
+        <div class="relative">
+          <input id="password" name="password"
+                 [type]="showPassword ? 'text' : 'password'"
+                 autocomplete="current-password" required
+                 class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                 placeholder="Mot de passe"
+                 [(ngModel)]="password">
+
+          <button type="button"
+                  (click)="showPassword = !showPassword"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 hover:text-gray-700 focus:outline-none">
+            {{ showPassword ? 'Masquer' : 'Afficher' }}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit"
+                [disabled]="loading || (emailVerified && !password) || (!emailVerified && !email)"
+                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+
+          <span *ngIf="loading" class="flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Chargement...
+          </span>
+
+          <span *ngIf="!loading">
+            {{ emailVerified ? 'Se Connecter' : 'Continuer' }}
+          </span>
+        </button>
+      </div>
+    </form>
+
+    <div class="text-sm text-center">
+      <a [routerLink]="['/forgot-password']" class="font-medium text-indigo-600 hover:text-indigo-500">
+        Mot de passe oublié ?
+      </a>
+      <p class="mt-2 text-gray-600">
+        Pas encore de compte ?
+        <a [routerLink]="['/signup']" class="font-medium text-indigo-600 hover:text-indigo-500">
+          Créer un compte
         </a>
       </p>
-
     </div>
   </div>
 </div>
