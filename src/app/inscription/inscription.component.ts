@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import {InscriptionRequest} from '../models';
+import {AuthService} from '../services/auth.service';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-inscription',
@@ -9,13 +12,25 @@ import { Router } from '@angular/router';
 })
 export class InscriptionComponent {
 
-  constructor(private router: Router) {}
+  inscriptionForm:FormGroup=new FormGroup({
+    nom:new FormControl('',Validators.required),
+    prenom:new FormControl('', Validators.required),
+    adresse_e_mail:new FormControl('',Validators.required),
+    pwd1:new FormControl('',Validators.required),
+    pwd2:new FormControl('',Validators.required),
+    telephone:new FormControl(''),
+    adresse:new FormControl(''),
+    dateNaissance:new FormControl(''),
+    genre:new FormControl('')
+  })
+
+  constructor(private router: Router,private authService:AuthService) {}
 
   /**
    * Gère la soumission du formulaire d'inscription
    */
   onSubmit(event: Event) {
-    event.preventDefault();
+    /*event.preventDefault();
 
     const nom = (document.getElementById('nom') as HTMLInputElement).value;
     const prenom = (document.getElementById('prenom') as HTMLInputElement).value;
@@ -27,7 +42,8 @@ export class InscriptionComponent {
     // Redirection après inscription réussie
     setTimeout(() => {
       this.router.navigate(['/']);
-    }, 2000);
+    }, 2000);*/
+    this.register()
   }
 
   /**
@@ -77,5 +93,30 @@ export class InscriptionComponent {
         messageBox.classList.add('hidden');
       }, 5000);
     }
+  }
+
+  register(){
+    const request:InscriptionRequest={
+      "email": this.inscriptionForm.get('adresse_e_mail')?.value,
+      "motDePasse": this.inscriptionForm.get('pwd1')?.value,
+      "nom": this.inscriptionForm.get('nom')?.value,
+      "prenom": this.inscriptionForm.get('prenom')?.value,
+      "telephone": this.inscriptionForm.get('telephone')?.value,
+      "adresse":this.inscriptionForm.get('adresse')?.value
+    }
+    console.log('inscrption de ',request)
+    this.authService.register(request).subscribe({
+      error:(err)=>{
+        console.log(err)
+      },
+      next:()=>{
+        console.log('ok ')
+      },
+      complete:()=>{
+        console.log("inscription ok");
+        this.router.navigate(['/']);
+      }
+    });
+
   }
 }

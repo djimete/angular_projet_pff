@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../auth.service'; // Service d'authentification
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
    * Simule la vérification de l'existence de l'e-mail (Étape 1), en utilisant AuthService.
    */
   simulateEmailVerification(email: string): void {
-    setTimeout(() => {
+    /*setTimeout(() => {
       this.loading = false;
 
       if (this.authService.isEmailRegistered(email)) {
@@ -84,7 +84,7 @@ export class LoginComponent implements OnInit {
         this.isSimulationSuccess = false;
         this.simulationMessage = `Aucun compte trouvé pour l'e-mail: ${email}. Veuillez vérifier ou vous inscrire.`;
       }
-    }, 1000);
+    }, 1000);*/
   }
 
   /**
@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    setTimeout(() => {
+    /*setTimeout(() => {
       this.loading = false;
 
       // Vérification finale de l'authentification
@@ -113,7 +113,7 @@ export class LoginComponent implements OnInit {
         this.isSimulationSuccess = false;
         this.simulationMessage = "Échec de la connexion.";
       }
-    }, 1500);
+    }, 1500);*/
   }
 
   /**

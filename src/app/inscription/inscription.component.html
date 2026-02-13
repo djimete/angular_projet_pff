@@ -11,68 +11,68 @@
       </p>
 
       <!-- Formulaire d'inscription -->
-      <form id="primary-form" (submit)="onSubmit($event)">
+      <form [formGroup]="inscriptionForm" id="primary-form" (submit)="onSubmit($event)">
 
         <!-- Nom -->
         <div class="mb-2">
           <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-          <input type="text" id="nom" name="nom" placeholder="Entrez votre nom" required
+          <input formControlName="nom" type="text" id="nom" name="nom" placeholder="Entrez votre nom" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Prénom -->
         <div class="mb-4">
           <label for="prenom" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
-          <input type="text" id="prenom" name="prenom" placeholder="Entrez votre prénom" required
+          <input formControlName="prenom" type="text" id="prenom" name="prenom" placeholder="Entrez votre prénom" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Email -->
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Adresse e-mail</label>
-          <input type="email" id="email" name="email" placeholder="Entrez votre e-mail" required
+          <input formControlName="adresse_e_mail" type="email" id="email" name="email" placeholder="Entrez votre e-mail" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Mot de passe -->
         <div class="mb-4">
           <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-          <input type="password" id="password" name="password" placeholder="Créez un mot de passe" required
+          <input formControlName="pwd1" type="password" id="password" name="password" placeholder="Créez un mot de passe" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Confirmation mot de passe -->
         <div class="mb-4">
           <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirmez le mot de passe</label>
-          <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirmez votre mot de passe" required
+          <input formControlName="pwd2" type="password" id="confirm-password" name="confirm-password" placeholder="Confirmez votre mot de passe" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Téléphone -->
         <div class="mb-4">
           <label for="telephone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-          <input type="tel" id="telephone" name="telephone" placeholder="Votre numéro de téléphone" required
+          <input formControlName="telephone" type="tel" id="telephone" name="telephone" placeholder="Votre numéro de téléphone" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Adresse -->
         <div class="mb-4">
           <label for="adresse" class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
-          <input type="text" id="adresse" name="adresse" placeholder="Votre adresse complète"
+          <input formControlName="adresse" type="text" id="adresse" name="adresse" placeholder="Votre adresse complète"
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Date de naissance -->
         <div class="mb-4">
           <label for="date-naissance" class="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
-          <input type="date" id="date-naissance" name="date-naissance" required
+          <input formControlName="dateNaissance" type="date" id="date-naissance" name="date-naissance" required
                  class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
         <!-- Genre -->
         <div class="mb-4">
           <label for="genre" class="block text-sm font-medium text-gray-700 mb-1">Genre</label>
-          <select id="genre" name="genre" required
+          <select formControlName="genre" id="genre" name="genre" required
                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none">
             <option value="">Sélectionnez votre genre</option>
             <option value="homme">Homme</option>

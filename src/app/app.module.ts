@@ -2,7 +2,7 @@
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClientModule, provideHttpClient} from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // 👈 [IMPORTANT] Pour [(ngModel)]
 import { CommonModule } from '@angular/common'; // ⬅️ NÉCESSAIRE pour ngClass, *ngIf, *ngFor
 import { NgClass } from '@angular/common';
@@ -26,6 +26,7 @@ import { ReparationtechComponent } from './reparationtech/reparationtech.compone
 import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component';
 import { DetaileletrictComponent } from './detaileletrict/detaileletrict.component';
 import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.component';
+import {AuthService} from './services/auth.service';
 // ----------------------------------------
 
 
@@ -52,7 +53,6 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
   // dans le template d'un composant de ce module ou dans le routing.
   imports: [
     BrowserModule,
-    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
@@ -64,7 +64,9 @@ import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.c
     LoginComponent,
     ReparationtechComponent, // J'assume qu'il est aussi standalone et utilisé ici
   ],
-  providers: [],
+  providers: [
+    provideHttpClient()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
