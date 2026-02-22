@@ -1,23 +1,26 @@
 // src/app/login/login.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {AuthService} from '../services/auth.service';
+import {LoginRequest} from '../models';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [FormsModule, RouterModule, CommonModule]
+  imports: [FormsModule, RouterModule, CommonModule, ReactiveFormsModule]
 })
 export class LoginComponent implements OnInit {
 
-  // Propriétés du formulaire
-  email: string = '';
-  password: string = '';
+
+  loginForm=new FormGroup({
+    email:new FormControl('',[Validators.required, Validators.email]),
+    password:new FormControl('')
+  })
 
   // Variables d'état pour la gestion du flux de connexion
   emailEntered: boolean = false;
@@ -38,9 +41,9 @@ export class LoginComponent implements OnInit {
     // Vérifie si un email a été passé en paramètre d'URL (après une inscription réussie)
     this.route.queryParams.subscribe(params => {
       if (params['email']) {
-        this.email = params['email'];
+        this.loginForm.get('email')?.setValue( params['email']);
         this.emailEntered = true;
-        this.simulationMessage = `Inscription réussie pour ${this.email}. Veuillez saisir votre mot de passe pour vous connecter.`;
+        this.simulationMessage = `Inscription réussie pour ${this.loginForm.get('email')?.value}. Veuillez saisir votre mot de passe pour vous connecter.`;
         this.isSimulationSuccess = true;
       }
     });
@@ -52,11 +55,27 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.loginError = '';
     this.simulationMessage = '';
-
-    if (!this.emailVerified) {
+    console.log("this.emailVerified",this.emailVerified)
+    if (!this.emailVerified && this.loginForm.controls["email"].valid) {
       // Étape 1 : Vérification de l'existence de l'utilisateur
-      if (this.email && this.email.includes('@')) {
-        this.simulateEmailVerification(this.email);
+      let email=this.loginForm.controls['email'].value;
+      if ( email) {
+        this.authService.verifieEmailExiste(email).subscribe({
+          complete:()=>{
+            console.log("emailExiste ok");
+            this.emailVerified=true;
+            this.loading = false;
+          },
+          error:(err)=>{
+            if(err.status==444){
+              this.simulationMessage=`${email} n'existe pas`
+            }else {
+              this.simulationMessage=`une erreur interne est survenue code=${err.status}`
+            }
+            console.log("errorVerifieEmail");
+            this.loading = false;
+          }
+        })
       } else {
         this.isSimulationSuccess = false;
         this.simulationMessage = "Veuillez entrer une adresse e-mail valide.";
@@ -71,7 +90,7 @@ export class LoginComponent implements OnInit {
   /**
    * Simule la vérification de l'existence de l'e-mail (Étape 1), en utilisant AuthService.
    */
-  simulateEmailVerification(email: string): void {
+  verifieEmailExiste(email: string): void {
     /*setTimeout(() => {
       this.loading = false;
 
@@ -92,11 +111,39 @@ export class LoginComponent implements OnInit {
    */
   simulateLogin(): void {
 
-    if (!this.password) {
-      this.loading = false;
-      this.loginError = 'Veuillez saisir votre mot de passe.';
-      this.isSimulationSuccess = false;
-      return;
+    const email = this.loginForm.controls["email"].value;
+    const password = this.loginForm.controls["password"].value;
+    console.log('email=',email)
+    console.log('password=',password)
+    if(email && password){
+      const request:LoginRequest={
+        email:email,
+        motDePasse:password
+      }
+      this.authService.authentification(request).subscribe({
+        next:(resp)=>{
+          console.log("resp=",resp)
+          this.authService.saveToken(resp)
+        },
+        error:(err)=>{
+          if(err.status==444){
+            this.simulationMessage="login ou mot de passe incorrect";
+            this.emailVerified=false;
+            this.emailEntered=false;
+            this.loginForm.reset()
+          }else {
+            this.simulationMessage=`une erreur interne est survenue code=${err.status}`
+          }
+          this.loading=false
+        },
+        complete:()=>{
+          console.log("authentification réussie");
+          this.loading=false;
+          this.router.navigate(['/'])
+        }
+      })
+    }else {
+      this.loading=false;
     }
 
     /*setTimeout(() => {
@@ -134,13 +181,13 @@ export class LoginComponent implements OnInit {
   }
 
   // Gère le changement d'e-mail pour réinitialiser l'état du formulaire
-  onEmailChange(): void {
+  /*onEmailChange(): void {
     if (this.emailVerified) {
       this.emailVerified = false;
-      this.password = '';
+      this.loginForm.get('password')?.setValue('');
     }
     this.loginError = '';
     this.simulationMessage = '';
     this.emailEntered = !!this.email;
-  }
+  }*/
 }

@@ -49,40 +49,40 @@
     </form>
     <section>
       <h3 id="results-count" class="text-2xl font-bold text-gray-800 mb-6">
-        {{ filteredPlombiers.length }} Plombiers trouvés dans votre région
+         filteredPlombiers.length Plombiers trouvés dans votre région
       </h3>
 
       <div id="plumbers-list" class="space-y-6">
 
-        <div *ngFor="let p of filteredPlombiers" class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4"
-             [ngClass]="p.disponible ? 'border-green-500' : 'border-orange-500'"
-             [attr.data-id]="p.id">
+        <div *ngFor="let p of plombiers" class="plumber-card bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500"
+
+             [attr.data-id]="1">
 
           <div class="md:flex md:justify-between md:items-center">
             <div class="flex items-center space-x-4">
-              <a href="#" (click)="showPlumberDetails(p.id); $event.preventDefault()">
-                <img [src]="'https://placehold.co/80x80/' + (p.disponible ? '059669' : 'f97316') + '/ffffff?text=' + p.initiales"
-                     class="w-16 h-16 rounded-full border-2" [ngClass]="p.disponible ? 'border-green-500' : 'border-orange-500'">
+              <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()">
+                <img [src]="'https://placehold.co/80x80/059669/ffffff?text=' + p.prenom.charAt(0)+p.nom.charAt(0)"
+                     class="w-16 h-16 rounded-full border-2 border-green-500" >
               </a>
 
               <div>
-                <a href="#" (click)="showPlumberDetails(p.id); $event.preventDefault()"
+                <a href="#" (click)="showPlumberDetails('1'); $event.preventDefault()"
                    class="text-xl font-bold text-gray-900 hover:text-indigo-600">
-                  {{ p.nom }}
+                  {{ p.prenom }} {{ p.nom }}
                 </a>
-                <p class="text-gray-600">{{ p.specialite }}</p>
+                <p class="text-gray-600">plomberie</p>
               </div>
             </div>
 
             <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
-              <div class="availability-status px-3 py-1 rounded-full"
-                   [ngClass]="p.disponible ? 'text-green-700 bg-green-100' : 'text-orange-700 bg-orange-100'">
-                {{ p.disponible ? 'Disponible Maintenant' : 'Prochain créneau : Demain 8h00' }}
+              <div class="availability-status px-3 py-1 rounded-full text-green-700"
+                   >
+                'Disponible Maintenant'
               </div>
 
-              <p class="text-2xl font-bold text-indigo-600">{{ p.tarif }}</p>
+              <p class="text-2xl font-bold text-indigo-600">{{p.tarif?p.tarif:'non renseigné'}} </p>
 
-              <button (click)="showPlumberDetails(p.id)"
+              <button (click)="showPlumberDetails('1')"
                       class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                 Réservation
               </button>
@@ -91,7 +91,7 @@
         </div>
       </div>
 
-      <div *ngIf="filteredPlombiers.length === 0"
+      <div *ngIf="plombiers.length === 0"
            class="text-center p-8 bg-yellow-50 rounded-lg border border-yellow-200 mt-6">
         <p class="text-xl text-yellow-800 font-semibold">
           Aucun plombier ne correspond à vos critères.
@@ -113,40 +113,40 @@
       <div class="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
 
         <div class="flex-shrink-0">
-          <div class="w-32 h-32 rounded-full flex items-center justify-center text-5xl font-bold text-white"
-               [ngClass]="plombierSelectionne.disponible ? 'bg-green-600' : 'bg-orange-600'">
-            {{plombierSelectionne.initiales}}
+          <div class="w-32 h-32 rounded-full flex items-center justify-center text-5xl font-bold text-white bg-green-600"
+               >
+            plombierSelectionne.initiales
           </div>
           <h2 class="text-2xl font-bold text-gray-900 mt-4">{{plombierSelectionne.nom}}</h2>
-          <p class="font-semibold" [ngClass]="plombierSelectionne.disponible ? 'text-green-600' : 'text-orange-600'">{{plombierSelectionne.specialite}}</p>
+          <p class="font-semibold text-green-600" >plombierSelectionne.specialite</p>
         </div>
 
         <div class="flex-grow">
           <div class="flex items-center space-x-2 text-gray-500 mb-2">
             <span class="text-red-500">📍</span>
-            <p>{{plombierSelectionne.zone}}</p>
+            <p>plombierSelectionne.zone</p>
           </div>
 
           <div class="flex items-center space-x-2 text-gray-800 mb-2">
             <span class="text-yellow-400 text-xl">⭐️</span>
-            <p class="font-bold">{{plombierSelectionne.note}} <span class="text-sm font-normal">({{plombierSelectionne.avisCount}} Avis)</span></p>
+            <p class="font-bold">plombierSelectionne.note <span class="text-sm font-normal">(plombierSelectionne.avisCount Avis)</span></p>
           </div>
 
           <p class="text-4xl font-extrabold text-indigo-600 mb-4">
-            {{plombierSelectionne.tarif}}
+            plombierSelectionne.tarif
           </p>
 
           <p class="text-gray-700 mb-4">
-            {{plombierSelectionne.description}} <br>
+            plombierSelectionne.description <br>
             <span class="italic text-sm text-gray-500">Devis gratuit sur demande.</span>
           </p>
 
           <h3 class="text-lg font-bold text-gray-800 mb-2">Services Spécialisés</h3>
           <div class="flex flex-wrap gap-2 mb-6">
-            <span *ngFor="let service of plombierSelectionne.services"
+            <!--span *ngFor="let service of plombierSelectionne.services"
                   class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
               {{service}}
-            </span>
+            </span-->
           </div>
 
           <ng-container *ngIf="reservationStatus === 'accepted'">
@@ -172,7 +172,7 @@
 
           <ng-container *ngIf="reservationStatus === 'initial'">
             <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-              <ng-container *ngIf="plombierSelectionne.disponible; else nonDisponible">
+              <ng-container *ngIf="plombierSelectionne; else nonDisponible">
                 <div class="bg-green-100 text-green-700 font-semibold px-4 py-2 rounded-full flex items-center space-x-2">
                   <span class="w-3 h-3 bg-green-500 rounded-full block"></span>
                   <span>Disponible Maintenant</span>

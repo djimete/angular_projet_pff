@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
+import {AuthService} from '../services/auth.service';
+import {User} from '../models';
 
 @Component({
   selector: 'app-home',
@@ -9,13 +11,17 @@ import { ApiService } from '../services/api.service';
 })
 export class HomeComponent implements OnInit {
 
-  data: any;
+  user:User|null=null;
 
-  constructor(private api: ApiService) {}
+  constructor(private authService:AuthService) {}
 
   ngOnInit() {
-    this.api.getData().subscribe(response => {
-      this.data = response;
-    });
+    this.user=this.authService.getUser();
+  }
+
+  deconnection() {
+    this.authService.deconnection();
+    this.user = null;
+
   }
 }

@@ -3,10 +3,17 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
     <a routerLink="/home" class="text-3xl font-bold text-indigo-600 cursor-pointer">WorkingExpress</a>
     <nav class="space-x-4">
-      <a routerLink="/login" class="text-gray-600 hover:text-indigo-600 transition duration-150 font-medium hidden sm:inline">Connexion</a>
-      <a routerLink="/inscription" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition duration-150">
-        S'inscrire
-      </a>
+      @if (user){
+        <span class="">Bienvenue</span>
+        <span class="">{{user.prenom}} {{user.nom}}</span>
+        <button type="button" (click)="deconnection()"> Deconnection</button>
+      } @else {
+        <a routerLink="/login" class="text-gray-600 hover:text-indigo-600 transition duration-150 font-medium hidden sm:inline">Connexion</a>
+        <a routerLink="/inscription" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition duration-150">
+          S'inscrire
+        </a>
+      }
+
     </nav>
   </div>
 </header>

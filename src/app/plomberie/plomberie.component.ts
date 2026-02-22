@@ -1,22 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Nécessaire si le composant est standalone
-import { FormsModule } from '@angular/forms'; // Nécessaire pour [(ngModel)]
+import { FormsModule } from '@angular/forms';
+import {User} from '../models';
+import {PrestatairesService} from '../services/prestataires.service'; // Nécessaire pour [(ngModel)]
 
-// Interface pour le modèle de données du Plombier
-interface Plombier {
-  id: string;
-  nom: string;
-  initiales: string;
-  specialite: string;
-  experience: number;
-  note: number;
-  avisCount: number;
-  tarif: string;
-  description: string;
-  zone: string;
-  services: string[];
-  disponible: boolean;
-}
+
 
 @Component({
   selector: 'app-plomberie',
@@ -28,6 +16,9 @@ interface Plombier {
   styleUrls: ['./plomberie.component.css']
 })
 export class PlomberieComponent implements OnInit {
+  applyFilters($event: any) {
+      throw new Error('Method not implemented.');
+  }
 
   // --- Propriétés de gestion de l'état des Vues et Modales ---
   public showDetailSection: boolean = false;
@@ -39,9 +30,9 @@ export class PlomberieComponent implements OnInit {
   public messageContent: string = '';
 
   // --- Data & États du Plombier ---
-  plombiers: Plombier[] = [];
-  filteredPlombiers: Plombier[] = []; // Liste filtrée affichée
-  plombierSelectionne: Plombier | null = null;
+  plombiers: User[] = [];
+  plombierSelectionne:User | null = null;
+
 
   reservationStatus: 'initial' | 'accepted' = 'initial'; // État de la réservation
   validationCode: string | null = null; // Code généré à l'acceptation
@@ -71,89 +62,42 @@ export class PlomberieComponent implements OnInit {
   public cardCVC: string = '';
   // -----------------------------------------------------------
 
+  constructor(private prestatairesServive:PrestatairesService) {
+  }
 
   // --- Cycle de Vie Angular ---
 
   ngOnInit(): void {
     this.loadPlombiersData();
-    // Afficher tous les plombiers au démarrage
-    this.filteredPlombiers = this.plombiers;
   }
 
   // --- Data Loading (MOCK) ---
 
   private loadPlombiersData() {
-    this.plombiers = [
-      {
-        id: '1',
-        nom: 'Louis M.',
-        initiales: 'LM',
-        specialite: 'Expert en détection de fuites',
-        experience: 12,
-        note: 4.9,
-        avisCount: 85,
-        tarif: '10 000 XOF / heure',
-        description: 'Louis est un plombier certifié avec plus de 12 ans d\'expérience. Spécialisé dans les urgences à Dakar et Rufisque.',
-        zone: 'Dakar/Rufisque',
-        services: ['Fuite d\'eau urgente', 'Installation robinetterie', 'Débouchage canalisation'],
-        disponible: true,
+    this.prestatairesServive.getPrestataires('plomberie').subscribe({
+      next:(data) =>{
+        this.plombiers=data;
       },
-      {
-        id: '2',
-        nom: 'Marion T.',
-        initiales: 'MT',
-        specialite: 'Plombière certifiée RGE',
-        experience: 5,
-        note: 4.5,
-        avisCount: 30,
-        tarif: '15 000 XOF / forfait',
-        description: 'Marion est spécialisée dans les installations écologiques et les rénovations de salle de bain.',
-        zone: 'Dakar Ouest',
-        services: ['Installation robinetterie', 'Débouchage canalisation'],
-        disponible: false,
+      error :(err)=>{
+
       },
-      {
-        id: '3',
-        nom: 'Modou Diaw',
-        initiales: 'MD',
-        specialite: 'Réparation de robinet',
-        experience: 2,
-        note: 3.8,
-        avisCount: 15,
-        tarif: 'Prix sur devis',
-        description: 'Jeune plombier dynamique offrant des services rapides de réparation de robinetterie et de petits travaux.',
-        zone: 'Dakar Centre',
-        services: ['Installation robinetterie'],
-        disponible: false,
-      },
-    ];
+      complete:()=>{
+
+      }
+    })
   }
 
   // --- Fonction de Filtrage (Ajoutée) ---
 
-  applyFilters(event: Event) {
-    event.preventDefault(); // Empêcher le comportement par défaut du formulaire
-
-    this.filteredPlombiers = this.plombiers.filter(p => {
-      const locationMatch = !this.filterLocation ||
-        p.zone.toLowerCase().includes(this.filterLocation.toLowerCase());
-
-      const serviceMatch = this.filterService === 'all' ||
-        p.services.some(s => s.toLowerCase().includes(this.filterService.toLowerCase()));
-
-      const urgentMatch = !this.filterUrgent || p.disponible;
-
-      return locationMatch && serviceMatch && urgentMatch;
-    });
-  }
 
   // --- Fonctions de VUE / Navigation ---
 
   showPlumberDetails(id: string) {
-    const plombier = this.plombiers.find(p => p.id === id);
+    //const plombier = this.plombiers.find(p => p.id === id);
+    const plombier=null;
 
     if (plombier) {
-      this.plombierSelectionne = plombier;
+      //this.plombierSelectionne = plombier;
 
       this.showDetailSection = true;
       this.reservationStatus = 'initial';
@@ -172,11 +116,11 @@ export class PlomberieComponent implements OnInit {
 
   showListView() {
     this.showDetailSection = false;
-    this.plombierSelectionne = null;
+   // this.plombierSelectionne = null;
     this.reservationStatus = 'initial';
     this.validationCode = null;
     this.closeAllModals();
-    this.applyFilters(new Event('submit')); // Réappliquer les filtres si existants
+    //this.applyFilters(new Event('submit')); // Réappliquer les filtres si existants
   }
 
   // --- Gestion des Modales ---
@@ -242,10 +186,10 @@ export class PlomberieComponent implements OnInit {
   submitReservation(event: Event) {
     event.preventDefault();
 
-    if (!this.plombierSelectionne) {
+   /* if (!this.plombierSelectionne) {
       this.showMessage("Erreur", "Aucun plombier sélectionné pour la réservation.");
       return;
-    }
+    }*/
 
     if (!this.reservationNom || !this.reservationTelephone || !this.reservationDescription) {
       this.showMessage("Champs Manquants", "Veuillez remplir tous les champs du formulaire de réservation.");
@@ -258,18 +202,18 @@ export class PlomberieComponent implements OnInit {
     this.validationCode = (Math.floor(1000 + Math.random() * 9000)).toString();
     this.reservationStatus = 'accepted';
 
-    this.showMessage("Demande de Réservation Acceptée ✅",
-      `Le plombier **${this.plombierSelectionne.nom}** a accepté votre demande ! Procédez au paiement de l'acompte. Votre code de validation est : <strong>${this.validationCode}</strong>.`);
+    /*this.showMessage("Demande de Réservation Acceptée ✅",
+      `Le plombier **${this.plombierSelectionne.nom}** a accepté votre demande ! Procédez au paiement de l'acompte. Votre code de validation est : <strong>${this.validationCode}</strong>.`);*/
   }
 
   submitPayment(event: Event) {
     event.preventDefault();
     this.paymentErrorMessage = null;
 
-    if (!this.validationCode || !this.plombierSelectionne) {
+    /*if (!this.validationCode || !this.plombierSelectionne) {
       this.paymentErrorMessage = "Erreur critique : Code de validation ou Plombier manquant.";
       return;
-    }
+    }*/
     if (!this.paymentAmount || this.paymentAmount <= 0) {
       this.paymentErrorMessage = "Veuillez entrer un montant d'acompte valide (min 1 XOF).";
       return;
@@ -328,4 +272,5 @@ export class PlomberieComponent implements OnInit {
       this.validationCode = null;
     }
   }
+
 }

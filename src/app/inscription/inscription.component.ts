@@ -21,6 +21,7 @@ export class InscriptionComponent {
     telephone:new FormControl(''),
     adresse:new FormControl(''),
     dateNaissance:new FormControl(''),
+    metier:new FormControl(''),
     genre:new FormControl('')
   })
 
@@ -102,7 +103,11 @@ export class InscriptionComponent {
       "nom": this.inscriptionForm.get('nom')?.value,
       "prenom": this.inscriptionForm.get('prenom')?.value,
       "telephone": this.inscriptionForm.get('telephone')?.value,
-      "adresse":this.inscriptionForm.get('adresse')?.value
+      "adresse":this.inscriptionForm.get('adresse')?.value,
+      "metier":this.inscriptionForm.get('metier')?.value,
+      "genre":this.inscriptionForm.get('genre')?.value,
+      "dateNaissance":this.inscriptionForm.get('dateNaissance')?.value,
+
     }
     console.log('inscrption de ',request)
     this.authService.register(request).subscribe({
