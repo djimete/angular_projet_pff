@@ -27,6 +27,9 @@ import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component'
 import { DetaileletrictComponent } from './detaileletrict/detaileletrict.component';
 import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.component';
 import {AuthService} from './services/auth.service';
+import { ReservationClientComponent } from './reservation-client/reservation-client.component';
+import { PaiementComponent } from './paiement/paiement.component';
+import { HistoriqueComponent } from './historique/historique.component';
 // ----------------------------------------
 
 
@@ -48,6 +51,9 @@ import {AuthService} from './services/auth.service';
     DetaildomestiqueComponent,
     CoursDomicileComponent,
     ElectriciteComponent,
+    ReservationClientComponent,
+    PaiementComponent,
+    HistoriqueComponent,
   ],
   // [IMPORTANT] Les composants standalone doivent être importés s'ils sont utilisés
   // dans le template d'un composant de ce module ou dans le routing.

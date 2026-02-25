@@ -17,6 +17,9 @@ import { ReparationtechComponent } from './reparationtech/reparationtech.compone
 import { CoursDomicileComponent } from './coursdomicile/coursdomicile.component'; // Casse corrigée
 import { DetaileletrictComponent } from './detaileletrict/detaileletrict.component';
 import { DetaildomestiqueComponent } from './detaildomestique/detaildomestique.component';
+import {ReservationClientComponent} from './reservation-client/reservation-client.component';
+import {PaiementComponent} from './paiement/paiement.component';
+import {HistoriqueComponent} from './historique/historique.component';
 // ----------------------------------------
 
 
@@ -27,6 +30,14 @@ const routes: Routes = [
   { path: 'inscription', component: InscriptionComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'confirm-password', component: ConfirmPasswordComponent },
+  { path: 'reservation-form', component: ReservationClientComponent },
+
+  { path: 'sigup', component: InscriptionComponent },
+  { path: 'deconnection', component: HomeComponent },
+  { path: 'reservation-form', component: ReservationClientComponent },
+  { path: 'paiement', component: PaiementComponent },
+  { path: 'historique', component: HistoriqueComponent },
+
 
   // Routes des Catégories de Services
   { path: 'plomberie', component: PlomberieComponent },

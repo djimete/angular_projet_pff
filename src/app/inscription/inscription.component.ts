@@ -1,8 +1,27 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import {InscriptionRequest} from '../models';
-import {AuthService} from '../services/auth.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+import { FormControl, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+export const registrationValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const pwd1 = control.get('pwd1');
+  const pwd2 = control.get('pwd2');
+  const tarif = control.get('tarif');
+  const metier = control.get('metier');
+
+  const errors: any = {};
+
+  if (pwd1 && pwd2 && pwd1.value !== pwd2.value) {
+    errors['mismatch'] = true;
+  }
+
+  // Correction : On vérifie si tarif a une valeur (même 0 est une valeur)
+  if (tarif?.value !== null && tarif?.value !== '' && (!metier?.value || metier.value === '')) {
+    errors['metierObligatoire'] = true;
+  }
+
+  return Object.keys(errors).length > 0 ? errors : null;
+};
 
 @Component({
   selector: 'app-inscription',
@@ -11,117 +30,70 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   standalone: false
 })
 export class InscriptionComponent {
+  isLoading = false;
 
-  inscriptionForm:FormGroup=new FormGroup({
-    nom:new FormControl('',Validators.required),
-    prenom:new FormControl('', Validators.required),
-    adresse_e_mail:new FormControl('',Validators.required),
-    pwd1:new FormControl('',Validators.required),
-    pwd2:new FormControl('',Validators.required),
-    telephone:new FormControl(''),
-    adresse:new FormControl(''),
-    dateNaissance:new FormControl(''),
-    metier:new FormControl(''),
-    genre:new FormControl('')
-  })
+  inscriptionForm: FormGroup = new FormGroup({
+    nom: new FormControl('', Validators.required),
+    prenom: new FormControl('', Validators.required),
+    adresse_e_mail: new FormControl('', [Validators.required, Validators.email]),
+    pwd1: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    pwd2: new FormControl('', Validators.required),
+    telephone: new FormControl('', Validators.required),
+    adresse: new FormControl('', Validators.required),
+    dateNaissance: new FormControl('', Validators.required),
+    metier: new FormControl(''),
+    tarif: new FormControl(null),
+    genre: new FormControl('', Validators.required)
+  }, { validators: registrationValidator });
 
-  constructor(private router: Router,private authService:AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
-  /**
-   * Gère la soumission du formulaire d'inscription
-   */
   onSubmit(event: Event) {
-    /*event.preventDefault();
-
-    const nom = (document.getElementById('nom') as HTMLInputElement).value;
-    const prenom = (document.getElementById('prenom') as HTMLInputElement).value;
-    const email = (document.getElementById('email') as HTMLInputElement).value;
-
-    this.showMessage(`Inscription réussie pour ${prenom} ${nom} (${email}) !`, false);
-    console.log('Formulaire d\'inscription soumis.');
-
-    // Redirection après inscription réussie
-    setTimeout(() => {
-      this.router.navigate(['/']);
-    }, 2000);*/
-    this.register()
-  }
-
-  /**
-   * Gère le clic sur les boutons d'inscription sociale
-   */
-  handleSocialSignIn(provider: string) {
-    console.log(`Tentative d'inscription via ${provider}...`);
-
-    let authUrl;
-
-    switch (provider) {
-      case 'Google':
-        authUrl = 'https://www.google.com/';
-        break;
-      case 'Facebook':
-        authUrl = 'https://www.facebook.com/';
-        break;
-      case 'Apple':
-        authUrl = 'https://www.apple.com/';
-        break;
-      default:
-        console.error('Fournisseur d\'authentification inconnu.');
-        return;
-    }
-
-    window.open(authUrl, '_blank');
-  }
-
-  /**
-   * Affiche un message de feedback
-   */
-  showMessage(text: string, isError: boolean = false) {
-    const messageBox = document.getElementById('message-box');
-    if (messageBox) {
-      messageBox.textContent = text;
-      messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
-
-      if (isError) {
-        messageBox.classList.add('bg-red-100', 'text-red-800');
-      } else {
-        messageBox.classList.add('bg-green-100', 'text-green-800');
-      }
-
-      messageBox.classList.remove('hidden');
-
-      setTimeout(() => {
-        messageBox.classList.add('hidden');
-      }, 5000);
+    if (this.inscriptionForm.valid) {
+      this.register();
     }
   }
 
-  register(){
-    const request:InscriptionRequest={
-      "email": this.inscriptionForm.get('adresse_e_mail')?.value,
-      "motDePasse": this.inscriptionForm.get('pwd1')?.value,
-      "nom": this.inscriptionForm.get('nom')?.value,
-      "prenom": this.inscriptionForm.get('prenom')?.value,
-      "telephone": this.inscriptionForm.get('telephone')?.value,
-      "adresse":this.inscriptionForm.get('adresse')?.value,
-      "metier":this.inscriptionForm.get('metier')?.value,
-      "genre":this.inscriptionForm.get('genre')?.value,
-      "dateNaissance":this.inscriptionForm.get('dateNaissance')?.value,
+  register() {
+    this.isLoading = true;
+    const val = this.inscriptionForm.value;
 
+    // Construction propre de l'objet de requête
+    const request: any = {
+      email: val.adresse_e_mail,
+      motDePasse: val.pwd1,
+      nom: val.nom,
+      prenom: val.prenom,
+      telephone: val.telephone,
+      adresse: val.adresse,
+      genre: val.genre,
+      dateNaissance: val.dateNaissance
+    };
+
+    // Si c'est un prestataire (tarif rempli)
+    if (val.tarif !== null && val.tarif !== '') {
+      request.tarif = Number(val.tarif); // Conversion forcée en nombre
+      request.metier = val.metier;
+      request.role = 'PRESTATAIRE';
+    } else {
+      request.role = 'CLIENT';
     }
-    console.log('inscrption de ',request)
+
     this.authService.register(request).subscribe({
-      error:(err)=>{
-        console.log(err)
+      next: (res) => {
+        this.isLoading = false;
+        if (request.role === 'PRESTATAIRE') {
+          // Un prestataire va sur l'accueil (où il verra sa propre carte dans la liste)
+          this.router.navigate(['/']);
+        } else {
+          // Un client est redirigé vers la création de réservation
+          this.router.navigate(['/reservation-form']);
+        }
       },
-      next:()=>{
-        console.log('ok ')
-      },
-      complete:()=>{
-        console.log("inscription ok");
-        this.router.navigate(['/']);
+      error: (err) => {
+        this.isLoading = false;
+        alert("Erreur lors de l'enregistrement. Vérifiez vos données.");
       }
     });
-
   }
 }

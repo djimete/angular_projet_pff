@@ -19,14 +19,24 @@ export interface LoginRequest{
 export interface User{
   prenom:string,
   nom:string,
-  tarif?:number;
+  tarif?:number,
   email?:string,
-  telephone?:string
+  telephone?:string,
+  adresse?: string,
+  metier?: string
+
 }
 
 export interface LoginResponse{
   token: string,
   user: User
+}
+
+export interface ReservationRequest {
+  prestataireId: number,
+  dateSouhaitee: string,
+  nbHeures: number,
+  details: string
 }
 
 

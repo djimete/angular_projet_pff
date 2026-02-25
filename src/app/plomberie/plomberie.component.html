@@ -25,21 +25,7 @@
                [(ngModel)]="filterLocation" name="filterLocation"
                class="p-3 border border-gray-300 rounded-lg">
 
-        <select id="filter-service"
-                [(ngModel)]="filterService" name="filterService"
-                class="p-3 border border-gray-300 rounded-lg appearance-none">
-          <option value="all">Tous les services</option>
-          <option value="fuite">Fuite d'eau urgente</option>
-          <option value="installation">Installation robinetterie</option>
-          <option value="debouchage">Débouchage canalisation</option>
-        </select>
 
-        <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-          <input type="checkbox" id="filter-urgent"
-                 [(ngModel)]="filterUrgent" name="filterUrgent"
-                 class="w-4 h-4 text-indigo-600">
-          <label for="filter-urgent" class="text-gray-700">Disponible maintenant</label>
-        </div>
 
         <button type="submit" id="apply-filters-btn"
                 class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
@@ -77,7 +63,7 @@
             <div class="flex flex-col items-start md:items-end space-y-2 mt-4 md:mt-0">
               <div class="availability-status px-3 py-1 rounded-full text-green-700"
                    >
-                'Disponible Maintenant'
+
               </div>
 
               <p class="text-2xl font-bold text-indigo-600">{{p.tarif?p.tarif:'non renseigné'}} </p>
